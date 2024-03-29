@@ -54,7 +54,8 @@ public class LosslessCalleeController {
 	public ResponseEntity<String> health() {
 		if (healthy.get() == 1) {
 			return new ResponseEntity<>("OK", HttpStatus.OK);
-		} else {
+		}
+		else {
 			if (calledHealthyEndpoint.compareAndSet(false, true)) {
 				Thread thread = new Thread(new Runnable() {
 					@Override
@@ -90,6 +91,5 @@ public class LosslessCalleeController {
 		metadataStr = URLDecoder.decode(metadataStr, UTF_8);
 		return metadataStr;
 	}
-
 
 }
