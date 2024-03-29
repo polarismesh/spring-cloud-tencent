@@ -37,6 +37,8 @@ import com.tencent.cloud.rpc.enhancement.resttemplate.PolarisLoadBalancerRequest
 import com.tencent.cloud.rpc.enhancement.scg.EnhancedGatewayGlobalFilter;
 import com.tencent.cloud.rpc.enhancement.transformer.InstanceTransformer;
 import com.tencent.cloud.rpc.enhancement.transformer.PolarisInstanceTransformer;
+import com.tencent.cloud.rpc.enhancement.transformer.PolarisRegistrationTransformer;
+import com.tencent.cloud.rpc.enhancement.transformer.RegistrationTransformer;
 import com.tencent.cloud.rpc.enhancement.webclient.EnhancedWebClientExchangeFilterFunction;
 import com.tencent.cloud.rpc.enhancement.webclient.PolarisLoadBalancerClientRequestTransformer;
 
@@ -85,6 +87,13 @@ public class RpcEnhancementAutoConfiguration {
 	@ConditionalOnMissingClass("com.alibaba.cloud.nacos.NacosServiceInstance")
 	public InstanceTransformer instanceTransformer() {
 		return new PolarisInstanceTransformer();
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	@ConditionalOnMissingClass("com.alibaba.cloud.nacos.registry.NacosRegistration")
+	public RegistrationTransformer registrationTransformer() {
+		return new PolarisRegistrationTransformer();
 	}
 
 	@Bean
