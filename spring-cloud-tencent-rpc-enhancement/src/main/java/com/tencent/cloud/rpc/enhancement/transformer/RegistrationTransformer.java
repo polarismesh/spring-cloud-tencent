@@ -24,6 +24,12 @@ import com.tencent.polaris.api.pojo.Instance;
 
 import org.springframework.cloud.client.serviceregistry.Registration;
 
+
+/**
+ * RegistrationTransformer extensions to adapt 3rd registration to polaris instance.
+ *
+ * @author andrew shan
+ */
 public interface RegistrationTransformer {
 
 	default Instance transform(Registration registration) {

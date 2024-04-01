@@ -84,14 +84,14 @@ public class RpcEnhancementAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	@ConditionalOnMissingClass("com.alibaba.cloud.nacos.NacosServiceInstance")
+	@ConditionalOnClass(name = "com.tencent.cloud.common.pojo.PolarisServiceInstance")
 	public InstanceTransformer instanceTransformer() {
 		return new PolarisInstanceTransformer();
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
-	@ConditionalOnMissingClass("com.alibaba.cloud.nacos.registry.NacosRegistration")
+	@ConditionalOnClass(name = "com.tencent.cloud.polaris.registry.PolarisRegistration")
 	public RegistrationTransformer registrationTransformer() {
 		return new PolarisRegistrationTransformer();
 	}
