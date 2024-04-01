@@ -6,3 +6,4 @@
 - [feat: SCT元数据管理能力与polaris-java元数据管理能力进行下沉及整合](https://github.com/Tencent/spring-cloud-tencent/pull/1249)
 - [feat: support lane router](https://github.com/Tencent/spring-cloud-tencent/pull/1250)
 - [feat: lane router rule support caller ip](https://github.com/Tencent/spring-cloud-tencent/pull/1253)
+- [feat:add polaris ThreadLocal plugin.](https://github.com/Tencent/spring-cloud-tencent/pull/1255)
