@@ -37,6 +37,8 @@ import com.tencent.cloud.rpc.enhancement.resttemplate.PolarisLoadBalancerRequest
 import com.tencent.cloud.rpc.enhancement.scg.EnhancedGatewayGlobalFilter;
 import com.tencent.cloud.rpc.enhancement.transformer.InstanceTransformer;
 import com.tencent.cloud.rpc.enhancement.transformer.PolarisInstanceTransformer;
+import com.tencent.cloud.rpc.enhancement.transformer.PolarisRegistrationTransformer;
+import com.tencent.cloud.rpc.enhancement.transformer.RegistrationTransformer;
 import com.tencent.cloud.rpc.enhancement.webclient.EnhancedWebClientExchangeFilterFunction;
 import com.tencent.cloud.rpc.enhancement.webclient.PolarisLoadBalancerClientRequestTransformer;
 
@@ -47,7 +49,6 @@ import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -82,9 +83,16 @@ public class RpcEnhancementAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	@ConditionalOnMissingClass("com.alibaba.cloud.nacos.NacosServiceInstance")
+	@ConditionalOnClass(name = "com.tencent.cloud.common.pojo.PolarisServiceInstance")
 	public InstanceTransformer instanceTransformer() {
 		return new PolarisInstanceTransformer();
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	@ConditionalOnClass(name = "com.tencent.cloud.polaris.registry.PolarisRegistration")
+	public RegistrationTransformer registrationTransformer() {
+		return new PolarisRegistrationTransformer();
 	}
 
 	@Bean
