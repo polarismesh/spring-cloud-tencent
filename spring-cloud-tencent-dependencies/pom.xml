@@ -73,7 +73,7 @@
 		<revision>1.14.0-2023.0.0-SNAPSHOT</revision>
 
 		<!-- Dependencies -->
-		<polaris.version>1.15.3-SNAPSHOT</polaris.version>
+		<polaris.version>1.15.3</polaris.version>
 		<guava.version>32.0.1-jre</guava.version>
 		<springdoc.version>2.2.0</springdoc.version>
 		<mocktio.version>4.9.0</mocktio.version>
@@ -185,6 +185,12 @@
 			<dependency>
 				<groupId>com.tencent.cloud</groupId>
 				<artifactId>spring-cloud-tencent-lossless-plugin</artifactId>
+				<version>${revision}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>com.tencent.cloud</groupId>
+				<artifactId>spring-cloud-starter-tencent-threadlocal-plugin</artifactId>
 				<version>${revision}</version>
 			</dependency>
 

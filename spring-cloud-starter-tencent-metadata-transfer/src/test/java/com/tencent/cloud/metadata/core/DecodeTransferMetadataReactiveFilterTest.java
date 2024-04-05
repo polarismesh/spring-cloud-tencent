@@ -20,6 +20,7 @@ package com.tencent.cloud.metadata.core;
 import com.tencent.cloud.common.constant.MetadataConstant;
 import com.tencent.cloud.common.constant.OrderConstant;
 import com.tencent.cloud.common.metadata.config.MetadataLocalProperties;
+import com.tencent.cloud.polaris.context.config.PolarisContextProperties;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -44,7 +45,7 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = MOCK,
 		classes = DecodeTransferMetadataServletFilterTest.TestApplication.class,
-		properties = {"spring.config.location = classpath:application-test.yml"})
+		properties = {"spring.config.location = classpath:application-test.yml", "spring.main.web-application-type = reactive"})
 public class DecodeTransferMetadataReactiveFilterTest {
 
 	@Autowired
@@ -54,7 +55,7 @@ public class DecodeTransferMetadataReactiveFilterTest {
 
 	@BeforeEach
 	public void setUp() {
-		this.metadataReactiveFilter = new DecodeTransferMetadataReactiveFilter();
+		this.metadataReactiveFilter = new DecodeTransferMetadataReactiveFilter(new PolarisContextProperties());
 	}
 
 	@Test

@@ -39,10 +39,9 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import reactor.core.publisher.Mono;
 
-import org.springframework.cloud.client.ServiceInstance;
-import org.springframework.cloud.client.loadbalancer.Response;
 import org.springframework.cloud.client.serviceregistry.Registration;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
+import org.springframework.cloud.gateway.route.Route;
 import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -56,8 +55,8 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
-import static org.springframework.cloud.gateway.support.ServerWebExchangeUtils.GATEWAY_LOADBALANCER_RESPONSE_ATTR;
 import static org.springframework.cloud.gateway.support.ServerWebExchangeUtils.GATEWAY_REQUEST_URL_ATTR;
+import static org.springframework.cloud.gateway.support.ServerWebExchangeUtils.GATEWAY_ROUTE_ATTR;
 
 @ExtendWith(MockitoExtension.class)
 public class EnhancedGatewayGlobalFilterTest {
@@ -111,20 +110,10 @@ public class EnhancedGatewayGlobalFilterTest {
 		doReturn(HttpMethod.GET).when(request).getMethod();
 		doReturn(new HttpHeaders()).when(response).getHeaders();
 		doReturn(Mono.empty()).when(chain).filter(exchange);
-
-		ServiceInstance serviceInstance = mock(ServiceInstance.class);
-		Response<ServiceInstance> serviceInstanceResponse = new Response<ServiceInstance>() {
-			@Override
-			public boolean hasServer() {
-				return true;
-			}
-
-			@Override
-			public ServiceInstance getServer() {
-				return serviceInstance;
-			}
-		};
-		doReturn(serviceInstanceResponse).when(exchange).getAttribute(GATEWAY_LOADBALANCER_RESPONSE_ATTR);
+		Route route = mock(Route.class);
+		URI uri = new URI("http://TEST/");
+		doReturn(uri).when(route).getUri();
+		doReturn(route).when(exchange).getAttribute(GATEWAY_ROUTE_ATTR);
 		doReturn(new URI("http://0.0.0.0/")).when(exchange).getAttribute(GATEWAY_REQUEST_URL_ATTR);
 		doReturn(request).when(exchange).getRequest();
 		doReturn(response).when(exchange).getResponse();

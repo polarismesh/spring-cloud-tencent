@@ -37,18 +37,21 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
 /**
- * Test for {@link EncodeTransferMedataWebClientFilter}.
+ * Test for {@link EncodeTransferMedataWebClientEnhancedPlugin}.
  *
  * @author sean yu
  */
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = RANDOM_PORT,
 		classes = EncodeTransferMedataWebClientFilterTest.TestApplication.class,
-		properties = {"spring.config.location = classpath:application-test.yml"})
+		properties = {"spring.config.location = classpath:application-test.yml",
+				"spring.main.web-application-type = reactive"})
 public class EncodeTransferMedataWebClientFilterTest {
 
 	@Autowired
 	private WebClient.Builder webClientBuilder;
+	@LocalServerPort
+	private int localServerPort;
 
 	@Test
 	public void testTransitiveMetadataFromApplicationConfig() {
@@ -62,10 +65,6 @@ public class EncodeTransferMedataWebClientFilterTest {
 				.block();
 		assertThat(metadata).isEqualTo("2");
 	}
-
-	@LocalServerPort
-	private int localServerPort;
-
 
 	@SpringBootApplication
 	@RestController
