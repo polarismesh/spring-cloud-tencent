@@ -5,3 +5,4 @@
 - [feat:upgrade jackson version.](https://github.com/Tencent/spring-cloud-tencent/pull/1261)
 - [fix: fix RouterLabelRestTemplateInterceptor add response headers exception with httpclient5.](https://github.com/Tencent/spring-cloud-tencent/pull/1267)
 - [feat: support lossless online and offline](https://github.com/Tencent/spring-cloud-tencent/pull/1268)
+- [feat: support lane router](https://github.com/Tencent/spring-cloud-tencent/pull/1269)
