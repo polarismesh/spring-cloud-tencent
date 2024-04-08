@@ -80,7 +80,7 @@
 		<io.swagger.version>1.5.24</io.swagger.version>
 		<mocktio.version>4.5.1</mocktio.version>
 		<byte-buddy.version>1.12.10</byte-buddy.version>
-		<jackson.version>2.15.4</jackson.version>
+		<jackson.version>2.12.7</jackson.version>
 		<protobuf-java.version>3.21.7</protobuf-java.version>
 		<system-stubs-jupiter.version>2.0.2</system-stubs-jupiter.version>
 
