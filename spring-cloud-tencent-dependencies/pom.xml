@@ -104,7 +104,7 @@
 				<scope>import</scope>
 			</dependency>
 
-			<!-- polaris starter-->
+			<!-- polaris starter -->
 			<dependency>
 				<groupId>com.tencent.cloud</groupId>
 				<artifactId>spring-cloud-tencent-commons</artifactId>
