@@ -70,16 +70,20 @@
 	</developers>
 
 	<properties>
+		<!-- Project revision -->
 		<revision>1.14.0-2021.0.9-SNAPSHOT</revision>
 
+		<!-- Polaris SDK version -->
+		<polaris.version>1.15.3</polaris.version>
+
 		<!-- Dependencies -->
-		<polaris.version>1.15.0</polaris.version>
 		<guava.version>32.0.1-jre</guava.version>
 		<logback.version>1.2.13</logback.version>
 		<springdoc.version>1.7.0</springdoc.version>
 		<io.swagger.version>1.5.24</io.swagger.version>
 		<mocktio.version>4.5.1</mocktio.version>
 		<byte-buddy.version>1.12.10</byte-buddy.version>
+		<jackson.version>2.13.5</jackson.version>
 		<protobuf-java.version>3.21.7</protobuf-java.version>
 		<system-stubs-jupiter.version>2.0.2</system-stubs-jupiter.version>
 
@@ -93,13 +97,14 @@
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
-				<artifactId>polaris-dependencies</artifactId>
-				<groupId>com.tencent.polaris</groupId>
-				<version>${polaris.version}</version>
+				<groupId>com.fasterxml.jackson</groupId>
+				<artifactId>jackson-bom</artifactId>
+				<version>${jackson.version}</version>
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
 
+			<!-- polaris starter-->
 			<dependency>
 				<groupId>com.tencent.cloud</groupId>
 				<artifactId>spring-cloud-tencent-commons</artifactId>
@@ -124,7 +129,6 @@
 				<version>${revision}</version>
 			</dependency>
 
-			<!--	polaris starter-->
 			<dependency>
 				<groupId>com.tencent.cloud</groupId>
 				<artifactId>spring-cloud-starter-tencent-polaris-ratelimit</artifactId>
@@ -225,7 +229,6 @@
 				<version>${springdoc.version}</version>
 			</dependency>
 
-
 			<dependency>
 				<groupId>org.springdoc</groupId>
 				<artifactId>springdoc-openapi-webflux-ui</artifactId>
@@ -265,6 +268,14 @@
 				<scope>test</scope>
 			</dependency>
 
+			<!-- polaris SDK-->
+			<dependency>
+				<artifactId>polaris-dependencies</artifactId>
+				<groupId>com.tencent.polaris</groupId>
+				<version>${polaris.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
 		</dependencies>
 	</dependencyManagement>
 
