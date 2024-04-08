@@ -73,8 +73,10 @@
 		<!-- Project revision -->
 		<revision>1.14.0-Hoxton.SR12-SNAPSHOT</revision>
 
-		<!-- Dependencies -->
+		<!-- Polaris SDK version -->
 		<polaris.version>1.15.3</polaris.version>
+
+		<!-- Dependencies -->
 		<guava.version>32.0.1-jre</guava.version>
 		<logback.version>1.2.13</logback.version>
 		<springfox.swagger2.version>3.0.0</springfox.swagger2.version>
@@ -102,6 +104,7 @@
 				<scope>import</scope>
 			</dependency>
 
+			<!-- polaris starter -->
 			<dependency>
 				<groupId>com.tencent.cloud</groupId>
 				<artifactId>spring-cloud-tencent-commons</artifactId>
@@ -132,7 +135,6 @@
 				<version>${revision}</version>
 			</dependency>
 
-			<!--	polaris starter-->
 			<dependency>
 				<groupId>com.tencent.cloud</groupId>
 				<artifactId>spring-cloud-starter-tencent-polaris-ratelimit</artifactId>
@@ -290,6 +292,7 @@
 				<scope>test</scope>
 			</dependency>
 
+			<!-- polaris SDK-->
 			<dependency>
 				<artifactId>polaris-dependencies</artifactId>
 				<groupId>com.tencent.polaris</groupId>
