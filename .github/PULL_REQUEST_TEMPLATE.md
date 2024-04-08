@@ -14,7 +14,7 @@ Other... Please describe:
 ## Adding the issue link (#xxx) if possible.
 
 <!--
-fixes #
+closes #
  -->
 
 ## Note
