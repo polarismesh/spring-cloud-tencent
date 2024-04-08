@@ -7,3 +7,4 @@
 - [feat: support lane router](https://github.com/Tencent/spring-cloud-tencent/pull/1250)
 - [feat: lane router rule support caller ip](https://github.com/Tencent/spring-cloud-tencent/pull/1253)
 - [feat:add polaris ThreadLocal plugin.](https://github.com/Tencent/spring-cloud-tencent/pull/1255)
+- [feat:upgrade jackson version.](https://github.com/Tencent/spring-cloud-tencent/pull/1257)

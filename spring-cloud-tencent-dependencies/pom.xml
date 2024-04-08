@@ -70,7 +70,8 @@
 	</developers>
 
 	<properties>
-		<revision>1.14.0-Hoxton.SR12-RC2</revision>
+		<!-- Project revision -->
+		<revision>1.14.0-Hoxton.SR12-SNAPSHOT</revision>
 
 		<!-- Dependencies -->
 		<polaris.version>1.15.3</polaris.version>
@@ -94,9 +95,9 @@
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
-				<artifactId>polaris-dependencies</artifactId>
-				<groupId>com.tencent.polaris</groupId>
-				<version>${polaris.version}</version>
+				<groupId>com.fasterxml.jackson</groupId>
+				<artifactId>jackson-bom</artifactId>
+				<version>${jackson.version}</version>
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
@@ -239,24 +240,6 @@
 			</dependency>
 
 			<dependency>
-				<groupId>com.fasterxml.jackson.core</groupId>
-				<artifactId>jackson-annotations</artifactId>
-				<version>${jackson.version}</version>
-			</dependency>
-
-			<dependency>
-				<groupId>com.fasterxml.jackson.core</groupId>
-				<artifactId>jackson-core</artifactId>
-				<version>${jackson.version}</version>
-			</dependency>
-
-			<dependency>
-				<groupId>com.fasterxml.jackson.core</groupId>
-				<artifactId>jackson-databind</artifactId>
-				<version>${jackson.version}</version>
-			</dependency>
-
-			<dependency>
 				<groupId>io.springfox</groupId>
 				<artifactId>springfox-boot-starter</artifactId>
 				<version>${springfox.swagger2.version}</version>
@@ -307,6 +290,13 @@
 				<scope>test</scope>
 			</dependency>
 
+			<dependency>
+				<artifactId>polaris-dependencies</artifactId>
+				<groupId>com.tencent.polaris</groupId>
+				<version>${polaris.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
 		</dependencies>
 	</dependencyManagement>
 
