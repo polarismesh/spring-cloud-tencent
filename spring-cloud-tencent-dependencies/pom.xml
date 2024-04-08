@@ -73,14 +73,14 @@
 		<revision>1.14.0-2020.0.6-SNAPSHOT</revision>
 
 		<!-- Dependencies -->
-		<polaris.version>1.15.0</polaris.version>
+		<polaris.version>1.15.3</polaris.version>
 		<guava.version>32.0.1-jre</guava.version>
 		<logback.version>1.2.13</logback.version>
 		<springdoc.version>1.7.0</springdoc.version>
 		<io.swagger.version>1.5.24</io.swagger.version>
 		<mocktio.version>4.5.1</mocktio.version>
 		<byte-buddy.version>1.12.10</byte-buddy.version>
-		<jackson.version>2.12.7</jackson.version>
+		<jackson.version>2.15.4</jackson.version>
 		<protobuf-java.version>3.21.7</protobuf-java.version>
 		<system-stubs-jupiter.version>2.0.2</system-stubs-jupiter.version>
 
@@ -94,9 +94,9 @@
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
-				<artifactId>polaris-dependencies</artifactId>
-				<groupId>com.tencent.polaris</groupId>
-				<version>${polaris.version}</version>
+				<groupId>com.fasterxml.jackson</groupId>
+				<artifactId>jackson-bom</artifactId>
+				<version>${jackson.version}</version>
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
@@ -221,24 +221,6 @@
 			</dependency>
 
 			<dependency>
-				<groupId>com.fasterxml.jackson.core</groupId>
-				<artifactId>jackson-annotations</artifactId>
-				<version>${jackson.version}</version>
-			</dependency>
-
-			<dependency>
-				<groupId>com.fasterxml.jackson.core</groupId>
-				<artifactId>jackson-core</artifactId>
-				<version>${jackson.version}</version>
-			</dependency>
-
-			<dependency>
-				<groupId>com.fasterxml.jackson.core</groupId>
-				<artifactId>jackson-databind</artifactId>
-				<version>${jackson.version}</version>
-			</dependency>
-
-			<dependency>
 				<groupId>org.springdoc</groupId>
 				<artifactId>springdoc-openapi-ui</artifactId>
 				<version>${springdoc.version}</version>
@@ -283,6 +265,13 @@
 				<scope>test</scope>
 			</dependency>
 
+			<dependency>
+				<artifactId>polaris-dependencies</artifactId>
+				<groupId>com.tencent.polaris</groupId>
+				<version>${polaris.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
 		</dependencies>
 	</dependencyManagement>
 
