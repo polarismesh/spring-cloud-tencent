@@ -26,7 +26,7 @@ import org.springframework.web.bind.annotation.RequestParam;
  *
  * @author Haotian Zhang
  */
-@FeignClient(value = "LaneCalleeService")
+@FeignClient("LaneCalleeService")
 public interface LaneRouterCalleeService {
 
 	/**
