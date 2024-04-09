@@ -70,14 +70,18 @@
 	</developers>
 
 	<properties>
+		<!-- Project revision -->
 		<revision>1.14.0-2023.0.0-SNAPSHOT</revision>
 
-		<!-- Dependencies -->
+		<!-- Polaris SDK version -->
 		<polaris.version>1.15.3</polaris.version>
+
+		<!-- Dependencies -->
 		<guava.version>32.0.1-jre</guava.version>
 		<springdoc.version>2.2.0</springdoc.version>
 		<mocktio.version>4.9.0</mocktio.version>
 		<byte-buddy.version>1.12.19</byte-buddy.version>
+		<jackson.version>2.15.4</jackson.version>
 		<protobuf-java.version>3.21.7</protobuf-java.version>
 		<okio.version>3.7.0</okio.version>
 		<system-stubs-jupiter.version>2.0.2</system-stubs-jupiter.version>
@@ -89,13 +93,14 @@
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
-				<artifactId>polaris-dependencies</artifactId>
-				<groupId>com.tencent.polaris</groupId>
-				<version>${polaris.version}</version>
+				<groupId>com.fasterxml.jackson</groupId>
+				<artifactId>jackson-bom</artifactId>
+				<version>${jackson.version}</version>
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
 
+			<!-- polaris starter-->
 			<dependency>
 				<groupId>com.tencent.cloud</groupId>
 				<artifactId>spring-cloud-tencent-commons</artifactId>
@@ -120,7 +125,6 @@
 				<version>${revision}</version>
 			</dependency>
 
-			<!--	polaris starter-->
 			<dependency>
 				<groupId>com.tencent.cloud</groupId>
 				<artifactId>spring-cloud-starter-tencent-polaris-ratelimit</artifactId>
@@ -266,6 +270,14 @@
 				<scope>test</scope>
 			</dependency>
 
+			<!-- polaris SDK-->
+			<dependency>
+				<artifactId>polaris-dependencies</artifactId>
+				<groupId>com.tencent.polaris</groupId>
+				<version>${polaris.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
 		</dependencies>
 	</dependencyManagement>
 
