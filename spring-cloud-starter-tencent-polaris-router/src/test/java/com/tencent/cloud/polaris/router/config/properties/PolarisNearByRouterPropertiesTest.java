@@ -49,6 +49,6 @@ public class PolarisNearByRouterPropertiesTest {
 	@Test
 	public void testToString() {
 		assertThat(properties.toString())
-				.isEqualTo("PolarisNearByRouterProperties{enabled=true}");
+				.isEqualTo("PolarisNearByRouterProperties{enabled=true, matchLevel='null'}");
 	}
 }
