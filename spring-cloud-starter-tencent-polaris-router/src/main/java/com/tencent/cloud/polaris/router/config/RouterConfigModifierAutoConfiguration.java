@@ -19,6 +19,7 @@
 package com.tencent.cloud.polaris.router.config;
 
 import com.tencent.cloud.polaris.router.RouterConfigModifier;
+import com.tencent.cloud.polaris.router.config.properties.PolarisNearByRouterProperties;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
@@ -35,8 +36,8 @@ public class RouterConfigModifierAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public RouterConfigModifier routerConfigModifier() {
-		return new RouterConfigModifier();
+	public RouterConfigModifier routerConfigModifier(PolarisNearByRouterProperties polarisNearByRouterProperties) {
+		return new RouterConfigModifier(polarisNearByRouterProperties);
 	}
 
 }

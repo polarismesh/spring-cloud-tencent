@@ -5,7 +5,7 @@ spring:
     name: LaneRouterGatewayService
   cloud:
     polaris:
-      address: grpc://9.134.5.52:8091
+      address: grpc://119.91.66.223:8091
       namespace: default
       enabled: true
       contract:

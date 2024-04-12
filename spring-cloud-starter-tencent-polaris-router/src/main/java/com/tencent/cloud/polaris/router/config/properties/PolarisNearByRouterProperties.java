@@ -29,6 +29,8 @@ public class PolarisNearByRouterProperties {
 
 	private boolean enabled = true;
 
+	private String matchLevel;
+
 	public boolean isEnabled() {
 		return enabled;
 	}
@@ -37,10 +39,19 @@ public class PolarisNearByRouterProperties {
 		this.enabled = enabled;
 	}
 
+	public String getMatchLevel() {
+		return matchLevel;
+	}
+
+	public void setMatchLevel(String matchLevel) {
+		this.matchLevel = matchLevel;
+	}
+
 	@Override
 	public String toString() {
 		return "PolarisNearByRouterProperties{" +
 				"enabled=" + enabled +
+				", matchLevel='" + matchLevel + '\'' +
 				'}';
 	}
 }
