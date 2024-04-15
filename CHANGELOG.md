@@ -7,3 +7,4 @@
 - [feat: support lossless online and offline](https://github.com/Tencent/spring-cloud-tencent/pull/1268)
 - [feat: support lane router](https://github.com/Tencent/spring-cloud-tencent/pull/1269)
 - [feat: add lane router examples](https://github.com/Tencent/spring-cloud-tencent/pull/1270)
+- [fix: fix the lossless provider override in multiple registries scenario](https://github.com/Tencent/spring-cloud-tencent/pull/1271)
