@@ -44,6 +44,7 @@ public class NacosInstanceTransformer implements InstanceTransformer {
 			);
 			String nacosInstanceId = serviceInstance.getMetadata().get("nacos.instanceId");
 			instance.setId(nacosInstanceId);
+
 		}
 	}
 
