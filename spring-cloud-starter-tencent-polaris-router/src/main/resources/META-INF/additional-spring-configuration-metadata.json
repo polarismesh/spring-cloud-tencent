@@ -10,7 +10,13 @@
       "name": "spring.cloud.polaris.router.nearby-router.enabled",
       "type": "java.lang.Boolean",
       "defaultValue": true,
-      "description": "the switch for near by router."
+      "description": "the switch for nearby router."
+    },
+    {
+      "name": "spring.cloud.polaris.router.nearby-router.matchLevel",
+      "type": "java.lang.String",
+      "defaultValue": "zone",
+      "description": "the match level for nearby router, options can be region/zone/campus."
     },
     {
       "name": "spring.cloud.polaris.router.rule-router.enabled",

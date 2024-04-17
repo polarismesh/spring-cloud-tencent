@@ -20,9 +20,13 @@ package com.tencent.cloud.polaris.router;
 
 import com.tencent.cloud.common.constant.OrderConstant;
 import com.tencent.cloud.polaris.context.PolarisConfigModifier;
+import com.tencent.cloud.polaris.router.config.properties.PolarisNearByRouterProperties;
 import com.tencent.polaris.api.config.consumer.ServiceRouterConfig;
+import com.tencent.polaris.api.plugin.route.LocationLevel;
 import com.tencent.polaris.factory.config.ConfigurationImpl;
 import com.tencent.polaris.plugins.router.healthy.RecoverRouterConfig;
+import com.tencent.polaris.plugins.router.nearby.NearbyRouterConfig;
+import org.apache.commons.lang.StringUtils;
 
 /**
  * RouterConfigModifier.
@@ -30,6 +34,12 @@ import com.tencent.polaris.plugins.router.healthy.RecoverRouterConfig;
  * @author sean yu
  */
 public class RouterConfigModifier implements PolarisConfigModifier {
+
+	private final PolarisNearByRouterProperties polarisNearByRouterProperties;
+
+	public RouterConfigModifier(PolarisNearByRouterProperties polarisNearByRouterProperties) {
+		this.polarisNearByRouterProperties = polarisNearByRouterProperties;
+	}
 
 	@Override
 	public void modify(ConfigurationImpl configuration) {
@@ -41,6 +51,16 @@ public class RouterConfigModifier implements PolarisConfigModifier {
 		// Update modified config to source properties
 		configuration.getConsumer().getServiceRouter()
 				.setPluginConfig(ServiceRouterConfig.DEFAULT_ROUTER_RECOVER, recoverRouterConfig);
+
+		if (StringUtils.isNotBlank(polarisNearByRouterProperties.getMatchLevel())) {
+			LocationLevel locationLevel = LocationLevel.valueOf(polarisNearByRouterProperties.getMatchLevel());
+			NearbyRouterConfig nearbyRouterConfig = configuration.getConsumer().getServiceRouter().getPluginConfig(
+					ServiceRouterConfig.DEFAULT_ROUTER_NEARBY, NearbyRouterConfig.class);
+			nearbyRouterConfig.setMatchLevel(locationLevel);
+			configuration.getConsumer().getServiceRouter()
+					.setPluginConfig(ServiceRouterConfig.DEFAULT_ROUTER_NEARBY, nearbyRouterConfig);
+		}
+
 	}
 
 	@Override
