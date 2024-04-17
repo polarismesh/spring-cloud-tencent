@@ -7,3 +7,4 @@
 - [fix: fix RouterLabelRestTemplateInterceptor add response headers exception with httpclient5.](https://github.com/Tencent/spring-cloud-tencent/pull/1337)
 - [feat: support lossless online/offline](https://github.com/Tencent/spring-cloud-tencent/pull/1338)
 - [feat: support lane router](https://github.com/Tencent/spring-cloud-tencent/pull/1339)
+- [feat: add lane router examples](https://github.com/Tencent/spring-cloud-tencent/pull/1340)

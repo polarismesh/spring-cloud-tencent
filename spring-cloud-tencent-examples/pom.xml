@@ -23,6 +23,7 @@
 		<module>polaris-config-data-example</module>
 		<module>quickstart-example</module>
 		<module>lossless-example</module>
+		<module>polaris-router-grayrelease-lane-example</module>
 	</modules>
 
 	<properties>
