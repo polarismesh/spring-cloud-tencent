@@ -29,6 +29,11 @@ import org.springframework.cloud.client.serviceregistry.Registration;
 public class NacosRegistrationTransformer implements RegistrationTransformer {
 
 	@Override
+	public String getRegistry() {
+		return "nacos";
+	}
+
+	@Override
 	public void transformCustom(DefaultInstance instance, Registration registration) {
 		if (registration instanceof NacosRegistration) {
 			NacosRegistration nacosRegistration = (NacosRegistration) registration;
