@@ -40,14 +40,16 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.DEFINED_PORT;
 
 /**
- * Test for {@link EncodeTransferMedataFeignInterceptor}.
+ * Test for {@link EncodeTransferMedataFeignEnhancedPlugin}.
  *
  * @author Haotian Zhang
  */
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = DEFINED_PORT,
 		classes = EncodeTransferMedataFeignInterceptorTest.TestApplication.class,
-		properties = {"server.port=48081", "spring.config.location = classpath:application-test.yml"})
+		properties = {"server.port=48081", "spring.config.location = classpath:application-test.yml",
+				"spring.main.web-application-type = servlet",
+				"spring.cloud.gateway.enabled = false"})
 public class EncodeTransferMedataFeignInterceptorTest {
 
 	@Autowired

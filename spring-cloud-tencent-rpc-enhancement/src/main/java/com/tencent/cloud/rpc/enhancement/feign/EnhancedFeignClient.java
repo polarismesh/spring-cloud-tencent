@@ -21,7 +21,6 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
 
-import com.tencent.cloud.common.metadata.MetadataContextHolder;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginContext;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginRunner;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginType;
@@ -32,11 +31,10 @@ import feign.Request;
 import feign.Request.Options;
 import feign.Response;
 
-import org.springframework.cloud.client.ServiceInstance;
+import org.springframework.cloud.client.DefaultServiceInstance;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 
-import static com.tencent.cloud.rpc.enhancement.resttemplate.PolarisLoadBalancerRequestTransformer.LOAD_BALANCER_SERVICE_INSTANCE;
 import static feign.Util.checkNotNull;
 
 /**
@@ -69,10 +67,20 @@ public class EnhancedFeignClient implements Client {
 				.url(url)
 				.build();
 		enhancedPluginContext.setRequest(enhancedRequestContext);
+		enhancedPluginContext.setOriginRequest(request);
 
 		enhancedPluginContext.setLocalServiceInstance(pluginRunner.getLocalServiceInstance());
-		enhancedPluginContext.setTargetServiceInstance((ServiceInstance) MetadataContextHolder.get()
-				.getLoadbalancerMetadata().get(LOAD_BALANCER_SERVICE_INSTANCE), url);
+		String svcName = request.requestTemplate().feignTarget().name();
+		DefaultServiceInstance serviceInstance = new DefaultServiceInstance(
+				String.format("%s-%s-%d", svcName, url.getHost(), url.getPort()),
+				svcName, url.getHost(), url.getPort(), url.getScheme().equals("https"));
+		// -1 means access directly by url
+		if (serviceInstance.getPort() == -1) {
+			enhancedPluginContext.setTargetServiceInstance(null, url);
+		}
+		else {
+			enhancedPluginContext.setTargetServiceInstance(serviceInstance, url);
+		}
 
 		// Run pre enhanced plugins.
 		pluginRunner.run(EnhancedPluginType.Client.PRE, enhancedPluginContext);

@@ -27,15 +27,15 @@ import com.tencent.cloud.rpc.enhancement.plugin.EnhancedRequestContext;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedResponseContext;
 import reactor.core.publisher.Mono;
 
-import org.springframework.cloud.client.ServiceInstance;
-import org.springframework.cloud.client.loadbalancer.Response;
+import org.springframework.cloud.client.DefaultServiceInstance;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
+import org.springframework.cloud.gateway.route.Route;
 import org.springframework.core.Ordered;
 import org.springframework.web.server.ServerWebExchange;
 
-import static org.springframework.cloud.gateway.support.ServerWebExchangeUtils.GATEWAY_LOADBALANCER_RESPONSE_ATTR;
 import static org.springframework.cloud.gateway.support.ServerWebExchangeUtils.GATEWAY_REQUEST_URL_ATTR;
+import static org.springframework.cloud.gateway.support.ServerWebExchangeUtils.GATEWAY_ROUTE_ATTR;
 
 /**
  * EnhancedGatewayGlobalFilter.
@@ -51,31 +51,40 @@ public class EnhancedGatewayGlobalFilter implements GlobalFilter, Ordered {
 	}
 
 	@Override
-	public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
+	public Mono<Void> filter(ServerWebExchange originExchange, GatewayFilterChain chain) {
 		EnhancedPluginContext enhancedPluginContext = new EnhancedPluginContext();
-		URI uri = exchange.getAttribute(GATEWAY_REQUEST_URL_ATTR);
+
 		EnhancedRequestContext enhancedRequestContext = EnhancedRequestContext.builder()
-				.httpHeaders(exchange.getRequest().getHeaders())
-				.httpMethod(exchange.getRequest().getMethod())
-				.url(uri)
+				.httpHeaders(originExchange.getRequest().getHeaders())
+				.httpMethod(originExchange.getRequest().getMethod())
+				.url(originExchange.getRequest().getURI())
 				.build();
 		enhancedPluginContext.setRequest(enhancedRequestContext);
-
-		enhancedPluginContext.setLocalServiceInstance(pluginRunner.getLocalServiceInstance());
-		Response<ServiceInstance> serviceInstanceResponse = exchange.getAttribute(GATEWAY_LOADBALANCER_RESPONSE_ATTR);
-		if (serviceInstanceResponse != null && serviceInstanceResponse.hasServer()) {
-			ServiceInstance instance = serviceInstanceResponse.getServer();
-			enhancedPluginContext.setTargetServiceInstance(instance, exchange.getRequest().getURI());
-		}
-		else {
-			enhancedPluginContext.setTargetServiceInstance(null, uri);
-		}
+		enhancedPluginContext.setOriginRequest(originExchange);
 
 		// Run pre enhanced plugins.
 		pluginRunner.run(EnhancedPluginType.Client.PRE, enhancedPluginContext);
-
+		// Exchange may be changed in plugin
+		ServerWebExchange exchange = (ServerWebExchange) enhancedPluginContext.getOriginRequest();
 		long startTime = System.currentTimeMillis();
 		return chain.filter(exchange)
+				.doOnSubscribe(v -> {
+					Route route = exchange.getAttribute(GATEWAY_ROUTE_ATTR);
+					URI uri = exchange.getAttribute(GATEWAY_REQUEST_URL_ATTR);
+					enhancedPluginContext.getRequest().setUrl(uri);
+					if (uri != null) {
+						if (route != null && route.getUri().getScheme().contains("lb")) {
+							DefaultServiceInstance serviceInstance = new DefaultServiceInstance();
+							serviceInstance.setServiceId(route.getUri().getHost());
+							serviceInstance.setHost(uri.getHost());
+							serviceInstance.setPort(uri.getPort());
+							enhancedPluginContext.setTargetServiceInstance(serviceInstance, null);
+						}
+						else {
+							enhancedPluginContext.setTargetServiceInstance(null, uri);
+						}
+					}
+				})
 				.doOnSuccess(v -> {
 					enhancedPluginContext.setDelay(System.currentTimeMillis() - startTime);
 					EnhancedResponseContext enhancedResponseContext = EnhancedResponseContext.builder()
