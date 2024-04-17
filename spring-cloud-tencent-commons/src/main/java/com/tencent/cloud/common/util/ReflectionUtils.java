@@ -50,4 +50,38 @@ public final class ReflectionUtils extends org.springframework.util.ReflectionUt
 		return name.substring(0, 1).toUpperCase(ENGLISH) + name.substring(1);
 	}
 
+	public static Object getFieldValue(Object instance, String fieldName) {
+		Field field = org.springframework.util.ReflectionUtils.findField(instance.getClass(), fieldName);
+		if (field == null) {
+			return null;
+		}
+
+		field.setAccessible(true);
+		try {
+			return field.get(instance);
+		}
+		catch (IllegalAccessException e) {
+			// ignore
+		}
+		finally {
+			field.setAccessible(false);
+		}
+		return null;
+	}
+
+	public static void setFieldValue(Object instance, String fieldName, Object value) {
+		Field field = org.springframework.util.ReflectionUtils.findField(instance.getClass(), fieldName);
+		if (field == null) {
+			return;
+		}
+
+		field.setAccessible(true);
+
+		try {
+			setField(field, instance, value);
+		}
+		finally {
+			field.setAccessible(false);
+		}
+	}
 }

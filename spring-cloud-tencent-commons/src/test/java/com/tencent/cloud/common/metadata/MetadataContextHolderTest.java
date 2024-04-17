@@ -36,7 +36,8 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
 		classes = MetadataContextHolderTest.TestApplication.class,
-		properties = {"spring.config.location = classpath:application-test.yml"})
+		properties = {"spring.config.location = classpath:application-test.yml",
+				"spring.main.web-application-type = reactive"})
 public class MetadataContextHolderTest {
 
 	@Test
@@ -62,7 +63,7 @@ public class MetadataContextHolderTest {
 		customMetadata.put("a", "1");
 		customMetadata.put("b", "22");
 		customMetadata.put("c", "3");
-		MetadataContextHolder.init(customMetadata, new HashMap<>());
+		MetadataContextHolder.init(customMetadata, new HashMap<>(), null);
 		metadataContext = MetadataContextHolder.get();
 		customMetadata = metadataContext.getTransitiveMetadata();
 		Assertions.assertThat(customMetadata.get("a")).isEqualTo("1");
