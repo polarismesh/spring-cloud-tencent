@@ -20,6 +20,8 @@ package com.tencent.cloud.rpc.enhancement.transformer;
 
 public class PolarisRegistrationTransformer implements RegistrationTransformer {
 
-
-
+	@Override
+	public String getRegistry() {
+		return "polaris";
+	}
 }
