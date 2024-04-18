@@ -8,3 +8,4 @@
 - [feat:upgrade jackson version.](https://github.com/Tencent/spring-cloud-tencent/pull/1262)
 - [fix: fix the lossless provider override in multiple registries scenario](https://github.com/Tencent/spring-cloud-tencent/pull/1263)
 - [fix:fix nearby router properties loading bug.](https://github.com/Tencent/spring-cloud-tencent/pull/1272)
+- [fix: fix grammar issues for lane router example & optimize the gateway dependency](https://github.com/Tencent/spring-cloud-tencent/pull/1274)
