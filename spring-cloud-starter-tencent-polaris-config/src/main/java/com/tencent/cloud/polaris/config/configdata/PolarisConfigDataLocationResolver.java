@@ -23,11 +23,11 @@ import java.util.List;
 import java.util.Objects;
 
 import com.tencent.cloud.polaris.config.ConfigurationModifier;
-import com.tencent.cloud.polaris.config.adapter.PolarisPropertySourceManager;
 import com.tencent.cloud.polaris.config.config.PolarisConfigProperties;
 import com.tencent.cloud.polaris.config.config.PolarisCryptoConfigProperties;
 import com.tencent.cloud.polaris.context.ModifyAddress;
 import com.tencent.cloud.polaris.context.PolarisConfigModifier;
+import com.tencent.cloud.polaris.context.PolarisSDKContextManager;
 import com.tencent.cloud.polaris.context.config.PolarisContextProperties;
 import com.tencent.polaris.api.utils.StringUtils;
 import com.tencent.polaris.client.api.SDKContext;
@@ -150,21 +150,6 @@ public class PolarisConfigDataLocationResolver implements
 		bootstrapContext.registerIfAbsent(PolarisContextProperties.class,
 				BootstrapRegistry.InstanceSupplier.of(polarisContextProperties));
 
-		bootstrapContext.registerIfAbsent(PolarisPropertySourceManager.class,
-				BootstrapRegistry.InstanceSupplier.of(new PolarisPropertySourceManager()));
-
-		bootstrapContext.addCloseListener(
-				event -> {
-					// destroy earlier Polaris sdkContext
-					event.getBootstrapContext().get(SDKContext.class).destroy();
-					// register PolarisPropertySourceManager to context
-					PolarisPropertySourceManager polarisPropertySourceManager = event.getBootstrapContext()
-							.get(PolarisPropertySourceManager.class);
-					event.getApplicationContext().getBeanFactory().registerSingleton(
-							"polarisPropertySourceManager", polarisPropertySourceManager);
-				}
-		);
-
 		return loadConfigDataResources(resolverContext,
 				location, profiles, polarisConfigProperties, polarisCryptoConfigProperties, polarisContextProperties);
 	}
@@ -273,7 +258,7 @@ public class PolarisConfigDataLocationResolver implements
 				((ConfigurationImpl) sdkContext.getConfig()).getGlobal().getStatReporter().setEnable(false);
 			}
 			sdkContext.init();
-			bootstrapContext.register(SDKContext.class, BootstrapRegistry.InstanceSupplier.of(sdkContext));
+			PolarisSDKContextManager.setConfigSDKContext(sdkContext);
 		}
 
 	}
@@ -282,11 +267,10 @@ public class PolarisConfigDataLocationResolver implements
 			PolarisConfigProperties polarisConfigProperties, PolarisCryptoConfigProperties polarisCryptoConfigProperties,
 			PolarisContextProperties polarisContextProperties) {
 		List<PolarisConfigModifier> modifierList = modifierList(polarisConfigProperties, polarisCryptoConfigProperties, polarisContextProperties);
-		return SDKContext.initContextByConfig(polarisContextProperties.configuration(modifierList, () -> {
-			return loadPolarisConfigProperties(resolverContext, String.class, "spring.cloud.client.ip-address");
-		}, () -> {
-			return loadPolarisConfigProperties(resolverContext, Integer.class, "spring.cloud.polaris.local-port");
-		}));
+		return SDKContext.initContextByConfig(polarisContextProperties.configuration(
+				modifierList,
+				() -> loadPolarisConfigProperties(resolverContext, String.class, "spring.cloud.client.ip-address"),
+				() -> loadPolarisConfigProperties(resolverContext, Integer.class, "spring.cloud.polaris.local-port")));
 	}
 
 	private List<PolarisConfigModifier> modifierList(PolarisConfigProperties polarisConfigProperties,

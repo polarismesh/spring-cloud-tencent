@@ -1,8 +1,10 @@
 server:
-  port: 48083
+  port: 48084
 spring:
   application:
     name: QuickstartCalleeService
+  config:
+    import: optional:polaris
   cloud:
     polaris:
       address: grpc://119.91.66.223:8091
@@ -17,7 +19,7 @@ spring:
           enabled: true
       stat:
         enabled: true
-        port: 28083
+        port: 28084
       #        pushgateway:
       #          enabled: true
       #          address: 127.0.0.1:9091
@@ -29,12 +31,11 @@ spring:
             files: [ "config/callee.properties" ]
       ratelimit:
         enabled: true
-        rejectRequestTipsFilePath: reject-tips.html
         maxQueuingTime: 500
     tencent:
       metadata:
         content:
-          label1: value1
+          label1: value2
           region: huanan
 management:
   endpoints:
@@ -45,4 +46,4 @@ management:
           - polaris-ratelimit
           - polaris-config
 label:
-  key-value: user:zhangsan
+  key-value: user2:lisi

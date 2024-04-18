@@ -25,14 +25,15 @@ import java.util.Map;
 
 import com.google.common.collect.Lists;
 import com.tencent.cloud.polaris.config.adapter.MockedConfigKVFile;
-import com.tencent.cloud.polaris.config.adapter.PolarisPropertySourceManager;
 import com.tencent.cloud.polaris.config.config.PolarisConfigProperties;
+import com.tencent.cloud.polaris.context.PolarisSDKContextManager;
 import com.tencent.cloud.polaris.context.config.PolarisContextProperties;
 import com.tencent.polaris.client.api.SDKContext;
 import com.tencent.polaris.configuration.api.core.ConfigFileService;
 import com.tencent.polaris.configuration.api.core.ConfigKVFile;
 import com.tencent.polaris.configuration.factory.ConfigFileServiceFactory;
 import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.MockedStatic;
@@ -49,7 +50,7 @@ import org.springframework.core.env.PropertySource;
 import static com.tencent.cloud.polaris.config.configdata.PolarisConfigDataLoader.CUSTOM_POLARIS_CONFIG_FILE_LOADED;
 import static com.tencent.cloud.polaris.config.configdata.PolarisConfigDataLoader.INTERNAL_CONFIG_FILES_LOADED;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
@@ -68,11 +69,14 @@ public class PolarisConfigDataLoaderTest {
 	private final String testServiceName = "testServiceName";
 	private final String polarisConfigPropertySourceName = "polaris-config";
 
+	@BeforeAll
+	static void beforeAll() {
+		PolarisSDKContextManager.setConfigSDKContext(sdkContext);
+	}
+
 	@AfterAll
 	static void afterAll() {
-		if (sdkContext != null) {
-			sdkContext.destroy();
-		}
+		PolarisSDKContextManager.innerGetConfigSDKContext();
 	}
 
 	@Test
@@ -100,9 +104,6 @@ public class PolarisConfigDataLoaderTest {
 			when(configFileService.getConfigPropertiesFile(testNamespace, testServiceName, "application.properties"))
 					.thenReturn(propertiesFile);
 			when(context.getBootstrapContext()).thenReturn(bootstrapContext);
-			when(bootstrapContext.get(eq(SDKContext.class))).thenReturn(sdkContext);
-
-			when(bootstrapContext.get(eq(PolarisPropertySourceManager.class))).thenReturn(new PolarisPropertySourceManager());
 
 			when(polarisContextProperties.getNamespace()).thenReturn(testNamespace);
 			when(polarisContextProperties.getService()).thenReturn(testServiceName);
@@ -123,7 +124,7 @@ public class PolarisConfigDataLoaderTest {
 			when(polarisConfigDataResource.getProfiles()).thenReturn(profiles);
 
 			mockedStatic.when(() -> {
-				ConfigFileServiceFactory.createConfigFileService(sdkContext);
+				ConfigFileServiceFactory.createConfigFileService(any(SDKContext.class));
 			}).thenReturn(configFileService);
 
 			ConfigData configData = polarisConfigDataLoader.load(context, polarisConfigDataResource);
@@ -181,8 +182,6 @@ public class PolarisConfigDataLoaderTest {
 			when(profiles.getActive()).thenReturn(active);
 
 			when(context.getBootstrapContext()).thenReturn(bootstrapContext);
-			when(bootstrapContext.get(eq(SDKContext.class))).thenReturn(sdkContext);
-			when(bootstrapContext.get(eq(PolarisPropertySourceManager.class))).thenReturn(new PolarisPropertySourceManager());
 
 			when(polarisContextProperties.getNamespace()).thenReturn(testNamespace);
 			when(polarisContextProperties.getService()).thenReturn(testServiceName);
@@ -202,7 +201,7 @@ public class PolarisConfigDataLoaderTest {
 			when(polarisConfigDataResource.getProfiles()).thenReturn(profiles);
 
 			mockedStatic.when(() -> {
-				ConfigFileServiceFactory.createConfigFileService(sdkContext);
+				ConfigFileServiceFactory.createConfigFileService(any(SDKContext.class));
 			}).thenReturn(configFileService);
 
 			ConfigData configData = polarisConfigDataLoader.load(context, polarisConfigDataResource);
@@ -254,9 +253,6 @@ public class PolarisConfigDataLoaderTest {
 			when(configFileService.getConfigPropertiesFile(testNamespace, customGroup, customFile1)).thenReturn(file1);
 
 			when(context.getBootstrapContext()).thenReturn(bootstrapContext);
-			when(bootstrapContext.get(eq(SDKContext.class))).thenReturn(sdkContext);
-
-			when(bootstrapContext.get(eq(PolarisPropertySourceManager.class))).thenReturn(new PolarisPropertySourceManager());
 
 			when(polarisContextProperties.getNamespace()).thenReturn(testNamespace);
 			when(polarisContextProperties.getService()).thenReturn(testServiceName);
@@ -278,7 +274,7 @@ public class PolarisConfigDataLoaderTest {
 			when(polarisConfigDataResource.getProfiles()).thenReturn(profiles);
 
 			mockedStatic.when(() -> {
-				ConfigFileServiceFactory.createConfigFileService(sdkContext);
+				ConfigFileServiceFactory.createConfigFileService(any(SDKContext.class));
 			}).thenReturn(configFileService);
 
 			ConfigData configData = polarisConfigDataLoader.load(context, polarisConfigDataResource);

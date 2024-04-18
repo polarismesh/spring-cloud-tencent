@@ -24,7 +24,6 @@ import java.util.Objects;
 
 import com.tencent.cloud.polaris.config.PolarisConfigAutoConfiguration;
 import com.tencent.cloud.polaris.config.PolarisConfigBootstrapAutoConfiguration;
-import com.tencent.cloud.polaris.config.adapter.PolarisPropertySourceManager;
 import com.tencent.cloud.polaris.config.adapter.PolarisRefreshAffectedContextRefresher;
 import com.tencent.cloud.polaris.config.adapter.PolarisRefreshEntireContextRefresher;
 import com.tencent.cloud.polaris.config.config.PolarisConfigProperties;
@@ -107,7 +106,6 @@ public class ConditionalOnReflectRefreshTypeTest {
 				.withPropertyValues("spring.cloud.polaris.config.enabled=true");
 		contextRunner.run(context -> {
 			assertThat(context).hasSingleBean(PolarisConfigProperties.class);
-			assertThat(context).hasSingleBean(PolarisPropertySourceManager.class);
 			assertThat(context).hasSingleBean(ContextRefresher.class);
 			assertThat(context).hasSingleBean(PolarisRefreshEntireContextRefresher.class);
 		});

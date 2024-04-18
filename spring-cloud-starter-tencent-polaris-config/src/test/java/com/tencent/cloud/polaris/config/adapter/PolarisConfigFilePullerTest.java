@@ -27,6 +27,7 @@ import com.tencent.cloud.polaris.config.config.ConfigFileGroup;
 import com.tencent.cloud.polaris.context.config.PolarisContextProperties;
 import com.tencent.polaris.configuration.api.core.ConfigFileService;
 import com.tencent.polaris.configuration.api.core.ConfigKVFile;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -52,13 +53,15 @@ public class PolarisConfigFilePullerTest {
 	private PolarisContextProperties polarisContextProperties;
 	@Mock
 	private ConfigFileService configFileService;
-	@Mock
-	private PolarisPropertySourceManager polarisPropertySourceManager;
+
+	@BeforeEach
+	public void setUp() {
+		PolarisPropertySourceManager.clearPropertySources();
+	}
 
 	@Test
 	public void testPullInternalConfigFiles() {
-		PolarisConfigFilePuller puller = PolarisConfigFilePuller.get(polarisContextProperties, configFileService,
-				polarisPropertySourceManager);
+		PolarisConfigFilePuller puller = PolarisConfigFilePuller.get(polarisContextProperties, configFileService);
 
 		when(polarisContextProperties.getNamespace()).thenReturn(testNamespace);
 		when(polarisContextProperties.getService()).thenReturn(testServiceName);
@@ -90,8 +93,7 @@ public class PolarisConfigFilePullerTest {
 
 	@Test
 	public void testPullInternalConfigFilesWithProfile() {
-		PolarisConfigFilePuller puller = PolarisConfigFilePuller.get(polarisContextProperties, configFileService,
-				polarisPropertySourceManager);
+		PolarisConfigFilePuller puller = PolarisConfigFilePuller.get(polarisContextProperties, configFileService);
 
 		when(polarisContextProperties.getNamespace()).thenReturn(testNamespace);
 		when(polarisContextProperties.getService()).thenReturn(testServiceName);
@@ -137,8 +139,7 @@ public class PolarisConfigFilePullerTest {
 
 	@Test
 	public void testPullCustomConfigFilesWithProfile() {
-		PolarisConfigFilePuller puller = PolarisConfigFilePuller.get(polarisContextProperties, configFileService,
-				polarisPropertySourceManager);
+		PolarisConfigFilePuller puller = PolarisConfigFilePuller.get(polarisContextProperties, configFileService);
 
 		when(polarisContextProperties.getNamespace()).thenReturn(testNamespace);
 
