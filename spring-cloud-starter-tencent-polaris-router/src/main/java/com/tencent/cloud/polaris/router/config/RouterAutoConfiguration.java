@@ -44,7 +44,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.cloud.loadbalancer.annotation.LoadBalancerClients;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.web.client.RestTemplate;
@@ -59,7 +58,6 @@ import static org.springframework.core.Ordered.HIGHEST_PRECEDENCE;
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnPolarisRouterEnabled
 @LoadBalancerClients(defaultConfiguration = LoadBalancerConfiguration.class)
-@Import({PolarisNearByRouterProperties.class, PolarisMetadataRouterProperties.class, PolarisRuleBasedRouterProperties.class})
 public class RouterAutoConfiguration {
 
 	@Bean
