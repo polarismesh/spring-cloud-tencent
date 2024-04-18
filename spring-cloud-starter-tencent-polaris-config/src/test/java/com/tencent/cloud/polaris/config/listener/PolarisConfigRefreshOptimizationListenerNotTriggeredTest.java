@@ -21,7 +21,6 @@ package com.tencent.cloud.polaris.config.listener;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.google.common.collect.Lists;
 import com.tencent.cloud.polaris.config.adapter.MockedConfigKVFile;
 import com.tencent.cloud.polaris.config.adapter.PolarisPropertySource;
 import com.tencent.cloud.polaris.config.adapter.PolarisPropertySourceManager;
@@ -31,6 +30,7 @@ import com.tencent.cloud.polaris.config.enums.RefreshType;
 import com.tencent.polaris.configuration.api.core.ChangeType;
 import com.tencent.polaris.configuration.api.core.ConfigKVFileChangeEvent;
 import com.tencent.polaris.configuration.api.core.ConfigPropertyChangeInfo;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
@@ -77,6 +77,11 @@ public class PolarisConfigRefreshOptimizationListenerNotTriggeredTest {
 	@Autowired
 	private ConfigurableApplicationContext context;
 
+	@BeforeAll
+	static void beforeAll() {
+		PolarisPropertySourceManager.clearPropertySources();
+	}
+
 	@Test
 	public void testNotSwitchConfigRefreshType() {
 		RefreshType actualRefreshType = context.getEnvironment()
@@ -100,12 +105,12 @@ public class PolarisConfigRefreshOptimizationListenerNotTriggeredTest {
 
 		PolarisPropertySource polarisPropertySource = new PolarisPropertySource(TEST_NAMESPACE, TEST_SERVICE_NAME, TEST_FILE_NAME,
 				file, content);
-		PolarisPropertySourceManager manager = context.getBean(PolarisPropertySourceManager.class);
-		when(manager.getAllPropertySources()).thenReturn(Lists.newArrayList(polarisPropertySource));
+		PolarisPropertySourceManager.addPropertySource(polarisPropertySource);
 
 		PolarisRefreshAffectedContextRefresher refresher = context.getBean(PolarisRefreshAffectedContextRefresher.class);
 		PolarisRefreshAffectedContextRefresher spyRefresher = Mockito.spy(refresher);
 
+		refresher.setRegistered(false);
 		spyRefresher.onApplicationEvent(null);
 
 		ConfigPropertyChangeInfo changeInfo = new ConfigPropertyChangeInfo("k1", "v1", "v11", ChangeType.MODIFIED);
@@ -133,12 +138,6 @@ public class PolarisConfigRefreshOptimizationListenerNotTriggeredTest {
 
 	@SpringBootApplication
 	protected static class TestApplication {
-
-		@Primary
-		@Bean
-		public PolarisPropertySourceManager polarisPropertySourceManager() {
-			return mock(PolarisPropertySourceManager.class);
-		}
 
 		@Primary
 		@Bean

@@ -13,7 +13,6 @@
  * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
- *
  */
 
 package com.tencent.cloud.polaris.config;
@@ -26,7 +25,7 @@ import com.tencent.cloud.common.constant.OrderConstant;
 import com.tencent.cloud.common.util.AddressUtils;
 import com.tencent.cloud.polaris.config.config.PolarisConfigProperties;
 import com.tencent.cloud.polaris.config.config.PolarisCryptoConfigProperties;
-import com.tencent.cloud.polaris.context.PolarisConfigModifier;
+import com.tencent.cloud.polaris.context.PolarisConfigurationConfigModifier;
 import com.tencent.cloud.polaris.context.config.PolarisContextProperties;
 import com.tencent.polaris.factory.config.ConfigurationImpl;
 import com.tencent.polaris.factory.config.configuration.ConfigFilterConfigImpl;
@@ -42,7 +41,7 @@ import org.springframework.util.CollectionUtils;
  *
  * @author lepdou 2022-03-10
  */
-public class ConfigurationModifier implements PolarisConfigModifier {
+public class ConfigurationModifier implements PolarisConfigurationConfigModifier {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ConfigurationModifier.class);
 
 	private static final String DATA_SOURCE_POLARIS = "polaris";

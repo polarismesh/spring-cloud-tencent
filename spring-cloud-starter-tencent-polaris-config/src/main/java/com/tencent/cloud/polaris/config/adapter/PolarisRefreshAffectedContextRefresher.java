@@ -59,9 +59,8 @@ public class PolarisRefreshAffectedContextRefresher extends PolarisConfigPropert
 	private TypeConverter typeConverter;
 
 	public PolarisRefreshAffectedContextRefresher(PolarisConfigProperties polarisConfigProperties,
-			PolarisPropertySourceManager polarisPropertySourceManager, SpringValueRegistry springValueRegistry,
-			PlaceholderHelper placeholderHelper) {
-		super(polarisConfigProperties, polarisPropertySourceManager);
+			SpringValueRegistry springValueRegistry, PlaceholderHelper placeholderHelper) {
+		super(polarisConfigProperties);
 		this.springValueRegistry = springValueRegistry;
 		this.placeholderHelper = placeholderHelper;
 	}
