@@ -64,17 +64,15 @@ public class PolarisConfigFileLocator implements PropertySourceLocator {
 
 	private final ConfigFileService configFileService;
 
-	private final PolarisPropertySourceManager polarisPropertySourceManager;
-
 	private final Environment environment;
 	// this class provides customized logic for some customers to configure special business group files
 	private final PolarisConfigCustomExtensionLayer polarisConfigCustomExtensionLayer = PolarisServiceLoaderUtil.getPolarisConfigCustomExtensionLayer();
 
-	public PolarisConfigFileLocator(PolarisConfigProperties polarisConfigProperties, PolarisContextProperties polarisContextProperties, ConfigFileService configFileService, PolarisPropertySourceManager polarisPropertySourceManager, Environment environment) {
+	public PolarisConfigFileLocator(PolarisConfigProperties polarisConfigProperties,
+			PolarisContextProperties polarisContextProperties, ConfigFileService configFileService, Environment environment) {
 		this.polarisConfigProperties = polarisConfigProperties;
 		this.polarisContextProperties = polarisContextProperties;
 		this.configFileService = configFileService;
-		this.polarisPropertySourceManager = polarisPropertySourceManager;
 		this.environment = environment;
 	}
 
@@ -104,7 +102,7 @@ public class PolarisConfigFileLocator implements PropertySourceLocator {
 			LOGGER.debug("[SCT Config] PolarisConfigCustomExtensionLayer is not init, ignore the following execution steps");
 			return;
 		}
-		polarisConfigCustomExtensionLayer.initConfigFiles(environment, compositePropertySource, polarisPropertySourceManager, configFileService);
+		polarisConfigCustomExtensionLayer.initConfigFiles(environment, compositePropertySource, configFileService);
 	}
 
 	private void afterLocatePolarisConfigExtension(CompositePropertySource compositePropertySource) {
@@ -123,7 +121,7 @@ public class PolarisConfigFileLocator implements PropertySourceLocator {
 
 			compositePropertySource.addPropertySource(polarisPropertySource);
 
-			polarisPropertySourceManager.addPropertySource(polarisPropertySource);
+			PolarisPropertySourceManager.addPropertySource(polarisPropertySource);
 
 			LOGGER.info("[SCT Config] Load and inject polaris config file. file = {}", configFile);
 		}
@@ -206,7 +204,7 @@ public class PolarisConfigFileLocator implements PropertySourceLocator {
 
 				compositePropertySource.addPropertySource(polarisPropertySource);
 
-				polarisPropertySourceManager.addPropertySource(polarisPropertySource);
+				PolarisPropertySourceManager.addPropertySource(polarisPropertySource);
 
 				LOGGER.info("[SCT Config] Load and inject polaris config file success. namespace = {}, group = {}, fileName = {}", namespace, group, fileName);
 			}
