@@ -59,8 +59,8 @@ public class LaneRouterCalleeController {
 	 */
 	@GetMapping("/sum")
 	public String sum(@RequestParam int value1, @RequestParam int value2) {
-		LOG.info("Lane {} Callee Service [{}:{}] is called and sum is [{}].", lane, ip, port, value1 + value2);
-		return String.format("Lane %s Callee Service [%s:%s] is called and sum is [%s].", lane, ip, port, value1 + value2);
+		LOG.info("Lane [{}] Callee Service [{} - {}:{}] is called and sum is [{}].", lane, appName, ip, port, value1 + value2);
+		return String.format("Lane [%s] Callee Service [%s - %s:%s] is called and sum is [%s].", lane, appName, ip, port, value1 + value2);
 	}
 
 	/**
@@ -69,8 +69,8 @@ public class LaneRouterCalleeController {
 	 */
 	@GetMapping("/info")
 	public String info() {
-		LOG.info("Lane {} [{}] Service [{}:{}] is called.", lane, appName, ip, port);
-		return String.format("Lane %s [%s] Service [%s:%s] is called.", lane, appName, ip, port);
+		LOG.info("Lane [{}] Service [{} - {}:{}] is called.", lane, appName, ip, port);
+		return String.format("Lane [%s] Service [%s - %s:%s] is called.", lane, appName, ip, port);
 	}
 
 	/**
@@ -85,7 +85,7 @@ public class LaneRouterCalleeController {
 			throws UnsupportedEncodingException {
 		LOG.info(URLDecoder.decode(metadataStr, UTF_8));
 		metadataStr = URLDecoder.decode(metadataStr, UTF_8);
-		return String.format("Lane %s: %s", lane, metadataStr);
+		return String.format("Lane [%s]: %s", lane, metadataStr);
 	}
 
 }

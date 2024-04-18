@@ -66,7 +66,7 @@ public class LaneRouterCallerController {
 	@GetMapping("/feign")
 	public String feign(@RequestParam int value1, @RequestParam int value2) {
 		String value = quickstartCalleeService.sum(value1, value2);
-		return String.format("Lane %s Caller Service %s: %s", lane, appName, value);
+		return String.format("Lane [%s] Caller Service [%s - %s:%s] -> %s", lane, appName, ip, port, value);
 	}
 
 	/**
@@ -75,8 +75,8 @@ public class LaneRouterCallerController {
 	 */
 	@GetMapping("/rest")
 	public String rest() {
-		String value = restTemplate.getForObject("http://QuickstartCalleeService/quickstart/callee/info", String.class);
-		return String.format("Lane %s Caller Service %s: %s", lane, appName, value);
+		String value = restTemplate.getForObject("http://LaneCalleeService/lane/callee/info", String.class);
+		return String.format("Lane [%s] Caller Service [%s - %s:%s] -> %s", lane, appName, ip, port, value);
 	}
 
 	/**
@@ -99,8 +99,8 @@ public class LaneRouterCallerController {
 	 */
 	@GetMapping("/info")
 	public String info() {
-		LOG.info("Lane {} [{}] Service [{}:{}] is called.", lane, appName, ip, port);
-		return String.format("Lane %s [%s] Service [%s:%s] is called.", lane, appName, ip, port);
+		LOG.info("Lane {} Service [{} - {}:{}] is called.", lane, appName, ip, port);
+		return String.format("Lane [%s] Service [%s - %s:%s] is called.", lane, appName, ip, port);
 	}
 
 	/**
