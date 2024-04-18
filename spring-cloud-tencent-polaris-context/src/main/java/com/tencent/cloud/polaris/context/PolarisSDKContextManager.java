@@ -145,11 +145,16 @@ public class PolarisSDKContextManager {
 	}
 
 	public static void innerConfigDestroy() {
-		if (Objects.nonNull(configSDKContext)) {
-			configSDKContext.destroy();
-			configSDKContext = null;
+		try {
+			if (Objects.nonNull(configSDKContext)) {
+				configSDKContext.destroy();
+				configSDKContext = null;
+			}
+			LOG.info("Polaris SDK config context is destroyed.");
 		}
-		LOG.info("Polaris SDK config context is destroyed.");
+		catch (Throwable throwable) {
+			LOG.info("Polaris SDK config context is destroyed failed.", throwable);
+		}
 	}
 
 	public void init() {
@@ -207,42 +212,15 @@ public class PolarisSDKContextManager {
 		initConfig();
 	}
 
-	public void initConfig() {
-		// get modifiers for configuration.
-		List<PolarisConfigModifier> configModifierList = new ArrayList<>();
-		for (PolarisConfigModifier modifier : modifierList) {
-			if (modifier instanceof PolarisConfigurationConfigModifier) {
-				configModifierList.add(modifier);
-			}
-		}
-		if (null == configSDKContext && CollectionUtils.isNotEmpty(configModifierList)) {
-			try {
-				// init config SDKContext
-				configSDKContext = SDKContext.initContextByConfig(properties.configuration(configModifierList,
-						() -> environment.getProperty("spring.cloud.client.ip-address"),
-						() -> environment.getProperty("spring.cloud.polaris.local-port", Integer.class, 0)));
-				configSDKContext.init();
-
-				// add shutdown hook
-				Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-					long startTimestamp = System.currentTimeMillis();
-					long delay = 0;
-					while (true) {
-						if (delay >= 10000) {
-							innerConfigDestroy();
-							break;
-						}
-						else {
-							delay = System.currentTimeMillis() - startTimestamp;
-						}
-					}
-				}));
-				LOG.info("create Polaris config SDK context successfully. properties: {}, ", properties);
-			}
-			catch (Throwable throwable) {
-				LOG.error("create Polaris config SDK context failed. properties: {}, ", properties, throwable);
-				throw throwable;
-			}
+	/**
+	 * Used for config data.
+	 */
+	public static void setConfigSDKContext(SDKContext context) {
+		if (configSDKContext == null) {
+			configSDKContext = context;
+			// add shutdown hook
+			Runtime.getRuntime().addShutdownHook(new Thread(PolarisSDKContextManager::innerConfigDestroy));
+			LOG.info("create Polaris config SDK context successfully.");
 		}
 	}
 
@@ -290,27 +268,30 @@ public class PolarisSDKContextManager {
 		return configSDKContext;
 	}
 
-	/**
-	 * Used for config data.
-	 */
-	public static void setConfigSDKContext(SDKContext context) {
-		if (configSDKContext == null) {
-			configSDKContext = context;
-			// add shutdown hook
-			Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-				long startTimestamp = System.currentTimeMillis();
-				long delay = 0;
-				while (true) {
-					if (delay >= 10000) {
-						innerConfigDestroy();
-						break;
-					}
-					else {
-						delay = System.currentTimeMillis() - startTimestamp;
-					}
-				}
-			}));
-			LOG.info("create Polaris config SDK context successfully.");
+	public void initConfig() {
+		// get modifiers for configuration.
+		List<PolarisConfigModifier> configModifierList = new ArrayList<>();
+		for (PolarisConfigModifier modifier : modifierList) {
+			if (modifier instanceof PolarisConfigurationConfigModifier) {
+				configModifierList.add(modifier);
+			}
+		}
+		if (null == configSDKContext && CollectionUtils.isNotEmpty(configModifierList)) {
+			try {
+				// init config SDKContext
+				configSDKContext = SDKContext.initContextByConfig(properties.configuration(configModifierList,
+						() -> environment.getProperty("spring.cloud.client.ip-address"),
+						() -> environment.getProperty("spring.cloud.polaris.local-port", Integer.class, 0)));
+				configSDKContext.init();
+
+				// add shutdown hook
+				Runtime.getRuntime().addShutdownHook(new Thread(PolarisSDKContextManager::innerConfigDestroy));
+				LOG.info("create Polaris config SDK context successfully. properties: {}, ", properties);
+			}
+			catch (Throwable throwable) {
+				LOG.error("create Polaris config SDK context failed. properties: {}, ", properties, throwable);
+				throw throwable;
+			}
 		}
 	}
 }
