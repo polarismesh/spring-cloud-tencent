@@ -56,7 +56,7 @@ public class PolarisSDKContextManager {
 	 */
 	public volatile static boolean isRegistered = false;
 	private volatile static SDKContext configSDKContext;
-	private volatile static SDKContext sdkContext;
+	private volatile static SDKContext serviceSdkContext;
 	private volatile static ProviderAPI providerAPI;
 	private volatile static ConsumerAPI consumerAPI;
 	private volatile static LosslessAPI losslessAPI;
@@ -78,7 +78,7 @@ public class PolarisSDKContextManager {
 	 * Don't call this method directly.
 	 */
 	public static void innerDestroy() {
-		if (Objects.nonNull(sdkContext)) {
+		if (Objects.nonNull(serviceSdkContext)) {
 			try {
 				// destroy ProviderAPI
 				if (Objects.nonNull(providerAPI)) {
@@ -122,9 +122,9 @@ public class PolarisSDKContextManager {
 					assemblyAPI = null;
 				}
 
-				if (Objects.nonNull(sdkContext)) {
-					sdkContext.destroy();
-					sdkContext = null;
+				if (Objects.nonNull(serviceSdkContext)) {
+					serviceSdkContext.destroy();
+					serviceSdkContext = null;
 				}
 				LOG.info("Polaris SDK context is destroyed.");
 			}
@@ -158,34 +158,34 @@ public class PolarisSDKContextManager {
 	}
 
 	public void init() {
-		if (null == sdkContext) {
+		if (null == serviceSdkContext) {
 			try {
 				// init SDKContext
-				sdkContext = SDKContext.initContextByConfig(properties.configuration(modifierList,
+				serviceSdkContext = SDKContext.initContextByConfig(properties.configuration(modifierList,
 						() -> environment.getProperty("spring.cloud.client.ip-address"),
 						() -> environment.getProperty("spring.cloud.polaris.local-port", Integer.class, 0)));
-				sdkContext.init();
+				serviceSdkContext.init();
 
 				// init ProviderAPI
-				providerAPI = DiscoveryAPIFactory.createProviderAPIByContext(sdkContext);
+				providerAPI = DiscoveryAPIFactory.createProviderAPIByContext(serviceSdkContext);
 
 				// init losslessAPI
-				losslessAPI = DiscoveryAPIFactory.createLosslessAPIByContext(sdkContext);
+				losslessAPI = DiscoveryAPIFactory.createLosslessAPIByContext(serviceSdkContext);
 
 				// init ConsumerAPI
-				consumerAPI = DiscoveryAPIFactory.createConsumerAPIByContext(sdkContext);
+				consumerAPI = DiscoveryAPIFactory.createConsumerAPIByContext(serviceSdkContext);
 
 				// init RouterAPI
-				routerAPI = RouterAPIFactory.createRouterAPIByContext(sdkContext);
+				routerAPI = RouterAPIFactory.createRouterAPIByContext(serviceSdkContext);
 
 				// init CircuitBreakAPI
-				circuitBreakAPI = CircuitBreakAPIFactory.createCircuitBreakAPIByContext(sdkContext);
+				circuitBreakAPI = CircuitBreakAPIFactory.createCircuitBreakAPIByContext(serviceSdkContext);
 
 				// init LimitAPI
-				limitAPI = LimitAPIFactory.createLimitAPIByContext(sdkContext);
+				limitAPI = LimitAPIFactory.createLimitAPIByContext(serviceSdkContext);
 
 				// init AssemblyAPI
-				assemblyAPI = AssemblyAPIFactory.createAssemblyAPIByContext(sdkContext);
+				assemblyAPI = AssemblyAPIFactory.createAssemblyAPIByContext(serviceSdkContext);
 
 				// add shutdown hook
 				Runtime.getRuntime().addShutdownHook(new Thread(() -> {
@@ -226,7 +226,7 @@ public class PolarisSDKContextManager {
 
 	public SDKContext getSDKContext() {
 		init();
-		return sdkContext;
+		return serviceSdkContext;
 	}
 
 	public ProviderAPI getProviderAPI() {
