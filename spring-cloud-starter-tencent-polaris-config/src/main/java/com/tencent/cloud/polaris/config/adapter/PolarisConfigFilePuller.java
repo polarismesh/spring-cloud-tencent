@@ -53,8 +53,6 @@ public final class PolarisConfigFilePuller {
 
 	private ConfigFileService configFileService;
 
-	private PolarisPropertySourceManager polarisPropertySourceManager;
-
 	private PolarisConfigFilePuller() {
 	}
 
@@ -64,15 +62,12 @@ public final class PolarisConfigFilePuller {
 	 *
 	 * @param polarisContextProperties     polarisContextProperties
 	 * @param configFileService            configFileService
-	 * @param polarisPropertySourceManager polarisPropertySourceManager
 	 * @return PolarisConfigFilePuller instance
 	 */
-	public static PolarisConfigFilePuller get(PolarisContextProperties polarisContextProperties, ConfigFileService configFileService,
-			PolarisPropertySourceManager polarisPropertySourceManager) {
+	public static PolarisConfigFilePuller get(PolarisContextProperties polarisContextProperties, ConfigFileService configFileService) {
 		PolarisConfigFilePuller puller = new PolarisConfigFilePuller();
 		puller.polarisContextProperties = polarisContextProperties;
 		puller.configFileService = configFileService;
-		puller.polarisPropertySourceManager = polarisPropertySourceManager;
 		return puller;
 	}
 
@@ -91,7 +86,7 @@ public final class PolarisConfigFilePuller {
 			PolarisPropertySource polarisPropertySource = loadPolarisPropertySource(
 					configFile.getNamespace(), configFile.getFileGroup(), configFile.getFileName());
 			compositePropertySource.addPropertySource(polarisPropertySource);
-			polarisPropertySourceManager.addPropertySource(polarisPropertySource);
+			PolarisPropertySourceManager.addPropertySource(polarisPropertySource);
 			LOGGER.info("[SCT Config] Load and inject polaris config file. file = {}", configFile);
 		}
 	}
@@ -129,7 +124,7 @@ public final class PolarisConfigFilePuller {
 		for (String fileName : files) {
 			PolarisPropertySource polarisPropertySource = loadPolarisPropertySource(namespace, group, fileName);
 			compositePropertySource.addPropertySource(polarisPropertySource);
-			polarisPropertySourceManager.addPropertySource(polarisPropertySource);
+			PolarisPropertySourceManager.addPropertySource(polarisPropertySource);
 			LOGGER.info(
 					"[SCT Config] Load and inject polaris config file success. namespace = {}, group = {}, fileName = {}",
 					namespace, group, fileName);

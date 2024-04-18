@@ -46,16 +46,13 @@ public abstract class PolarisConfigPropertyAutoRefresher implements ApplicationL
 
 	private final PolarisConfigProperties polarisConfigProperties;
 
-	private final PolarisPropertySourceManager polarisPropertySourceManager;
-
 	private final AtomicBoolean registered = new AtomicBoolean(false);
 
 	// this class provides customized logic for some customers to configure special business group files
 	private final PolarisConfigCustomExtensionLayer polarisConfigCustomExtensionLayer = PolarisServiceLoaderUtil.getPolarisConfigCustomExtensionLayer();
 
-	public PolarisConfigPropertyAutoRefresher(PolarisConfigProperties polarisConfigProperties, PolarisPropertySourceManager polarisPropertySourceManager) {
+	public PolarisConfigPropertyAutoRefresher(PolarisConfigProperties polarisConfigProperties) {
 		this.polarisConfigProperties = polarisConfigProperties;
-		this.polarisPropertySourceManager = polarisPropertySourceManager;
 	}
 
 	@Override
@@ -68,7 +65,7 @@ public abstract class PolarisConfigPropertyAutoRefresher implements ApplicationL
 			return;
 		}
 
-		List<PolarisPropertySource> polarisPropertySources = polarisPropertySourceManager.getAllPropertySources();
+		List<PolarisPropertySource> polarisPropertySources = PolarisPropertySourceManager.getAllPropertySources();
 		if (CollectionUtils.isEmpty(polarisPropertySources)) {
 			return;
 		}
@@ -143,5 +140,12 @@ public abstract class PolarisConfigPropertyAutoRefresher implements ApplicationL
 			return;
 		}
 		polarisConfigCustomExtensionLayer.executeRegisterPublishChangeListener(polarisPropertySource);
+	}
+
+	/**
+	 * Just for junit test.
+	 */
+	public void setRegistered(boolean registered) {
+		this.registered.set(registered);
 	}
 }

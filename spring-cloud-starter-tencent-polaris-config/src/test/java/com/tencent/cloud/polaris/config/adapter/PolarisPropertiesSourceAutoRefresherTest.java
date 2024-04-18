@@ -24,7 +24,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.google.common.collect.Lists;
 import com.tencent.cloud.polaris.config.config.PolarisConfigProperties;
 import com.tencent.cloud.polaris.config.spring.property.PlaceholderHelper;
 import com.tencent.cloud.polaris.config.spring.property.SpringValue;
@@ -32,6 +31,7 @@ import com.tencent.cloud.polaris.config.spring.property.SpringValueRegistry;
 import com.tencent.polaris.configuration.api.core.ChangeType;
 import com.tencent.polaris.configuration.api.core.ConfigKVFileChangeEvent;
 import com.tencent.polaris.configuration.api.core.ConfigPropertyChangeInfo;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -59,8 +59,6 @@ public class PolarisPropertiesSourceAutoRefresherTest {
 	private final String testFileName = "application.properties";
 	@Mock
 	private PolarisConfigProperties polarisConfigProperties;
-	@Mock
-	private PolarisPropertySourceManager polarisPropertySourceManager;
 
 	@Mock
 	private SpringValueRegistry springValueRegistry;
@@ -68,10 +66,14 @@ public class PolarisPropertiesSourceAutoRefresherTest {
 	@Mock
 	private PlaceholderHelper placeholderHelper;
 
+	@BeforeEach
+	public void setUp() {
+		PolarisPropertySourceManager.clearPropertySources();
+	}
+
 	@Test
 	public void testConfigFileChanged() throws Exception {
-		PolarisRefreshAffectedContextRefresher refresher = new PolarisRefreshAffectedContextRefresher(polarisConfigProperties,
-				polarisPropertySourceManager, springValueRegistry, placeholderHelper);
+		PolarisRefreshAffectedContextRefresher refresher = new PolarisRefreshAffectedContextRefresher(polarisConfigProperties, springValueRegistry, placeholderHelper);
 		ConfigurableApplicationContext applicationContext = mock(ConfigurableApplicationContext.class);
 		ConfigurableListableBeanFactory beanFactory = mock(ConfigurableListableBeanFactory.class);
 		TypeConverter typeConverter = mock(TypeConverter.class);
@@ -99,7 +101,7 @@ public class PolarisPropertiesSourceAutoRefresherTest {
 		PolarisPropertySource polarisPropertySource = new PolarisPropertySource(testNamespace, testServiceName, testFileName,
 				file, content);
 
-		when(polarisPropertySourceManager.getAllPropertySources()).thenReturn(Lists.newArrayList(polarisPropertySource));
+		PolarisPropertySourceManager.addPropertySource(polarisPropertySource);
 
 		ConfigPropertyChangeInfo changeInfo = new ConfigPropertyChangeInfo("k1", "v1", "v11", ChangeType.MODIFIED);
 		ConfigPropertyChangeInfo changeInfo2 = new ConfigPropertyChangeInfo("k4", null, "v4", ChangeType.ADDED);

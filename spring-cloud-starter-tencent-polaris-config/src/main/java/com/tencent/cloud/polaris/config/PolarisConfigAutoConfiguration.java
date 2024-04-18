@@ -21,7 +21,6 @@ package com.tencent.cloud.polaris.config;
 import com.tencent.cloud.polaris.config.adapter.AffectedConfigurationPropertiesRebinder;
 import com.tencent.cloud.polaris.config.adapter.PolarisConfigPropertyRefresher;
 import com.tencent.cloud.polaris.config.adapter.PolarisConfigRefreshScopeAnnotationDetector;
-import com.tencent.cloud.polaris.config.adapter.PolarisPropertySourceManager;
 import com.tencent.cloud.polaris.config.adapter.PolarisRefreshAffectedContextRefresher;
 import com.tencent.cloud.polaris.config.adapter.PolarisRefreshEntireContextRefresher;
 import com.tencent.cloud.polaris.config.annotation.PolarisConfigAnnotationProcessor;
@@ -78,9 +77,9 @@ public class PolarisConfigAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(search = SearchStrategy.CURRENT)
-	public PolarisConfigPropertyRefresher polarisRefreshContextPropertySourceAutoRefresher(PolarisConfigProperties polarisConfigProperties,
-			PolarisPropertySourceManager polarisPropertySourceManager, ContextRefresher contextRefresher) {
-		return new PolarisRefreshEntireContextRefresher(polarisConfigProperties, polarisPropertySourceManager, contextRefresher);
+	public PolarisConfigPropertyRefresher polarisRefreshContextPropertySourceAutoRefresher(
+			PolarisConfigProperties polarisConfigProperties, ContextRefresher contextRefresher) {
+		return new PolarisRefreshEntireContextRefresher(polarisConfigProperties, contextRefresher);
 	}
 
 	@Configuration(proxyBeanMethods = false)
@@ -104,10 +103,10 @@ public class PolarisConfigAutoConfiguration {
 		}
 
 		@Bean
-		public PolarisConfigPropertyRefresher polarisReflectPropertySourceAutoRefresher(PolarisConfigProperties polarisConfigProperties,
-				PolarisPropertySourceManager polarisPropertySourceManager, SpringValueRegistry springValueRegistry,
+		public PolarisConfigPropertyRefresher polarisReflectPropertySourceAutoRefresher(
+				PolarisConfigProperties polarisConfigProperties, SpringValueRegistry springValueRegistry,
 				PlaceholderHelper placeholderHelper) {
-			return new PolarisRefreshAffectedContextRefresher(polarisConfigProperties, polarisPropertySourceManager,
+			return new PolarisRefreshAffectedContextRefresher(polarisConfigProperties,
 					springValueRegistry, placeholderHelper);
 		}
 
