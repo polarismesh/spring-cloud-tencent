@@ -39,6 +39,7 @@ public class FeignAutoConfigurationTest {
 			.withConfiguration(AutoConfigurations.of(
 					MetadataAutoConfiguration.class,
 					RouterAutoConfiguration.class,
+					RouterConfigModifierAutoConfiguration.class,
 					PolarisContextAutoConfiguration.class,
 					FeignAutoConfiguration.class,
 					ApplicationContextAwareUtils.class
