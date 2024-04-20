@@ -158,6 +158,67 @@ public class PolarisSDKContextManager {
 	}
 
 	public void init() {
+		initService();
+		initConfig();
+	}
+
+	/**
+	 * Used for config data.
+	 */
+	public static void setConfigSDKContext(SDKContext context) {
+		if (configSDKContext == null) {
+			configSDKContext = context;
+			// add shutdown hook
+			Runtime.getRuntime().addShutdownHook(new Thread(PolarisSDKContextManager::innerConfigDestroy));
+			LOG.info("create Polaris config SDK context successfully.");
+		}
+	}
+
+	public SDKContext getSDKContext() {
+		initService();
+		return serviceSdkContext;
+	}
+
+	public ProviderAPI getProviderAPI() {
+		initService();
+		return providerAPI;
+	}
+
+	public LosslessAPI getLosslessAPI() {
+		initService();
+		return losslessAPI;
+	}
+
+	public ConsumerAPI getConsumerAPI() {
+		initService();
+		return consumerAPI;
+	}
+
+	public RouterAPI getRouterAPI() {
+		initService();
+		return routerAPI;
+	}
+
+	public CircuitBreakAPI getCircuitBreakAPI() {
+		initService();
+		return circuitBreakAPI;
+	}
+
+	public LimitAPI getLimitAPI() {
+		initService();
+		return limitAPI;
+	}
+
+	public AssemblyAPI getAssemblyAPI() {
+		return assemblyAPI;
+	}
+
+	public SDKContext getConfigSDKContext() {
+		initConfig();
+		return configSDKContext;
+	}
+
+	public void initService() {
 		if (null == serviceSdkContext) {
 			try {
 				// init SDKContext
@@ -208,64 +269,6 @@ public class PolarisSDKContextManager {
 				throw throwable;
 			}
 		}
-
-		initConfig();
-	}
-
-	/**
-	 * Used for config data.
-	 */
-	public static void setConfigSDKContext(SDKContext context) {
-		if (configSDKContext == null) {
-			configSDKContext = context;
-			// add shutdown hook
-			Runtime.getRuntime().addShutdownHook(new Thread(PolarisSDKContextManager::innerConfigDestroy));
-			LOG.info("create Polaris config SDK context successfully.");
-		}
-	}
-
-	public SDKContext getSDKContext() {
-		init();
-		return serviceSdkContext;
-	}
-
-	public ProviderAPI getProviderAPI() {
-		init();
-		return providerAPI;
-	}
-
-	public LosslessAPI getLosslessAPI() {
-		init();
-		return losslessAPI;
-	}
-
-	public ConsumerAPI getConsumerAPI() {
-		init();
-		return consumerAPI;
-	}
-
-	public RouterAPI getRouterAPI() {
-		init();
-		return routerAPI;
-	}
-
-	public CircuitBreakAPI getCircuitBreakAPI() {
-		init();
-		return circuitBreakAPI;
-	}
-
-	public LimitAPI getLimitAPI() {
-		init();
-		return limitAPI;
-	}
-
-	public AssemblyAPI getAssemblyAPI() {
-		return assemblyAPI;
-	}
-
-	public SDKContext getConfigSDKContext() {
-		initConfig();
-		return configSDKContext;
 	}
 
 	public void initConfig() {
