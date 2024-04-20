@@ -33,6 +33,11 @@ spring:
         enabled: true
         rejectRequestTipsFilePath: reject-tips.html
         maxQueuingTime: 500
+      lossless:
+        enabled: true
+        port: 28011
+        healthCheckPath: /actuator/health
+        healthCheckInterval: 5000
     tencent:
       metadata:
         content:
@@ -40,11 +45,14 @@ spring:
           region: huanan
 management:
   endpoints:
+    health:
+      enabled: true
     web:
       exposure:
         include:
           - polaris-discovery
           - polaris-ratelimit
           - polaris-config
+          - health
 label:
   key-value: user:zhangsan

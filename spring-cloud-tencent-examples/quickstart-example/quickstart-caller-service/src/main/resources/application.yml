@@ -28,6 +28,11 @@ spring:
     #        pushgateway:
     #          enabled: true
     #          address: 127.0.0.1:9091
+      lossless:
+        enabled: true
+        port: 28013
+        healthCheckPath: /actuator/health
+        healthCheckInterval: 5000
     tencent:
       rpc-enhancement:
         enabled: true
@@ -46,3 +51,4 @@ management:
         include:
           - polaris-discovery
           - polaris-circuit-breaker
+          - health

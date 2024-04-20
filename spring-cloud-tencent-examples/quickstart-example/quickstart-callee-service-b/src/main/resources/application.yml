@@ -32,6 +32,11 @@ spring:
       ratelimit:
         enabled: true
         maxQueuingTime: 500
+      lossless:
+        enabled: true
+        port: 28012
+        healthCheckPath: /actuator/health
+        healthCheckInterval: 5000
     tencent:
       metadata:
         content:
@@ -45,5 +50,6 @@ management:
           - polaris-discovery
           - polaris-ratelimit
           - polaris-config
+          - health
 label:
   key-value: user2:lisi
