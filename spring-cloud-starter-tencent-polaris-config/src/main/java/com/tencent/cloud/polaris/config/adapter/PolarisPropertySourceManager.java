@@ -28,15 +28,25 @@ import java.util.concurrent.ConcurrentHashMap;
  *
  * @author lepdou 2022-03-28
  */
-public class PolarisPropertySourceManager {
+public final class PolarisPropertySourceManager {
 
-	private final Map<String, PolarisPropertySource> polarisPropertySources = new ConcurrentHashMap<>();
+	private static final Map<String, PolarisPropertySource> polarisPropertySources = new ConcurrentHashMap<>();
 
-	public void addPropertySource(PolarisPropertySource polarisPropertySource) {
-		polarisPropertySources.putIfAbsent(polarisPropertySource.getPropertySourceName(), polarisPropertySource);
+	private PolarisPropertySourceManager() {
 	}
 
-	public List<PolarisPropertySource> getAllPropertySources() {
+	public static void addPropertySource(PolarisPropertySource polarisPropertySource) {
+		polarisPropertySources.put(polarisPropertySource.getPropertySourceName(), polarisPropertySource);
+	}
+
+	public static List<PolarisPropertySource> getAllPropertySources() {
 		return new ArrayList<>(polarisPropertySources.values());
+	}
+
+	/**
+	 * Just for test.
+	 */
+	public static void clearPropertySources() {
+		polarisPropertySources.clear();
 	}
 }

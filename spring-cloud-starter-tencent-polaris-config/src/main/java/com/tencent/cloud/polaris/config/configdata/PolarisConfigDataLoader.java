@@ -22,9 +22,9 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import com.tencent.cloud.polaris.config.adapter.PolarisConfigFilePuller;
-import com.tencent.cloud.polaris.config.adapter.PolarisPropertySourceManager;
 import com.tencent.cloud.polaris.config.config.ConfigFileGroup;
 import com.tencent.cloud.polaris.config.config.PolarisConfigProperties;
+import com.tencent.cloud.polaris.context.PolarisSDKContextManager;
 import com.tencent.polaris.client.api.SDKContext;
 import com.tencent.polaris.configuration.api.core.ConfigFileService;
 import com.tencent.polaris.configuration.factory.ConfigFileServiceFactory;
@@ -90,13 +90,12 @@ public class PolarisConfigDataLoader implements ConfigDataLoader<PolarisConfigDa
 			PolarisConfigDataResource resource) {
 		CompositePropertySource compositePropertySource = new CompositePropertySource(
 				POLARIS_CONFIG_PROPERTY_SOURCE_NAME);
-		SDKContext sdkContext = bootstrapContext.get(SDKContext.class);
+		SDKContext sdkContext = PolarisSDKContextManager.innerGetConfigSDKContext();
 		if (null == this.configFileService) {
 			this.configFileService = ConfigFileServiceFactory.createConfigFileService(sdkContext);
 		}
 		if (null == this.puller) {
-			this.puller = PolarisConfigFilePuller.get(resource.getPolarisContextProperties(),
-					configFileService, bootstrapContext.get(PolarisPropertySourceManager.class));
+			this.puller = PolarisConfigFilePuller.get(resource.getPolarisContextProperties(), configFileService);
 		}
 		Profiles profiles = resource.getProfiles();
 		if (INTERNAL_CONFIG_FILES_LOADED.compareAndSet(false, true)) {

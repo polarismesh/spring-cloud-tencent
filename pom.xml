@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.springframework.cloud</groupId>
 		<artifactId>spring-cloud-build</artifactId>
-		<version>4.1.0</version>
+		<version>4.1.1</version>
 		<relativePath/>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
@@ -92,13 +92,13 @@
 		<revision>1.14.0-2023.0.0-SNAPSHOT</revision>
 
 		<!-- Spring Framework -->
-		<spring.framework.version>6.1.4</spring.framework.version>
+		<spring.framework.version>6.1.6</spring.framework.version>
 
 		<!-- Spring Boot -->
-		<spring.boot.version>3.2.3</spring.boot.version>
+		<spring.boot.version>3.2.4</spring.boot.version>
 
 		<!-- Spring Cloud -->
-		<spring.cloud.version>2023.0.0</spring.cloud.version>
+		<spring.cloud.version>2023.0.1</spring.cloud.version>
 
 		<!-- Maven Plugin Versions -->
 		<jacoco.version>0.8.8</jacoco.version>
@@ -113,14 +113,6 @@
 
 	<dependencyManagement>
 		<dependencies>
-			<!-- This will be deleted later with the version upgrade of Spring Cloud. https://github.com/spring-cloud/spring-cloud-commons/issues/1315 -->
-			<dependency>
-				<groupId>org.springframework.cloud</groupId>
-				<artifactId>spring-cloud-commons</artifactId>
-				<version>4.1.1</version>
-				<scope>compile</scope>
-			</dependency>
-
 			<!-- Spring Cloud Tencent Dependencies -->
 			<dependency>
 				<groupId>com.tencent.cloud</groupId>

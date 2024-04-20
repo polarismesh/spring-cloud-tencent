@@ -35,9 +35,8 @@ public class PolarisRefreshEntireContextRefresher extends PolarisConfigPropertyA
 	private final ContextRefresher contextRefresher;
 
 	public PolarisRefreshEntireContextRefresher(PolarisConfigProperties polarisConfigProperties,
-			PolarisPropertySourceManager polarisPropertySourceManager,
 			ContextRefresher contextRefresher) {
-		super(polarisConfigProperties, polarisPropertySourceManager);
+		super(polarisConfigProperties);
 		this.contextRefresher = contextRefresher;
 	}
 
