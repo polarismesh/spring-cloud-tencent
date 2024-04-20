@@ -27,11 +27,6 @@ spring:
       stat:
         enabled: true
         port: 28081
-      lossless:
-        enabled: true
-        port: 28014
-        healthCheckPath: /actuator/health
-        healthCheckInterval: 5000
     gateway:
       discovery:
         locator:
