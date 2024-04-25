@@ -17,6 +17,7 @@
 
 package com.tencent.cloud.polaris.contract;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -133,7 +134,12 @@ public class PolarisContractReporter implements ApplicationListener<ApplicationR
 				InterfaceDescriptor interfaceDescriptor = new InterfaceDescriptor();
 				interfaceDescriptor.setPath(p.getKey());
 				interfaceDescriptor.setMethod(o.getKey());
-				interfaceDescriptor.setContent(JacksonUtils.serialize2Json(o.getValue()));
+				try {
+					interfaceDescriptor.setContent(GzipUtil.compressBase64Encode(JacksonUtils.serialize2Json(o.getValue()), "utf-8"));
+				}
+				catch (IOException ioe) {
+					LOG.warn("Encode operation [{}] failed.", o.getValue(), ioe);
+				}
 				interfaceDescriptorList.add(interfaceDescriptor);
 			}
 		}
