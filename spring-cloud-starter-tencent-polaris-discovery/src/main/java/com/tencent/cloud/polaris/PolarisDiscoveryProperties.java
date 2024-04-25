@@ -101,6 +101,18 @@ public class PolarisDiscoveryProperties {
 	 */
 	private Long serviceListRefreshInterval = 60000L;
 
+	/**
+	 * Zero protection switch.
+	 */
+	@Value("${spring.cloud.polaris.discovery.zero-protection.enabled:false}")
+	private boolean zeroProtectionEnabled = false;
+
+	/**
+	 * Zero protection test connectivity switch.
+	 */
+	@Value("${spring.cloud.polaris.discovery.zero-protection.is-need-test-connectivity:false}")
+	private boolean zeroProtectionNeedTestConnectivity = false;
+
 	public String getInstanceId() {
 		return instanceId;
 	}
@@ -192,6 +204,22 @@ public class PolarisDiscoveryProperties {
 		this.heartbeatInterval = heartbeatInterval;
 	}
 
+	public boolean isZeroProtectionEnabled() {
+		return zeroProtectionEnabled;
+	}
+
+	public void setZeroProtectionEnabled(boolean zeroProtectionEnabled) {
+		this.zeroProtectionEnabled = zeroProtectionEnabled;
+	}
+
+	public boolean isZeroProtectionNeedTestConnectivity() {
+		return zeroProtectionNeedTestConnectivity;
+	}
+
+	public void setZeroProtectionNeedTestConnectivity(boolean zeroProtectionNeedTestConnectivity) {
+		this.zeroProtectionNeedTestConnectivity = zeroProtectionNeedTestConnectivity;
+	}
+
 	public Boolean getEnabled() {
 		return enabled;
 	}
@@ -227,6 +255,8 @@ public class PolarisDiscoveryProperties {
 				", heartbeatInterval=" + heartbeatInterval +
 				", healthCheckUrl='" + healthCheckUrl + '\'' +
 				", serviceListRefreshInterval=" + serviceListRefreshInterval +
+				", zeroProtectionEnabled=" + zeroProtectionEnabled +
+				", zeroProtectionNeedTestConnectivity=" + zeroProtectionNeedTestConnectivity +
 				'}';
 	}
 }

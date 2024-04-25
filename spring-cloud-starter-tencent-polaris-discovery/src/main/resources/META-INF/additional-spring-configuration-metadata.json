@@ -67,16 +67,16 @@
       "description": "Millis interval of refresh of service info list. Default: 60000."
     },
     {
-      "name": "spring.cloud.polaris.loadbalancer.enabled",
+      "name": "spring.cloud.polaris.discovery.zero-protection.enabled",
       "type": "java.lang.Boolean",
-      "defaultValue": "true",
-      "description": "polaris loadbalancer."
+      "defaultValue": false,
+      "description": "Zero protection switch. Default: false."
     },
     {
-      "name": "spring.cloud.polaris.loadbalancer.strategy",
-      "type": "java.lang.String",
-      "defaultValue": "roundRobin",
-      "description": "loadbalancer strategy."
+      "name": "spring.cloud.polaris.discovery.zero-protection.is-need-test-connectivity",
+      "type": "java.lang.Boolean",
+      "defaultValue": false,
+      "description": "Zero protection test connectivity switch. Default: false."
     },
     {
       "name": "spring.cloud.nacos.discovery.enabled",

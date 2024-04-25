@@ -90,6 +90,9 @@ public class ConsulConfigModifier implements PolarisConfigModifier {
 			if (StringUtils.isNotBlank(consulContextProperties.getInstanceId())) {
 				metadata.put(ConsulConstant.MetadataMapKey.INSTANCE_ID_KEY, consulContextProperties.getInstanceId());
 			}
+			if (StringUtils.isNotBlank(consulContextProperties.getAclToken())) {
+				serverConnectorConfig.setToken(consulContextProperties.getAclToken());
+			}
 			if (consulContextProperties.isPreferIpAddress()
 					&& StringUtils.isNotBlank(consulContextProperties.getIpAddress())) {
 				metadata.put(ConsulConstant.MetadataMapKey.PREFER_IP_ADDRESS_KEY,

@@ -129,7 +129,7 @@ public class PolarisContractReporter implements ApplicationListener<ApplicationR
 				InterfaceDescriptor interfaceDescriptor = new InterfaceDescriptor();
 				interfaceDescriptor.setPath(p.getKey());
 				interfaceDescriptor.setMethod(o.getKey());
-				interfaceDescriptor.setContent(JacksonUtils.serialize2Json(p.getValue()));
+				interfaceDescriptor.setContent(JacksonUtils.serialize2Json(o.getValue()));
 				interfaceDescriptorList.add(interfaceDescriptor);
 			}
 		}
