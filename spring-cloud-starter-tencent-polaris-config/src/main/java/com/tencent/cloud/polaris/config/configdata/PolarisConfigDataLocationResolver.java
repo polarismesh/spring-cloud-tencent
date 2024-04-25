@@ -139,8 +139,19 @@ public class PolarisConfigDataLocationResolver implements
 		}
 
 		// prepare and init earlier Polaris SDKContext to pull config files from remote.
-		prepareAndInitEarlierPolarisSdkContext(resolverContext, polarisConfigProperties, polarisCryptoConfigProperties, polarisContextProperties);
-
+		try {
+			prepareAndInitEarlierPolarisSdkContext(resolverContext, polarisConfigProperties, polarisCryptoConfigProperties, polarisContextProperties);
+		}
+		catch (Throwable throwable) {
+			if (location.isOptional()) {
+				log.warn("create earlier polaris SDK context failed.", throwable);
+				return new ArrayList<>();
+			}
+			else {
+				log.error("create earlier polaris SDK context failed.", throwable);
+				throw throwable;
+			}
+		}
 		bootstrapContext.registerIfAbsent(PolarisConfigProperties.class,
 				BootstrapRegistry.InstanceSupplier.of(polarisConfigProperties));
 
