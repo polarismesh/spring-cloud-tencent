@@ -85,8 +85,8 @@ public class PolarisSwaggerAutoConfiguration {
 	public OpenAPI polarisOpenAPI() {
 		return new OpenAPI()
 				.info(new Info()
-						.title("Polaris Swagger API")
-						.description("This is to show polaris api description.")
+						.title("Polaris Contract")
+						.description("This is to show polaris contract description.")
 						.license(new License().name("BSD-3-Clause").url("https://opensource.org/licenses/BSD-3-Clause"))
 						.version("1.0.0"));
 	}

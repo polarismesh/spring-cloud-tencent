@@ -89,9 +89,16 @@ public class PolarisConfigDataLocationResolver implements
 		if (!location.hasPrefix(PREFIX)) {
 			return false;
 		}
-		return context.getBinder()
+
+		boolean contextEnabled = context.getBinder()
+				.bind("spring.cloud.polaris.enabled", Boolean.class)
+				.orElse(true);
+
+		boolean configEnabled = context.getBinder()
 				.bind("spring.cloud.polaris.config.enabled", Boolean.class)
 				.orElse(true);
+
+		return contextEnabled && configEnabled;
 	}
 
 	@Override
@@ -136,6 +143,10 @@ public class PolarisConfigDataLocationResolver implements
 		);
 		if (Objects.isNull(polarisContextProperties)) {
 			polarisContextProperties = new PolarisContextProperties();
+		}
+
+		if (!polarisContextProperties.getEnabled() || !polarisConfigProperties.isEnabled()) {
+			return Collections.emptyList();
 		}
 
 		// prepare and init earlier Polaris SDKContext to pull config files from remote.

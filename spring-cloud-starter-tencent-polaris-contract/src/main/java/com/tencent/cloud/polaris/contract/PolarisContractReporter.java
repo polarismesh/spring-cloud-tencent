@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.tencent.cloud.common.util.GzipUtil;
 import com.tencent.cloud.common.util.JacksonUtils;
 import com.tencent.cloud.polaris.PolarisDiscoveryProperties;
 import com.tencent.cloud.polaris.contract.config.PolarisContractProperties;
@@ -97,13 +98,16 @@ public class PolarisContractReporter implements ApplicationListener<ApplicationR
 					request.setVersion(polarisDiscoveryProperties.getVersion());
 					List<InterfaceDescriptor> interfaceDescriptorList = getInterfaceDescriptorFromSwagger(openAPI);
 					request.setInterfaceDescriptors(interfaceDescriptorList);
+					String jsonValue = JacksonUtils.serialize2Json(openAPI);
+					String serviceApiMeta = GzipUtil.compressBase64Encode(jsonValue, "utf-8");
+					request.setContent(serviceApiMeta);
 					ReportServiceContractResponse response = providerAPI.reportServiceContract(request);
 					LOG.info("Service contract [Namespace: {}. Name: {}. Service: {}. Protocol:{}. Version: {}. API counter: {}] is reported.",
 							request.getNamespace(), request.getName(), request.getService(), request.getProtocol(),
 							request.getVersion(), request.getInterfaceDescriptors().size());
 					if (LOG.isDebugEnabled()) {
-						String jsonValue = JacksonUtils.serialize2Json(openAPI);
 						LOG.debug("OpenApi json data: {}", jsonValue);
+						LOG.debug("OpenApi json base64 data: {}", serviceApiMeta);
 					}
 				}
 				else {

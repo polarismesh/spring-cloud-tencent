@@ -65,7 +65,7 @@ public class PolarisContextProperties {
 	 * If polaris enabled.
 	 */
 	@Value("${spring.cloud.polaris.enabled:#{'true'}}")
-	private Boolean enabled;
+	private Boolean enabled = true;
 
 	/**
 	 * polaris namespace.
