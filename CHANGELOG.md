@@ -8,3 +8,4 @@
 - [feat: lane router rule support caller ip](https://github.com/Tencent/spring-cloud-tencent/pull/1253)
 - [feat:add polaris ThreadLocal plugin.](https://github.com/Tencent/spring-cloud-tencent/pull/1255)
 - [feat:upgrade jackson version.](https://github.com/Tencent/spring-cloud-tencent/pull/1257)
+- [fix:fix wrong report when using Zuul with instance not found exception.](https://github.com/Tencent/spring-cloud-tencent/pull/1283)

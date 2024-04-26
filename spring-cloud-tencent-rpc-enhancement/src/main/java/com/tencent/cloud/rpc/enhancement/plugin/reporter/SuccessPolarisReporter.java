@@ -71,6 +71,11 @@ public class SuccessPolarisReporter implements EnhancedPlugin {
 			return;
 		}
 
+		if (context.getThrowable() != null) {
+			LOG.debug("Success report with throwable. Don't report. {}", context, context.getThrowable());
+			return;
+		}
+
 		EnhancedRequestContext request = context.getRequest();
 		EnhancedResponseContext response = context.getResponse();
 		ServiceInstance callerServiceInstance = Optional.ofNullable(context.getLocalServiceInstance()).orElse(new DefaultServiceInstance());
