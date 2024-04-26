@@ -72,7 +72,9 @@ public class SuccessPolarisReporter implements EnhancedPlugin {
 		}
 
 		if (context.getThrowable() != null) {
-			LOG.debug("Success report with throwable. Don't report. {}", context, context.getThrowable());
+			if (LOG.isDebugEnabled()) {
+				LOG.debug("Success report with throwable. Don't report. {}", context, context.getThrowable());
+			}
 			return;
 		}
 
