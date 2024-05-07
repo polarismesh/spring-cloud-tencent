@@ -23,6 +23,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tencent.cloud.common.util.GzipUtil;
 import com.tencent.cloud.common.util.JacksonUtils;
 import com.tencent.cloud.polaris.PolarisDiscoveryProperties;
@@ -39,6 +41,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springdoc.api.AbstractOpenApiResource;
 import org.springdoc.api.AbstractOpenApiResourceUtil;
+import org.springdoc.core.providers.ObjectMapperProvider;
 import org.springdoc.webflux.api.OpenApiWebFluxUtil;
 import org.springdoc.webmvc.api.OpenApiWebMvcUtil;
 
@@ -64,15 +67,18 @@ public class PolarisContractReporter implements ApplicationListener<ApplicationR
 
 	private final PolarisDiscoveryProperties polarisDiscoveryProperties;
 
+	private final ObjectMapperProvider springdocObjectMapperProvider;
+
 	public PolarisContractReporter(org.springdoc.webmvc.api.MultipleOpenApiResource multipleOpenApiWebMvcResource,
 			org.springdoc.webflux.api.MultipleOpenApiResource multipleOpenApiWebFluxResource,
 			PolarisContractProperties polarisContractProperties, ProviderAPI providerAPI,
-			PolarisDiscoveryProperties polarisDiscoveryProperties) {
+			PolarisDiscoveryProperties polarisDiscoveryProperties, ObjectMapperProvider springdocObjectMapperProvider) {
 		this.multipleOpenApiWebMvcResource = multipleOpenApiWebMvcResource;
 		this.multipleOpenApiWebFluxResource = multipleOpenApiWebFluxResource;
 		this.polarisContractProperties = polarisContractProperties;
 		this.providerAPI = providerAPI;
 		this.polarisDiscoveryProperties = polarisDiscoveryProperties;
+		this.springdocObjectMapperProvider = springdocObjectMapperProvider;
 	}
 
 	@Override
@@ -99,7 +105,15 @@ public class PolarisContractReporter implements ApplicationListener<ApplicationR
 					request.setVersion(polarisDiscoveryProperties.getVersion());
 					List<InterfaceDescriptor> interfaceDescriptorList = getInterfaceDescriptorFromSwagger(openAPI);
 					request.setInterfaceDescriptors(interfaceDescriptorList);
-					String jsonValue = JacksonUtils.serialize2Json(openAPI);
+					String jsonValue;
+					if (springdocObjectMapperProvider != null && springdocObjectMapperProvider.jsonMapper() != null) {
+						jsonValue = springdocObjectMapperProvider.jsonMapper().writeValueAsString(openAPI);
+					}
+					else {
+						ObjectMapper mapper = new ObjectMapper();
+						mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+						jsonValue = mapper.writeValueAsString(openAPI);
+					}
 					String serviceApiMeta = GzipUtil.compressBase64Encode(jsonValue, "utf-8");
 					request.setContent(serviceApiMeta);
 					ReportServiceContractResponse response = providerAPI.reportServiceContract(request);
