@@ -26,7 +26,6 @@ import java.util.Map;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tencent.cloud.common.util.GzipUtil;
-import com.tencent.cloud.common.util.JacksonUtils;
 import com.tencent.cloud.polaris.PolarisDiscoveryProperties;
 import com.tencent.cloud.polaris.contract.config.PolarisContractProperties;
 import com.tencent.polaris.api.core.ProviderAPI;
@@ -149,7 +148,16 @@ public class PolarisContractReporter implements ApplicationListener<ApplicationR
 				interfaceDescriptor.setPath(p.getKey());
 				interfaceDescriptor.setMethod(o.getKey());
 				try {
-					interfaceDescriptor.setContent(GzipUtil.compressBase64Encode(JacksonUtils.serialize2Json(o.getValue()), "utf-8"));
+					String jsonValue;
+					if (springdocObjectMapperProvider != null && springdocObjectMapperProvider.jsonMapper() != null) {
+						jsonValue = springdocObjectMapperProvider.jsonMapper().writeValueAsString(o.getValue());
+					}
+					else {
+						ObjectMapper mapper = new ObjectMapper();
+						mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+						jsonValue = mapper.writeValueAsString(o.getValue());
+					}
+					interfaceDescriptor.setContent(GzipUtil.compressBase64Encode(jsonValue, "utf-8"));
 				}
 				catch (IOException ioe) {
 					LOG.warn("Encode operation [{}] failed.", o.getValue(), ioe);
