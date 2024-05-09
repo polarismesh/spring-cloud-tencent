@@ -16,35 +16,28 @@
  *
  */
 
-package com.tencent.cloud.plugin.discovery.adapter.transformer;
+package com.tencent.cloud.rpc.enhancement.transformer;
 
-import com.tencent.cloud.rpc.enhancement.transformer.InstanceTransformer;
+import com.tencent.cloud.common.pojo.PolarisServiceInstance;
 import com.tencent.polaris.api.pojo.DefaultInstance;
-import org.apache.commons.lang.StringUtils;
 
 import org.springframework.cloud.client.ServiceInstance;
 
 /**
- * NacosInstanceTransformer.
+ * PolarisInstanceTransformer.
  *
- * @author Haotian Zhang
+ * @author sean yu
  */
-public class NacosInstanceTransformer implements InstanceTransformer {
+public class PolarisInstanceTransformer implements InstanceTransformer {
 
 	@Override
 	public void transformCustom(DefaultInstance instance, ServiceInstance serviceInstance) {
-		if ("com.alibaba.cloud.nacos.NacosServiceInstance".equals(serviceInstance.getClass().getName())) {
-			String nacosWeight = serviceInstance.getMetadata().get("nacos.weight");
-			instance.setWeight(
-					StringUtils.isBlank(nacosWeight) ? 100 : (int) Double.parseDouble(nacosWeight) * 100
-			);
-			String nacosHealthy = serviceInstance.getMetadata().get("nacos.healthy");
-			instance.setHealthy(
-					!StringUtils.isBlank(nacosHealthy) && Boolean.parseBoolean(nacosHealthy)
-			);
-			String nacosInstanceId = serviceInstance.getMetadata().get("nacos.instanceId");
-			instance.setId(nacosInstanceId);
-
+		if (serviceInstance instanceof PolarisServiceInstance) {
+			PolarisServiceInstance polarisServiceInstance = (PolarisServiceInstance) serviceInstance;
+			instance.setRegion(polarisServiceInstance.getPolarisInstance().getRegion());
+			instance.setZone(polarisServiceInstance.getPolarisInstance().getZone());
+			instance.setCampus(polarisServiceInstance.getPolarisInstance().getCampus());
+			instance.setWeight(polarisServiceInstance.getPolarisInstance().getWeight());
 		}
 	}
 

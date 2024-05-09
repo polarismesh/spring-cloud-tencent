@@ -59,13 +59,6 @@
 		</dependency>
 
 		<dependency>
-			<groupId>com.alibaba.cloud</groupId>
-			<artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
-			<version>2.2.9.RELEASE</version>
-			<optional>true</optional>
-		</dependency>
-
-		<dependency>
 			<groupId>com.tencent.polaris</groupId>
 			<artifactId>polaris-test-mock-discovery</artifactId>
 			<scope>test</scope>

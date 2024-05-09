@@ -1,0 +1,36 @@
+server:
+  port: 48090
+spring:
+  application:
+    name: LosslessCalleeService
+  cloud:
+    polaris:
+      address: grpc://119.91.66.223:8091
+      namespace: default
+      enabled: true
+      discovery:
+        enabled: true
+        register: true
+      contract:
+        exposure: true
+        report:
+          enabled: true
+      stat:
+        enabled: true
+        port: 28084
+      lossless:
+        enabled: true
+        port: 28084
+        #healthCheckPath: /actuator/health
+        #healthCheckInterval: 5000
+lossless:
+  healthy:
+    delay:
+      second: 20
+management:
+  endpoints:
+    web:
+      exposure:
+        include:
+          - polaris-discovery
+          - health

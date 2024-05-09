@@ -1,0 +1,18 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<parent>
+		<artifactId>spring-cloud-tencent-examples</artifactId>
+		<groupId>com.tencent.cloud</groupId>
+		<version>${revision}</version>
+		<relativePath>../pom.xml</relativePath>
+	</parent>
+	<modules>
+		<module>lossless-callee-service</module>
+		<module>lossless-nacos-callee-service</module>
+	</modules>
+	<modelVersion>4.0.0</modelVersion>
+
+	<artifactId>lossless-example</artifactId>
+	<packaging>pom</packaging>
+	<name>Spring Cloud Starter Tencent Lossless Example</name>
+</project>

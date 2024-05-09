@@ -19,6 +19,7 @@
 package com.tencent.cloud.plugin.discovery.adapter.config;
 
 import com.tencent.cloud.plugin.discovery.adapter.transformer.NacosInstanceTransformer;
+import com.tencent.cloud.rpc.enhancement.transformer.PolarisInstanceTransformer;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -44,6 +45,7 @@ public class NacosDiscoveryAdapterAutoConfigurationTest {
 	public void testDefaultInitialization() {
 		this.contextRunner.run(context -> {
 			assertThat(context).hasSingleBean(NacosInstanceTransformer.class);
+			assertThat(context).doesNotHaveBean(PolarisInstanceTransformer.class);
 		});
 	}
 }

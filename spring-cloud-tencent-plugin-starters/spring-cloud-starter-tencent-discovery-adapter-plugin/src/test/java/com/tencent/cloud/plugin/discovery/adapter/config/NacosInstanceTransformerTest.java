@@ -18,10 +18,12 @@
 
 package com.tencent.cloud.plugin.discovery.adapter.config;
 
-import com.alibaba.cloud.nacos.ribbon.NacosServer;
+import java.util.HashMap;
+
+import com.alibaba.cloud.nacos.NacosServiceInstance;
 import com.tencent.cloud.common.util.ApplicationContextAwareUtils;
 import com.tencent.cloud.plugin.discovery.adapter.transformer.NacosInstanceTransformer;
-import com.tencent.polaris.api.pojo.DefaultInstance;
+import com.tencent.polaris.api.pojo.Instance;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
@@ -51,14 +53,13 @@ public class NacosInstanceTransformerTest {
 	@Test
 	public void test() {
 		NacosInstanceTransformer nacosInstanceTransformer = new NacosInstanceTransformer();
-
-		com.alibaba.nacos.api.naming.pojo.Instance nacosInstance = new com.alibaba.nacos.api.naming.pojo.Instance();
-		nacosInstance.setHealthy(true);
-		NacosServer nacosServer = new NacosServer(nacosInstance);
-
-
-		DefaultInstance instance = new DefaultInstance();
-		nacosInstanceTransformer.transformCustom(instance, nacosServer);
+		NacosServiceInstance nacosServiceInstance = new NacosServiceInstance();
+		nacosServiceInstance.setMetadata(new HashMap<String, String>() {{
+			put("nacos.weight", "0.01");
+			put("nacos.healthy", "true");
+			put("nacos.instanceId", "xxx");
+		}});
+		Instance instance = nacosInstanceTransformer.transform(nacosServiceInstance);
 		assertThat(instance.isHealthy()).isEqualTo(true);
 	}
 

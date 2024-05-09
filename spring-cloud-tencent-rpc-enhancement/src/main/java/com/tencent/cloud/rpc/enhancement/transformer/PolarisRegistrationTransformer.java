@@ -13,26 +13,15 @@
  * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
- */
-
-package com.tencent.cloud.plugin.lossless.transfomer;
-
-import com.tencent.cloud.polaris.PolarisDiscoveryProperties;
-
-/**
- * Discovery namespace getter for Polaris.
  *
- * @author Shedfree Wu
  */
-public class PolarisDiscoveryNamespaceGetter implements DiscoveryNamespaceGetter {
 
-	private String namespace;
+package com.tencent.cloud.rpc.enhancement.transformer;
 
-	public PolarisDiscoveryNamespaceGetter(PolarisDiscoveryProperties polarisDiscoveryProperties) {
-		this.namespace = polarisDiscoveryProperties.getNamespace();
-	}
+public class PolarisRegistrationTransformer implements RegistrationTransformer {
 
-	public String getNamespace() {
-		return namespace;
+	@Override
+	public String getRegistry() {
+		return "polaris";
 	}
 }

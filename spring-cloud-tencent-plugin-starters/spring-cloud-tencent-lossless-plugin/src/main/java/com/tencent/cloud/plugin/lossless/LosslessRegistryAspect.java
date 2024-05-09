@@ -18,8 +18,9 @@
 package com.tencent.cloud.plugin.lossless;
 
 import com.tencent.cloud.plugin.lossless.config.LosslessProperties;
-import com.tencent.cloud.plugin.lossless.transfomer.DiscoveryNamespaceGetter;
 import com.tencent.cloud.polaris.context.PolarisSDKContextManager;
+import com.tencent.cloud.polaris.context.config.PolarisContextProperties;
+import com.tencent.cloud.rpc.enhancement.transformer.RegistrationTransformer;
 import com.tencent.polaris.api.pojo.BaseInstance;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -37,7 +38,7 @@ import org.springframework.cloud.client.serviceregistry.ServiceRegistry;
 @Aspect
 public class LosslessRegistryAspect {
 
-	private ServiceRegistry serviceRegistry;
+	private ServiceRegistry<Registration> serviceRegistry;
 
 	private Registration registration;
 
@@ -45,16 +46,19 @@ public class LosslessRegistryAspect {
 
 	private PolarisSDKContextManager polarisSDKContextManager;
 
-	private DiscoveryNamespaceGetter discoveryNamespaceGetter;
+	private RegistrationTransformer registrationTransformer;
 
-	public LosslessRegistryAspect(ServiceRegistry serviceRegistry, Registration registration,
-					LosslessProperties losslessProperties, PolarisSDKContextManager polarisSDKContextManager,
-					DiscoveryNamespaceGetter discoveryNamespaceGetter) {
+	private PolarisContextProperties properties;
+
+	public LosslessRegistryAspect(ServiceRegistry<Registration> serviceRegistry, Registration registration,
+			PolarisContextProperties properties, LosslessProperties losslessProperties,
+			PolarisSDKContextManager polarisSDKContextManager, RegistrationTransformer registrationTransformer) {
 		this.serviceRegistry = serviceRegistry;
 		this.registration = registration;
 		this.losslessProperties = losslessProperties;
 		this.polarisSDKContextManager = polarisSDKContextManager;
-		this.discoveryNamespaceGetter = discoveryNamespaceGetter;
+		this.registrationTransformer = registrationTransformer;
+		this.properties = properties;
 	}
 
 	@Pointcut("execution(public * org.springframework.cloud.client.serviceregistry.ServiceRegistry.register(..))")
@@ -71,7 +75,7 @@ public class LosslessRegistryAspect {
 	public Object invokeRegister(ProceedingJoinPoint joinPoint) throws Throwable {
 
 		// web started, get port from registration
-		BaseInstance instance = SpringCloudLosslessActionProvider.getBaseInstance(registration, discoveryNamespaceGetter);
+		BaseInstance instance = SpringCloudLosslessActionProvider.getBaseInstance(registration, registrationTransformer);
 
 		Runnable registerAction = () -> executeJoinPoint(joinPoint);
 

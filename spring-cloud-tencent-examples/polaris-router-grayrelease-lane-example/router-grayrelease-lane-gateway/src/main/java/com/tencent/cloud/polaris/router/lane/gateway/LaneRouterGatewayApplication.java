@@ -15,14 +15,15 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package com.tencent.cloud.plugin.lossless.transfomer;
+package com.tencent.cloud.polaris.router.lane.gateway;
 
-/**
- * Interface for discovery namespace getter.
- *
- * @author Shedfree Wu
- */
-public interface DiscoveryNamespaceGetter {
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-	String getNamespace();
+@SpringBootApplication
+public class LaneRouterGatewayApplication {
+
+	public static void main(String[] args) {
+		SpringApplication.run(LaneRouterGatewayApplication.class, args);
+	}
 }

@@ -35,6 +35,10 @@ import com.tencent.cloud.rpc.enhancement.plugin.reporter.SuccessPolarisReporter;
 import com.tencent.cloud.rpc.enhancement.resttemplate.EnhancedRestTemplateInterceptor;
 import com.tencent.cloud.rpc.enhancement.resttemplate.PolarisLoadBalancerRequestTransformer;
 import com.tencent.cloud.rpc.enhancement.scg.EnhancedGatewayGlobalFilter;
+import com.tencent.cloud.rpc.enhancement.transformer.InstanceTransformer;
+import com.tencent.cloud.rpc.enhancement.transformer.PolarisInstanceTransformer;
+import com.tencent.cloud.rpc.enhancement.transformer.PolarisRegistrationTransformer;
+import com.tencent.cloud.rpc.enhancement.transformer.RegistrationTransformer;
 import com.tencent.cloud.rpc.enhancement.webclient.EnhancedWebClientExchangeFilterFunction;
 import com.tencent.cloud.rpc.enhancement.webclient.PolarisLoadBalancerClientRequestTransformer;
 import com.tencent.cloud.rpc.enhancement.webclient.RibbonLoadBalancerClientAspect;
@@ -83,6 +87,20 @@ import static javax.servlet.DispatcherType.REQUEST;
 @EnableConfigurationProperties(RpcEnhancementReporterProperties.class)
 @AutoConfigureAfter(PolarisContextAutoConfiguration.class)
 public class RpcEnhancementAutoConfiguration {
+
+	@Bean
+	@ConditionalOnMissingBean
+	@ConditionalOnClass(name = "com.tencent.cloud.common.pojo.PolarisServiceInstance")
+	public InstanceTransformer instanceTransformer() {
+		return new PolarisInstanceTransformer();
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	@ConditionalOnClass(name = "com.tencent.cloud.polaris.registry.PolarisRegistration")
+	public RegistrationTransformer registrationTransformer() {
+		return new PolarisRegistrationTransformer();
+	}
 
 	@Bean
 	@Lazy

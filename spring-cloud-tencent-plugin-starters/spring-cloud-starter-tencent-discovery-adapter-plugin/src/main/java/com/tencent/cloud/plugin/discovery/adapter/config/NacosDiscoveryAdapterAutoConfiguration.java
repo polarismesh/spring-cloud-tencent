@@ -19,8 +19,10 @@
 package com.tencent.cloud.plugin.discovery.adapter.config;
 
 import com.tencent.cloud.plugin.discovery.adapter.transformer.NacosInstanceTransformer;
+import com.tencent.cloud.plugin.discovery.adapter.transformer.NacosRegistrationTransformer;
 import com.tencent.cloud.polaris.loadbalancer.config.PolarisLoadBalancerAutoConfiguration;
-import com.tencent.cloud.polaris.loadbalancer.transformer.InstanceTransformer;
+import com.tencent.cloud.rpc.enhancement.transformer.InstanceTransformer;
+import com.tencent.cloud.rpc.enhancement.transformer.RegistrationTransformer;
 
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -41,9 +43,16 @@ public class NacosDiscoveryAdapterAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	@ConditionalOnClass(name = "com.alibaba.cloud.nacos.ribbon.NacosServer")
+	@ConditionalOnClass(name = "com.alibaba.cloud.nacos.NacosServiceInstance")
 	public InstanceTransformer instanceTransformer() {
 		return new NacosInstanceTransformer();
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	@ConditionalOnClass(name = "com.alibaba.cloud.nacos.registry.NacosRegistration")
+	public RegistrationTransformer registrationTransformer() {
+		return new NacosRegistrationTransformer();
 	}
 
 }
