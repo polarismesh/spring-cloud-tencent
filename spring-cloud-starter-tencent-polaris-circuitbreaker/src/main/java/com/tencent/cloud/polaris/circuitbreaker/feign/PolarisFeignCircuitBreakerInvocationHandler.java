@@ -113,36 +113,41 @@ public class PolarisFeignCircuitBreakerInvocationHandler implements InvocationHa
 		else if ("toString".equals(method.getName())) {
 			return toString();
 		}
-
-		String circuitName = circuitBreakerNameResolver.resolveCircuitBreakerName(feignClientName, target, method);
-		CircuitBreaker circuitBreaker = factory.create(circuitName);
 		Supplier<Object> supplier = asSupplier(method, args);
-		Function<Throwable, Object> fallbackFunction;
-		if (this.nullableFallbackFactory != null) {
-			fallbackFunction = throwable -> {
-				Object fallback = this.nullableFallbackFactory.create(throwable);
-				try {
-					return this.fallbackMethodMap.get(method).invoke(fallback, args);
-				}
-				catch (Exception exception) {
-					unwrapAndRethrow(exception);
-				}
-				return null;
-			};
+		if (circuitBreakerNameResolver != null) {
+			String circuitName = circuitBreakerNameResolver.resolveCircuitBreakerName(feignClientName, target, method);
+			CircuitBreaker circuitBreaker = factory.create(circuitName);
+
+			Function<Throwable, Object> fallbackFunction;
+			if (this.nullableFallbackFactory != null) {
+				fallbackFunction = throwable -> {
+					Object fallback = this.nullableFallbackFactory.create(throwable);
+					try {
+						return this.fallbackMethodMap.get(method).invoke(fallback, args);
+					}
+					catch (Exception exception) {
+						unwrapAndRethrow(exception);
+					}
+					return null;
+				};
+			}
+			else {
+				fallbackFunction = throwable -> {
+					PolarisCircuitBreakerFallbackFactory.DefaultFallback fallback =
+							(PolarisCircuitBreakerFallbackFactory.DefaultFallback) new PolarisCircuitBreakerFallbackFactory(this.decoder).create(throwable);
+					return fallback.fallback(method);
+				};
+			}
+			try {
+				return circuitBreaker.run(supplier, fallbackFunction);
+			}
+			catch (FallbackWrapperException e) {
+				// unwrap And Rethrow
+				throw e.getCause();
+			}
 		}
 		else {
-			fallbackFunction = throwable -> {
-				PolarisCircuitBreakerFallbackFactory.DefaultFallback fallback =
-						(PolarisCircuitBreakerFallbackFactory.DefaultFallback) new PolarisCircuitBreakerFallbackFactory(this.decoder).create(throwable);
-				return fallback.fallback(method);
-			};
-		}
-		try {
-			return circuitBreaker.run(supplier, fallbackFunction);
-		}
-		catch (FallbackWrapperException e) {
-			// unwrap And Rethrow
-			throw e.getCause();
+			return supplier.get();
 		}
 	}
 
