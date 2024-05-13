@@ -57,6 +57,8 @@ public class PolarisContractProperties implements ContractProperties {
 	@Value("${spring.cloud.polaris.contract.report.enabled:true}")
 	private boolean reportEnabled = true;
 
+	private String name;
+
 	public PolarisContractProperties(@Nullable ExtendedContractProperties extendContractProperties) {
 		this.extendContractProperties = extendContractProperties;
 	}
@@ -150,5 +152,17 @@ public class PolarisContractProperties implements ContractProperties {
 	@Override
 	public void setReportEnabled(boolean reportEnabled) {
 		this.reportEnabled = reportEnabled;
+	}
+
+	public String getName() {
+		if (Objects.nonNull(extendContractProperties)) {
+			return extendContractProperties.getName();
+		}
+		return name;
+	}
+
+	@Override
+	public void setName(String name) {
+		this.name = name;
 	}
 }

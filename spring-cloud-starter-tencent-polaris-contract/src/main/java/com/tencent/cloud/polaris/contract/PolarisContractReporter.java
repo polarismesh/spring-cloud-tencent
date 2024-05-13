@@ -32,6 +32,7 @@ import com.tencent.polaris.api.core.ProviderAPI;
 import com.tencent.polaris.api.plugin.server.InterfaceDescriptor;
 import com.tencent.polaris.api.plugin.server.ReportServiceContractRequest;
 import com.tencent.polaris.api.plugin.server.ReportServiceContractResponse;
+import com.tencent.polaris.api.utils.StringUtils;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.Operation;
 import io.swagger.v3.oas.models.PathItem;
@@ -97,7 +98,11 @@ public class PolarisContractReporter implements ApplicationListener<ApplicationR
 				}
 				if (openAPI != null) {
 					ReportServiceContractRequest request = new ReportServiceContractRequest();
-					request.setName(polarisDiscoveryProperties.getService());
+					String name = polarisContractProperties.getName();
+					if (StringUtils.isBlank(name)) {
+						name = polarisDiscoveryProperties.getService();
+					}
+					request.setName(name);
 					request.setNamespace(polarisDiscoveryProperties.getNamespace());
 					request.setService(polarisDiscoveryProperties.getService());
 					request.setProtocol("http");
