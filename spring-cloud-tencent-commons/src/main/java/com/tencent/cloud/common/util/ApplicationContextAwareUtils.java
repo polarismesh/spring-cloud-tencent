@@ -17,6 +17,8 @@
 
 package com.tencent.cloud.common.util;
 
+import com.tencent.polaris.api.utils.StringUtils;
+
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -50,7 +52,14 @@ public class ApplicationContextAwareUtils implements ApplicationContextAware {
 	 * @return property value
 	 */
 	public static String getProperties(String key) {
-		return applicationContext.getEnvironment().getProperty(key);
+		if (applicationContext != null) {
+			return applicationContext.getEnvironment().getProperty(key);
+		}
+		String property = System.getenv(key);
+		if (StringUtils.isBlank(property)) {
+			property = System.getProperty(key);
+		}
+		return property;
 	}
 
 	/**
@@ -60,6 +69,13 @@ public class ApplicationContextAwareUtils implements ApplicationContextAware {
 	 * @return property value
 	 */
 	public static String getProperties(String key, String defaultValue) {
-		return applicationContext.getEnvironment().getProperty(key, defaultValue);
+		if (applicationContext != null) {
+			return applicationContext.getEnvironment().getProperty(key, defaultValue);
+		}
+		String property = System.getenv(key);
+		if (StringUtils.isBlank(property)) {
+			property = System.getProperty(key, defaultValue);
+		}
+		return property;
 	}
 }

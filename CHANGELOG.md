@@ -12,3 +12,4 @@
 - [refactor:let the configuration SDK context stand alone.](https://github.com/Tencent/spring-cloud-tencent/pull/1275)
 - [fix: fix grammar issues for lane router example & optimize the gateway dependency](https://github.com/Tencent/spring-cloud-tencent/pull/1276)
 - [fix: fix lossless deregister failed when no healthcheck configured](https://github.com/Tencent/spring-cloud-tencent/pull/1281)
+- [fix:fix ApplicationContextAwareUtils NPE bug.](https://github.com/Tencent/spring-cloud-tencent/pull/1293)
