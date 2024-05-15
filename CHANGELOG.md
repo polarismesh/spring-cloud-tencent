@@ -11,3 +11,4 @@
 - [fix:fix wrong report when using Zuul with instance not found exception.](https://github.com/Tencent/spring-cloud-tencent/pull/1283)
 - [feat: merge lane router and lossless features from 2023](https://github.com/Tencent/spring-cloud-tencent/pull/1288)
 - [fix: fix npe when add circuitbreak module without feign.hystrix.enable=true](https://github.com/Tencent/spring-cloud-tencent/pull/1292)
+- [fix:fix ApplicationContextAwareUtils NPE bug.](https://github.com/Tencent/spring-cloud-tencent/pull/1295)
