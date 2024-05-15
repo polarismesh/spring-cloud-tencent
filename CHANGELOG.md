@@ -2,3 +2,4 @@
 ---
 
 - [feat:upgrade jackson version.](https://github.com/Tencent/spring-cloud-tencent/pull/1258)
+- [fix:fix ApplicationContextAwareUtils NPE bug.](https://github.com/Tencent/spring-cloud-tencent/pull/1296)
