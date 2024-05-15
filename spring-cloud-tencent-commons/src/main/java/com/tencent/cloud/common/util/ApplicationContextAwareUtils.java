@@ -18,6 +18,8 @@
 package com.tencent.cloud.common.util;
 
 import com.tencent.polaris.api.utils.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
@@ -30,6 +32,8 @@ import org.springframework.lang.NonNull;
  * @author Hongwei Zhu
  */
 public class ApplicationContextAwareUtils implements ApplicationContextAware {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(ApplicationContextAwareUtils.class);
 
 	private static ApplicationContext applicationContext;
 
@@ -55,6 +59,7 @@ public class ApplicationContextAwareUtils implements ApplicationContextAware {
 		if (applicationContext != null) {
 			return applicationContext.getEnvironment().getProperty(key);
 		}
+		LOGGER.warn("applicationContext is null, try to get property from System.getenv or System.getProperty");
 		String property = System.getenv(key);
 		if (StringUtils.isBlank(property)) {
 			property = System.getProperty(key);
@@ -72,6 +77,7 @@ public class ApplicationContextAwareUtils implements ApplicationContextAware {
 		if (applicationContext != null) {
 			return applicationContext.getEnvironment().getProperty(key, defaultValue);
 		}
+		LOGGER.warn("applicationContext is null, try to get property from System.getenv or System.getProperty");
 		String property = System.getenv(key);
 		if (StringUtils.isBlank(property)) {
 			property = System.getProperty(key, defaultValue);
