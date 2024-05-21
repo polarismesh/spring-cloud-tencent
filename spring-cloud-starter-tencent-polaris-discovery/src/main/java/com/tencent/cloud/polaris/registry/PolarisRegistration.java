@@ -67,6 +67,7 @@ public class PolarisRegistration implements Registration {
 	private final List<PolarisRegistrationCustomizer> customizers;
 	private boolean registerEnabled = false;
 	private Map<String, String> metadata;
+	private Map<String, Map<String, String>> extendedMetadata;
 	private int port;
 	private String instanceId;
 
@@ -131,6 +132,8 @@ public class PolarisRegistration implements Registration {
 
 			this.metadata = instanceMetadata;
 		}
+
+		this.extendedMetadata = new HashMap<>();
 
 		// generate registerEnabled
 		if (null != polarisDiscoveryProperties) {
@@ -215,6 +218,13 @@ public class PolarisRegistration implements Registration {
 	@Override
 	public Map<String, String> getMetadata() {
 		return metadata;
+	}
+
+	public Map<String, Map<String, String>> getExtendedMetadata() {
+		if (extendedMetadata == null) {
+			extendedMetadata = new HashMap<>();
+		}
+		return extendedMetadata;
 	}
 
 	@Override

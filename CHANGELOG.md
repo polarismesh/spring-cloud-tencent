@@ -13,3 +13,4 @@
 - [fix: fix grammar issues for lane router example & optimize the gateway dependency](https://github.com/Tencent/spring-cloud-tencent/pull/1343)
 - [refactor:let the configuration SDK context stand alone.](https://github.com/Tencent/spring-cloud-tencent/pull/1344)
 - [fix: fix lossless deregister failed when no healthcheck configured](https://github.com/Tencent/spring-cloud-tencent/pull/1345)
+  [feat:add zero protection.](https://github.com/Tencent/spring-cloud-tencent/pull/1346)

@@ -51,6 +51,10 @@ public class DiscoveryConfigModifier implements PolarisConfigModifier {
 		// Set ServiceRefreshInterval
 		configuration.getConsumer().getLocalCache()
 				.setServiceListRefreshInterval(polarisDiscoveryProperties.getServiceListRefreshInterval());
+
+		configuration.getConsumer().getZeroProtection().setEnable(polarisDiscoveryProperties.isZeroProtectionEnabled());
+		configuration.getConsumer().getZeroProtection()
+				.setNeedTestConnectivity(polarisDiscoveryProperties.isZeroProtectionNeedTestConnectivity());
 	}
 
 	@Override

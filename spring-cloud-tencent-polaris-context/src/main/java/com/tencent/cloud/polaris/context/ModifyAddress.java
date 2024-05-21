@@ -18,6 +18,7 @@
 
 package com.tencent.cloud.polaris.context;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.tencent.cloud.common.constant.OrderConstant;
@@ -25,6 +26,8 @@ import com.tencent.cloud.common.util.AddressUtils;
 import com.tencent.cloud.polaris.context.config.PolarisContextProperties;
 import com.tencent.polaris.factory.config.ConfigurationImpl;
 import org.apache.commons.lang.StringUtils;
+
+import org.springframework.util.CollectionUtils;
 
 /**
  * Modify polaris server address.
@@ -48,6 +51,13 @@ public class ModifyAddress implements PolarisConfigModifier {
 		List<String> addresses = AddressUtils.parseAddressList(properties.getAddress());
 
 		configuration.getGlobal().getServerConnector().setAddresses(addresses);
+		if (CollectionUtils.isEmpty(configuration.getGlobal().getServerConnectors())) {
+			configuration.getGlobal().setServerConnectors(new ArrayList<>());
+		}
+		if (CollectionUtils.isEmpty(configuration.getGlobal().getServerConnectors())
+				&& null != configuration.getGlobal().getServerConnector()) {
+			configuration.getGlobal().getServerConnectors().add(configuration.getGlobal().getServerConnector());
+		}
 	}
 
 	@Override
