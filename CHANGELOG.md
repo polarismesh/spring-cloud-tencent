@@ -14,3 +14,4 @@
 - [refactor:let the configuration SDK context stand alone.](https://github.com/Tencent/spring-cloud-tencent/pull/1383)
 - [fix: fix lossless deregister failed when no healthcheck configured](https://github.com/Tencent/spring-cloud-tencent/pull/1385)
 - [fix:fix ApplicationContextAwareUtils NPE bug.](https://github.com/Tencent/spring-cloud-tencent/pull/1386)
+- [feat:add zero protection.](https://github.com/Tencent/spring-cloud-tencent/pull/1278)

@@ -30,6 +30,7 @@ import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.info.License;
 import org.springdoc.core.GroupedOpenApi;
 import org.springdoc.core.SpringDocConfiguration;
+import org.springdoc.core.providers.ObjectMapperProvider;
 import org.springdoc.webflux.api.MultipleOpenApiWebFluxResource;
 import org.springdoc.webmvc.api.MultipleOpenApiWebMvcResource;
 
@@ -56,6 +57,12 @@ import static com.tencent.cloud.polaris.contract.utils.PackageUtil.SPLITTER;
 @Import(SpringDocConfiguration.class)
 public class PolarisSwaggerAutoConfiguration {
 
+	static {
+		// After springboot2.6.x, the default path matching strategy of spring MVC is changed from ANT_PATH_MATCHER
+		// mode to PATH_PATTERN_PARSER mode, causing an error. The solution is to switch to the original ANT_PATH_MATCHER mode.
+		System.setProperty("spring.mvc.pathmatch.matching-strategy", "ant-path-matcher");
+	}
+
 	@Bean
 	public GroupedOpenApi polarisGroupedOpenApi(PolarisContractProperties polarisContractProperties) {
 		String basePackage = PackageUtil.scanPackage(polarisContractProperties.getBasePackage());
@@ -79,8 +86,8 @@ public class PolarisSwaggerAutoConfiguration {
 	public OpenAPI polarisOpenAPI() {
 		return new OpenAPI()
 				.info(new Info()
-						.title("Polaris Swagger API")
-						.description("This is to show polaris api description.")
+						.title("Polaris Contract")
+						.description("This is to show polaris contract description.")
 						.license(new License().name("BSD-3-Clause").url("https://opensource.org/licenses/BSD-3-Clause"))
 						.version("1.0.0"));
 	}
@@ -92,9 +99,9 @@ public class PolarisSwaggerAutoConfiguration {
 			@Nullable MultipleOpenApiWebMvcResource multipleOpenApiWebMvcResource,
 			@Nullable MultipleOpenApiWebFluxResource multipleOpenApiWebFluxResource,
 			PolarisContractProperties polarisContractProperties, PolarisSDKContextManager polarisSDKContextManager,
-			PolarisDiscoveryProperties polarisDiscoveryProperties) {
+			PolarisDiscoveryProperties polarisDiscoveryProperties, ObjectMapperProvider springdocObjectMapperProvider) {
 		return new PolarisContractReporter(multipleOpenApiWebMvcResource, multipleOpenApiWebFluxResource,
-				polarisContractProperties, polarisSDKContextManager.getProviderAPI(), polarisDiscoveryProperties);
+				polarisContractProperties, polarisSDKContextManager.getProviderAPI(), polarisDiscoveryProperties, springdocObjectMapperProvider);
 	}
 
 	@Bean

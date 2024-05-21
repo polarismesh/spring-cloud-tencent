@@ -125,7 +125,7 @@ public class OrderConstant {
 		/**
 		 * Address modifier order.
 		 */
-		public static Integer ADDRESS_ORDER = Integer.MIN_VALUE;
+		public static Integer ADDRESS_ORDER = Integer.MIN_VALUE + 10;
 
 		/**
 		 * Discovery config modifier order.
