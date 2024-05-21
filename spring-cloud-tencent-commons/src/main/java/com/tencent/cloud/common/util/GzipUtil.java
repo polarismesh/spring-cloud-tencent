@@ -24,24 +24,29 @@ import java.util.Base64;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * @author kysonli
- * @date 2018/9/7 15:35
  */
 public final class GzipUtil {
+
+	private static final Logger LOG = LoggerFactory.getLogger(GzipUtil.class);
 
 	private GzipUtil() {
 	}
 
 	public static byte[] compress(String data, String charsetName) throws IOException {
-		ByteArrayOutputStream bos = new ByteArrayOutputStream();
-		GZIPOutputStream gzip = new GZIPOutputStream(bos);
-		gzip.write(data.getBytes(charsetName));
-		gzip.finish();
-		gzip.close();
-		byte[] ret = bos.toByteArray();
-		bos.close();
-		return ret;
+		try (ByteArrayOutputStream bos = new ByteArrayOutputStream(); GZIPOutputStream gzip = new GZIPOutputStream(bos)) {
+			gzip.write(data.getBytes(charsetName));
+			gzip.finish();
+			return bos.toByteArray();
+		}
+		catch (IOException e) {
+			LOG.error("compress data [{}] error", data, e);
+			throw e;
+		}
 	}
 
 	public static String compressBase64Encode(String data, String charsetName) throws IOException {
@@ -56,20 +61,19 @@ public final class GzipUtil {
 
 
 	public static byte[] decompress(byte[] zipData) throws IOException {
-		ByteArrayInputStream bis = new ByteArrayInputStream(zipData);
-		GZIPInputStream gzip = new GZIPInputStream(bis);
-		byte[] buf = new byte[256];
-		int num = -1;
-		ByteArrayOutputStream bos = new ByteArrayOutputStream();
-		while ((num = gzip.read(buf, 0, buf.length)) != -1) {
-			bos.write(buf, 0, num);
+		try (ByteArrayInputStream bis = new ByteArrayInputStream(zipData); GZIPInputStream gzip = new GZIPInputStream(bis); ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
+			byte[] buf = new byte[256];
+			int num;
+			while ((num = gzip.read(buf)) != -1) {
+				bos.write(buf, 0, num);
+			}
+			bos.flush();
+			return bos.toByteArray();
 		}
-		gzip.close();
-		bis.close();
-		byte[] ret = bos.toByteArray();
-		bos.flush();
-		bos.close();
-		return ret;
+		catch (IOException e) {
+			LOG.error("decompress zip data error", e);
+			throw e;
+		}
 	}
 
 	public static String base64DecodeDecompress(String data, String charsetName) throws IOException {
