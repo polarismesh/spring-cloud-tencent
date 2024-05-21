@@ -78,23 +78,26 @@ public class PolarisConfigFileLocator implements PropertySourceLocator {
 
 	@Override
 	public PropertySource<?> locate(Environment environment) {
-		CompositePropertySource compositePropertySource = new CompositePropertySource(POLARIS_CONFIG_PROPERTY_SOURCE_NAME);
-		try {
-			// load custom config extension files
-			initCustomPolarisConfigExtensionFiles(compositePropertySource);
-			// load spring boot default config files
-			initInternalConfigFiles(compositePropertySource);
-			// load custom config files
-			List<ConfigFileGroup> configFileGroups = polarisConfigProperties.getGroups();
-			if (CollectionUtils.isEmpty(configFileGroups)) {
+		if (polarisConfigProperties.isEnabled()) {
+			CompositePropertySource compositePropertySource = new CompositePropertySource(POLARIS_CONFIG_PROPERTY_SOURCE_NAME);
+			try {
+				// load custom config extension files
+				initCustomPolarisConfigExtensionFiles(compositePropertySource);
+				// load spring boot default config files
+				initInternalConfigFiles(compositePropertySource);
+				// load custom config files
+				List<ConfigFileGroup> configFileGroups = polarisConfigProperties.getGroups();
+				if (CollectionUtils.isEmpty(configFileGroups)) {
+					return compositePropertySource;
+				}
+				initCustomPolarisConfigFiles(compositePropertySource, configFileGroups);
 				return compositePropertySource;
 			}
-			initCustomPolarisConfigFiles(compositePropertySource, configFileGroups);
-			return compositePropertySource;
+			finally {
+				afterLocatePolarisConfigExtension(compositePropertySource);
+			}
 		}
-		finally {
-			afterLocatePolarisConfigExtension(compositePropertySource);
-		}
+		return null;
 	}
 
 	private void initCustomPolarisConfigExtensionFiles(CompositePropertySource compositePropertySource) {

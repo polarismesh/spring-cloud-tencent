@@ -17,3 +17,4 @@
 - [fix:fix the ratelimit bug for 2023](https://github.com/Tencent/spring-cloud-tencent/pull/1316)
 - [fix:update spring boot version](https://github.com/Tencent/spring-cloud-tencent/pull/1333)
 - [feat:add scg-mvc example](https://github.com/Tencent/spring-cloud-tencent/pull/1367)
+- [feat:add zero protection.](https://github.com/Tencent/spring-cloud-tencent/pull/1408)

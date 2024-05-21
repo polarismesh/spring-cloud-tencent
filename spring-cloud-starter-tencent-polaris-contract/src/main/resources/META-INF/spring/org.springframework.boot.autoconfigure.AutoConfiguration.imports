@@ -1,2 +1,2 @@
 com.tencent.cloud.polaris.contract.config.PolarisSwaggerAutoConfiguration
-com.tencent.cloud.polaris.contract.config.PolarisContractProperties
+com.tencent.cloud.polaris.contract.config.PolarisContractPropertiesAutoConfiguration

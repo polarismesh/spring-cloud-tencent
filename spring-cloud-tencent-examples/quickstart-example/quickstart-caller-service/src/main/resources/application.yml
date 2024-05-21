@@ -16,6 +16,9 @@ spring:
         heartbeat:
           enabled: true
         health-check-url: /quickstart/caller/healthCheck
+        zero-protection:
+          enabled: true
+          is-need-test-connectivity: true
       contract:
         exposure: true
         report:

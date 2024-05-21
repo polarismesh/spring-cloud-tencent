@@ -51,4 +51,8 @@ public interface ContractProperties {
 	boolean isReportEnabled();
 
 	void setReportEnabled(boolean reportEnabled);
+
+	String getName();
+
+	void setName(String name);
 }
