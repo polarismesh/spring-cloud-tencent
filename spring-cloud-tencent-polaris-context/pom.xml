@@ -77,6 +77,11 @@
 
 		<dependency>
 			<groupId>com.tencent.polaris</groupId>
+			<artifactId>connector-consul</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>com.tencent.polaris</groupId>
 			<artifactId>connector-composite</artifactId>
 		</dependency>
 

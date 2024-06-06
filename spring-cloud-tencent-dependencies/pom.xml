@@ -74,7 +74,7 @@
 		<revision>1.14.0-2020.0.6-SNAPSHOT</revision>
 
 		<!-- Polaris SDK version -->
-		<polaris.version>1.15.6</polaris.version>
+		<polaris.version>1.15.7-SNAPSHOT</polaris.version>
 
 		<!-- Dependencies -->
 		<guava.version>32.0.1-jre</guava.version>
@@ -85,6 +85,8 @@
 		<byte-buddy.version>1.12.10</byte-buddy.version>
 		<jackson.version>2.12.7</jackson.version>
 		<protobuf-java.version>3.21.7</protobuf-java.version>
+		<okio.version>3.0.0</okio.version>
+		<joda-time.version>2.9.9</joda-time.version>
 		<system-stubs-jupiter.version>2.0.2</system-stubs-jupiter.version>
 
 		<!-- Maven Plugin Versions -->
@@ -257,6 +259,18 @@
 				<groupId>net.bytebuddy</groupId>
 				<artifactId>byte-buddy</artifactId>
 				<version>${byte-buddy.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>com.squareup.okio</groupId>
+				<artifactId>okio</artifactId>
+				<version>${okio.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>joda-time</groupId>
+				<artifactId>joda-time</artifactId>
+				<version>${joda-time.version}</version>
 			</dependency>
 
 			<dependency>
