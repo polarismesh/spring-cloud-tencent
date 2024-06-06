@@ -191,8 +191,12 @@ public class PolarisConfigFileLocator implements PropertySourceLocator {
 		String namespace = polarisContextProperties.getNamespace();
 
 		for (ConfigFileGroup configFileGroup : configFileGroups) {
-			String group = configFileGroup.getName();
+			String groupNamespace = configFileGroup.getNamespace();
+			if (!StringUtils.hasText(groupNamespace)) {
+				groupNamespace = namespace;
+			}
 
+			String group = configFileGroup.getName();
 			if (!StringUtils.hasText(group)) {
 				throw new IllegalArgumentException("polaris config group name cannot be empty.");
 			}
@@ -203,25 +207,25 @@ public class PolarisConfigFileLocator implements PropertySourceLocator {
 			}
 
 			for (String fileName : files) {
-				PolarisPropertySource polarisPropertySource = loadPolarisPropertySource(namespace, group, fileName);
+				PolarisPropertySource polarisPropertySource = loadPolarisPropertySource(groupNamespace, group, fileName);
 
 				compositePropertySource.addPropertySource(polarisPropertySource);
 
 				PolarisPropertySourceManager.addPropertySource(polarisPropertySource);
 
-				LOGGER.info("[SCT Config] Load and inject polaris config file success. namespace = {}, group = {}, fileName = {}", namespace, group, fileName);
+				LOGGER.info("[SCT Config] Load and inject polaris config file success. namespace = {}, group = {}, fileName = {}", groupNamespace, group, fileName);
 			}
 		}
 	}
 
 	private PolarisPropertySource loadPolarisPropertySource(String namespace, String group, String fileName) {
 		ConfigKVFile configKVFile;
-		// unknown extension is resolved as properties file
-		if (ConfigFileFormat.isPropertyFile(fileName) || ConfigFileFormat.isUnknownFile(fileName)) {
-			configKVFile = configFileService.getConfigPropertiesFile(namespace, group, fileName);
-		}
-		else if (ConfigFileFormat.isYamlFile(fileName)) {
+		// unknown extension is resolved as yaml file
+		if (ConfigFileFormat.isYamlFile(fileName) || ConfigFileFormat.isUnknownFile(fileName)) {
 			configKVFile = configFileService.getConfigYamlFile(namespace, group, fileName);
+		}
+		else if (ConfigFileFormat.isPropertyFile(fileName)) {
+			configKVFile = configFileService.getConfigPropertiesFile(namespace, group, fileName);
 		}
 		else {
 			LOGGER.warn("[SCT Config] Unsupported config file. namespace = {}, group = {}, fileName = {}", namespace, group, fileName);

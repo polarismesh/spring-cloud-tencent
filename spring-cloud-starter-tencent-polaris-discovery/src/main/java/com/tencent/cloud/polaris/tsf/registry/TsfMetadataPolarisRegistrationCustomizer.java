@@ -21,6 +21,7 @@ import java.util.Map;
 
 import com.tencent.cloud.common.constant.SdkVersion;
 import com.tencent.cloud.common.util.JacksonUtils;
+import com.tencent.cloud.polaris.context.tsf.config.TsfCoreProperties;
 import com.tencent.cloud.polaris.registry.PolarisRegistration;
 import com.tencent.cloud.polaris.registry.PolarisRegistrationCustomizer;
 import com.tencent.cloud.polaris.tsf.TsfDiscoveryProperties;
@@ -34,9 +35,12 @@ import com.tencent.cloud.polaris.tsf.util.RegistrationUtil;
  */
 public class TsfMetadataPolarisRegistrationCustomizer implements PolarisRegistrationCustomizer {
 
+	private final TsfCoreProperties tsfCoreProperties;
+
 	private final TsfDiscoveryProperties tsfDiscoveryProperties;
 
-	public TsfMetadataPolarisRegistrationCustomizer(TsfDiscoveryProperties tsfDiscoveryProperties) {
+	public TsfMetadataPolarisRegistrationCustomizer(TsfCoreProperties tsfCoreProperties, TsfDiscoveryProperties tsfDiscoveryProperties) {
+		this.tsfCoreProperties = tsfCoreProperties;
 		this.tsfDiscoveryProperties = tsfDiscoveryProperties;
 	}
 
@@ -44,10 +48,10 @@ public class TsfMetadataPolarisRegistrationCustomizer implements PolarisRegistra
 	public void customize(PolarisRegistration registration) {
 		Map<String, String> metadata = registration.getMetadata();
 
-		metadata.put("TSF_APPLICATION_ID", tsfDiscoveryProperties.getTsfApplicationId());
+		metadata.put("TSF_APPLICATION_ID", tsfCoreProperties.getTsfApplicationId());
 		metadata.put("TSF_PROG_VERSION", tsfDiscoveryProperties.getTsfProgVersion());
-		metadata.put("TSF_GROUP_ID", tsfDiscoveryProperties.getTsfGroupId());
-		metadata.put("TSF_NAMESPACE_ID", tsfDiscoveryProperties.getTsfNamespaceId());
+		metadata.put("TSF_GROUP_ID", tsfCoreProperties.getTsfGroupId());
+		metadata.put("TSF_NAMESPACE_ID", tsfCoreProperties.getTsfNamespaceId());
 		metadata.put("TSF_INSTNACE_ID", tsfDiscoveryProperties.getInstanceId());
 		metadata.put("TSF_REGION", tsfDiscoveryProperties.getTsfRegion());
 		metadata.put("TSF_ZONE", tsfDiscoveryProperties.getTsfZone());

@@ -26,6 +26,8 @@ import java.util.List;
  */
 public class ConfigFileGroup {
 
+	private String namespace;
+
 	/**
 	 * group name.
 	 */
@@ -35,6 +37,14 @@ public class ConfigFileGroup {
 	 * the files belong to group.
 	 */
 	private List<String> files;
+
+	public String getNamespace() {
+		return namespace;
+	}
+
+	public void setNamespace(String namespace) {
+		this.namespace = namespace;
+	}
 
 	public String getName() {
 		return name;
@@ -54,6 +64,10 @@ public class ConfigFileGroup {
 
 	@Override
 	public String toString() {
-		return "ConfigFileGroup{" + "name='" + name + '\'' + ", file=" + files + '}';
+		return "ConfigFileGroup{" +
+				"namespace='" + namespace + '\'' +
+				", name='" + name + '\'' +
+				", files=" + files +
+				'}';
 	}
 }
