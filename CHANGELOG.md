@@ -14,3 +14,4 @@
 - [fix:fix ApplicationContextAwareUtils NPE bug.](https://github.com/Tencent/spring-cloud-tencent/pull/1297)
 - [feat:upgrade jacoco version.](https://github.com/Tencent/spring-cloud-tencent/pull/1310)
 - [fix:fix no registry when lossless is disabled.](https://github.com/Tencent/spring-cloud-tencent/pull/1312)
+- [fix:fix the ratelimit bug for 2023](https://github.com/Tencent/spring-cloud-tencent/pull/1316)
