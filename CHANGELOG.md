@@ -14,3 +14,5 @@
 - [refactor:let the configuration SDK context stand alone.](https://github.com/Tencent/spring-cloud-tencent/pull/1344)
 - [fix: fix lossless deregister failed when no healthcheck configured](https://github.com/Tencent/spring-cloud-tencent/pull/1345)
 - [feat:add zero protection.](https://github.com/Tencent/spring-cloud-tencent/pull/1346)
+- [fix:fix no registry when lossless is disabled.](https://github.com/Tencent/spring-cloud-tencent/pull/1347)
+
