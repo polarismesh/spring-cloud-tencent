@@ -84,6 +84,16 @@ public class PolarisAdaptorTsfConfigExtensionLayer implements PolarisConfigCusto
 
 	private PolarisConfigPropertyAutoRefresher polarisConfigPropertyAutoRefresher;
 
+	@Override
+	public boolean isEnabled() {
+		// tse_polaris_enable
+		String tsePolarisEnable = System.getenv("tse_polaris_enable");
+		if (StringUtils.isBlank(tsePolarisEnable)) {
+			tsePolarisEnable = System.getProperty("tse_polaris_enable", "false");
+		}
+		return StringUtils.equals(tsePolarisEnable, "true");
+	}
+
 	/**
 	 * @see PolarisConfigCustomExtensionLayer#initConfigFiles(CompositePropertySource,
 	 *        PolarisPropertySourceManager,

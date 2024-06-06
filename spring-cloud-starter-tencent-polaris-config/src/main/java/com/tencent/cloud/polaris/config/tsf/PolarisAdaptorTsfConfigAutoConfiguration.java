@@ -18,9 +18,7 @@
 package com.tencent.cloud.polaris.config.tsf;
 
 import com.tencent.cloud.polaris.config.ConditionalOnPolarisConfigEnabled;
-import com.tencent.cloud.polaris.config.adapter.PolarisConfigCustomExtensionLayer;
 import com.tencent.cloud.polaris.config.config.PolarisConfigProperties;
-import com.tencent.cloud.polaris.config.tsf.adaptor.PolarisAdaptorTsfConfigExtensionLayer;
 import com.tencent.cloud.polaris.config.tsf.controller.PolarisAdaptorTsfConfigController;
 import com.tencent.cloud.polaris.context.tsf.ConditionalOnTsfEnabled;
 import com.tencent.cloud.polaris.context.tsf.config.TsfCoreProperties;
@@ -33,8 +31,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.Ordered;
-import org.springframework.core.annotation.Order;
 
 /**
  * @author juanyinyang
@@ -51,13 +47,6 @@ public class PolarisAdaptorTsfConfigAutoConfiguration {
 		System.setProperty("spring.cloud.polaris.config.refresh-type", "refresh_context");
 		LOGGER.info(
 				"[SCTT Config] PolarisAdaptorTsfConfigAutoConfiguration init set spring.cloud.polaris.config.refresh-type to refresh_context");
-	}
-
-	@Bean
-	@ConditionalOnMissingBean
-	@Order(Ordered.HIGHEST_PRECEDENCE)
-	public PolarisConfigCustomExtensionLayer polarisAdaptorTsfConfigProcessCallback() {
-		return new PolarisAdaptorTsfConfigExtensionLayer();
 	}
 
 	@Bean

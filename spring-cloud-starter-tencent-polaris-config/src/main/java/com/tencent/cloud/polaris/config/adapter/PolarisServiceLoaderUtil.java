@@ -30,18 +30,23 @@ import org.slf4j.LoggerFactory;
 public final class PolarisServiceLoaderUtil {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(PolarisServiceLoaderUtil.class);
-	private PolarisServiceLoaderUtil() {
-	}
 	// this class provides customized logic for some customers to configure special business group files
 	private static PolarisConfigCustomExtensionLayer polarisConfigCustomExtensionLayer;
+
 	static {
 		ServiceLoader<PolarisConfigCustomExtensionLayer> polarisConfigCustomExtensionLayerLoader = ServiceLoader.load(PolarisConfigCustomExtensionLayer.class);
 		Iterator<PolarisConfigCustomExtensionLayer> polarisConfigCustomExtensionLayerIterator = polarisConfigCustomExtensionLayerLoader.iterator();
 		// Generally, there is only one implementation class. If there are multiple, the last one is loaded
 		while (polarisConfigCustomExtensionLayerIterator.hasNext()) {
-			polarisConfigCustomExtensionLayer = polarisConfigCustomExtensionLayerIterator.next();
-			LOGGER.info("[SCT Config] PolarisConfigFileLocator init polarisConfigCustomExtensionLayer:{}", polarisConfigCustomExtensionLayer);
+			PolarisConfigCustomExtensionLayer temp = polarisConfigCustomExtensionLayerIterator.next();
+			if (temp.isEnabled()) {
+				polarisConfigCustomExtensionLayer = temp;
+				LOGGER.info("[SCT Config] PolarisConfigFileLocator init polarisConfigCustomExtensionLayer:{}", polarisConfigCustomExtensionLayer);
+			}
 		}
+	}
+
+	private PolarisServiceLoaderUtil() {
 	}
 
 	public static PolarisConfigCustomExtensionLayer getPolarisConfigCustomExtensionLayer() {
