@@ -15,12 +15,11 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package com.tencent.cloud.polaris.lossless;
+package com.tencent.cloud.plugin.lossless;
 
 import java.util.Collections;
 
 import com.tencent.cloud.common.util.OkHttpUtil;
-import com.tencent.cloud.plugin.lossless.LosslessRegistryAspect;
 import com.tencent.cloud.plugin.lossless.config.LosslessAutoConfiguration;
 import com.tencent.cloud.plugin.lossless.config.LosslessPropertiesBootstrapConfiguration;
 import com.tencent.cloud.polaris.context.PolarisSDKContextManager;
