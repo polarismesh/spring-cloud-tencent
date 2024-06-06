@@ -73,6 +73,7 @@ public class LosslessRegistryAspectTest {
 					PolarisDiscoveryClientConfiguration.class,
 					PolarisDiscoveryAutoConfiguration.class))
 			.withPropertyValues("spring.cloud.nacos.discovery.enabled=false")
+			.withPropertyValues("spring.cloud.polaris.lossless.enabled=true")
 			.withPropertyValues("spring.cloud.polaris.lossless.delayRegisterInterval=5000")
 			.withPropertyValues("spring.cloud.polaris.lossless.healthCheckPath=")
 			.withPropertyValues("spring.cloud.polaris.lossless.port=" + LOSSLESS_PORT_1)
@@ -93,6 +94,7 @@ public class LosslessRegistryAspectTest {
 					PolarisDiscoveryClientConfiguration.class,
 					PolarisDiscoveryAutoConfiguration.class))
 			.withPropertyValues("spring.cloud.nacos.discovery.enabled=false")
+			.withPropertyValues("spring.cloud.polaris.lossless.enabled=true")
 			.withPropertyValues("spring.cloud.polaris.lossless.healthCheckInterval=1000")
 			.withPropertyValues("spring.cloud.polaris.lossless.healthCheckPath=/test")
 			.withPropertyValues("spring.cloud.polaris.lossless.port=28082")
