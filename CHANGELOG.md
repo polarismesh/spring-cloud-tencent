@@ -13,3 +13,4 @@
 - [fix: fix lossless deregister failed when no healthcheck configured](https://github.com/Tencent/spring-cloud-tencent/pull/1279)
 - [fix:fix ApplicationContextAwareUtils NPE bug.](https://github.com/Tencent/spring-cloud-tencent/pull/1297)
 - [feat:upgrade jacoco version.](https://github.com/Tencent/spring-cloud-tencent/pull/1310)
+- [fix:fix no registry when lossless is disabled.](https://github.com/Tencent/spring-cloud-tencent/pull/1312)
