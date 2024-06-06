@@ -1,0 +1,26 @@
+server:
+  port: 18081
+spring:
+  application:
+    name: provider-demo
+  config:
+    import: optional:polaris
+  cloud:
+    polaris:
+      namespace: default
+      enabled: true
+      stat:
+        enabled: true
+        port: 28081
+      loadbalancer:
+        strategy: polarisWeightedRandom
+    tencent:
+      rpc-enhancement:
+        reporter:
+          enabled: true
+
+logging:
+  file:
+    name: /tsf-demo-logs/${spring.application.name}/root.log
+  level:
+    root: INFO

@@ -1,6 +1,6 @@
 org.springframework.cloud.bootstrap.BootstrapConfiguration=\
-  com.tencent.cloud.polaris.config.PolarisConfigBootstrapAutoConfiguration
-
+  com.tencent.cloud.polaris.config.PolarisConfigBootstrapAutoConfiguration,\
+  com.tencent.cloud.polaris.config.tsf.PolarisAdaptorTsfConfigBootstrapConfiguration
 # ConfigData Location Resolvers
 org.springframework.boot.context.config.ConfigDataLocationResolver=\
   com.tencent.cloud.polaris.config.configdata.PolarisConfigDataLocationResolver
