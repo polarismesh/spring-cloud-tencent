@@ -73,6 +73,9 @@ public class LosslessRegistryAspect {
 
 	@Around("registerPointcut()")
 	public Object invokeRegister(ProceedingJoinPoint joinPoint) throws Throwable {
+		if (!losslessProperties.isEnabled()) {
+			return joinPoint.proceed();
+		}
 
 		// web started, get port from registration
 		BaseInstance instance = SpringCloudLosslessActionProvider.getBaseInstance(registration, registrationTransformer);
