@@ -29,6 +29,8 @@ import org.springframework.core.env.Environment;
  * @author juanyinyang
  */
 public interface PolarisConfigCustomExtensionLayer {
+	boolean isEnabled();
+
 	void initRegisterConfig(PolarisConfigPropertyAutoRefresher polarisConfigPropertyAutoRefresher);
 
 	void initConfigFiles(Environment environment, CompositePropertySource compositePropertySource, ConfigFileService configFileService);

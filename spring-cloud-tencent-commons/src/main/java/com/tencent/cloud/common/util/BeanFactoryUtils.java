@@ -13,7 +13,6 @@
  * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
- *
  */
 
 package com.tencent.cloud.common.util;
@@ -22,8 +21,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
+import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.ListableBeanFactory;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.stereotype.Component;
 
 import static org.springframework.beans.factory.BeanFactoryUtils.beansOfTypeIncludingAncestors;
 
@@ -31,9 +37,30 @@ import static org.springframework.beans.factory.BeanFactoryUtils.beansOfTypeIncl
  * the utils for bean factory.
  * @author lepdou 2022-05-23
  */
-public final class BeanFactoryUtils {
+@Component
+public final class BeanFactoryUtils implements BeanFactoryAware {
 
-	private BeanFactoryUtils() {
+	private static final Logger LOGGER = LoggerFactory.getLogger(BeanFactoryUtils.class);
+
+	private static BeanFactory beanFactory;
+
+	/**
+	 * Dynamic parsing of spring @Value.
+	 *
+	 * @param value something like ${}
+	 * @return return null if the parsing fails or the object is not found.
+	 */
+	public static String resolve(String value) {
+		try {
+			if (beanFactory instanceof ConfigurableBeanFactory) {
+				return ((ConfigurableBeanFactory) beanFactory).resolveEmbeddedValue(value);
+			}
+		}
+		catch (Exception e) {
+			LOGGER.error("resolve {} failed.", value, e);
+		}
+
+		return null;
 	}
 
 	public static <T> List<T> getBeans(BeanFactory beanFactory, Class<T> requiredType) {
@@ -44,5 +71,10 @@ public final class BeanFactoryUtils {
 
 		Map<String, T> beanMap = beansOfTypeIncludingAncestors((ListableBeanFactory) beanFactory, requiredType);
 		return new ArrayList<>(beanMap.values());
+	}
+
+	@Override
+	public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
+		BeanFactoryUtils.beanFactory = beanFactory;
 	}
 }
