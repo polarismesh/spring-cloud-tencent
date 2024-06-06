@@ -119,12 +119,12 @@ public class QuotaCheckServletFilter extends OncePerRequestFilter {
 				if (Objects.nonNull(quotaResponse.getActiveRule())) {
 					try {
 						String encodedActiveRuleName = URLEncoder.encode(
-								quotaResponse.getActiveRule().getName().getValue(), UTF_8);
+								quotaResponse.getActiveRuleName(), UTF_8);
 						response.addHeader(HeaderConstant.INTERNAL_ACTIVE_RULE_NAME, encodedActiveRuleName);
 					}
 					catch (UnsupportedEncodingException e) {
 						LOG.error("Cannot encode {} for header internal-callee-activerule.",
-								quotaResponse.getActiveRule().getName().getValue(), e);
+								quotaResponse.getActiveRuleName(), e);
 					}
 				}
 				return;
