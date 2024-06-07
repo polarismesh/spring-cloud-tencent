@@ -83,7 +83,7 @@
 		<byte-buddy.version>1.12.19</byte-buddy.version>
 		<jackson.version>2.15.3</jackson.version>
 		<protobuf-java.version>3.21.7</protobuf-java.version>
-		<okio.version>3.0.0</okio.version>
+		<okio.version>3.4.0</okio.version>
 		<joda-time.version>2.9.9</joda-time.version>
 		<system-stubs-jupiter.version>2.0.2</system-stubs-jupiter.version>
 
