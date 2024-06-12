@@ -58,5 +58,11 @@ public class PluginOrderConstant {
 		 * {@link com.tencent.cloud.metadata.core.EncodeTransferMedataRestTemplateEnhancedPlugin}.
 		 */
 		public static final int CONSUMER_TRANSFER_METADATA_PLUGIN_ORDER = Ordered.HIGHEST_PRECEDENCE + 10;
+
+		/**
+		 * order for
+		 * {@link com.tencent.cloud.plugin.trace.TraceMetadataEnhancedPlugin}
+		 */
+		public static final int CONSUMER_TRACE_METADATA_PLUGIN_ORDER = CONSUMER_TRANSFER_METADATA_PLUGIN_ORDER - 1;
 	}
 }
