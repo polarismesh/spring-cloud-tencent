@@ -50,6 +50,8 @@ public class PolarisConfigProperties {
 	@Value("${spring.cloud.polaris.config.port:#{'8093'}}")
 	private int port = 8093;
 
+	private String token;
+
 	/**
 	 * Whether to automatically update to the spring context when the configuration file.
 	 * is updated
@@ -113,6 +115,14 @@ public class PolarisConfigProperties {
 		this.port = port;
 	}
 
+	public String getToken() {
+		return token;
+	}
+
+	public void setToken(String token) {
+		this.token = token;
+	}
+
 	public boolean isAutoRefresh() {
 		return autoRefresh;
 	}
@@ -167,5 +177,22 @@ public class PolarisConfigProperties {
 
 	public void setLocalFileRootPath(String localFileRootPath) {
 		this.localFileRootPath = localFileRootPath;
+	}
+
+	@Override
+	public String toString() {
+		return "PolarisConfigProperties{" +
+				"enabled=" + enabled +
+				", address='" + address + '\'' +
+				", port=" + port +
+				", token='" + token + '\'' +
+				", autoRefresh=" + autoRefresh +
+				", shutdownIfConnectToConfigServerFailed=" + shutdownIfConnectToConfigServerFailed +
+				", preference=" + preference +
+				", refreshType=" + refreshType +
+				", groups=" + groups +
+				", dataSource='" + dataSource + '\'' +
+				", localFileRootPath='" + localFileRootPath + '\'' +
+				'}';
 	}
 }

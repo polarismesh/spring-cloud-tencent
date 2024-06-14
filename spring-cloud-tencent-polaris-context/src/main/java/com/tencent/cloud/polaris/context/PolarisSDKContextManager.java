@@ -162,18 +162,6 @@ public class PolarisSDKContextManager {
 		initConfig();
 	}
 
-	/**
-	 * Used for config data.
-	 */
-	public static void setConfigSDKContext(SDKContext context) {
-		if (configSDKContext == null) {
-			configSDKContext = context;
-			// add shutdown hook
-			Runtime.getRuntime().addShutdownHook(new Thread(PolarisSDKContextManager::innerConfigDestroy));
-			LOG.info("create Polaris config SDK context successfully.");
-		}
-	}
-
 	public SDKContext getSDKContext() {
 		initService();
 		return serviceSdkContext;
@@ -218,11 +206,30 @@ public class PolarisSDKContextManager {
 		return configSDKContext;
 	}
 
+	/**
+	 * Used for config data.
+	 */
+	public static void setConfigSDKContext(SDKContext context) {
+		if (configSDKContext == null) {
+			configSDKContext = context;
+			// add shutdown hook
+			Runtime.getRuntime().addShutdownHook(new Thread(PolarisSDKContextManager::innerConfigDestroy));
+			LOG.info("create Polaris config SDK context successfully.");
+		}
+	}
+
 	public void initService() {
 		if (null == serviceSdkContext) {
 			try {
+				// get modifiers for service.
+				List<PolarisConfigModifier> serviceModifierList = new ArrayList<>();
+				for (PolarisConfigModifier modifier : modifierList) {
+					if (!(modifier instanceof PolarisConfigurationConfigModifier)) {
+						serviceModifierList.add(modifier);
+					}
+				}
 				// init SDKContext
-				serviceSdkContext = SDKContext.initContextByConfig(properties.configuration(modifierList,
+				serviceSdkContext = SDKContext.initContextByConfig(properties.configuration(serviceModifierList,
 						() -> environment.getProperty("spring.cloud.client.ip-address"),
 						() -> environment.getProperty("spring.cloud.polaris.local-port", Integer.class, 0)));
 				serviceSdkContext.init();

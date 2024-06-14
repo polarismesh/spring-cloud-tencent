@@ -79,9 +79,9 @@ public class TsfDiscoveryConfigModifier implements PolarisConfigModifier {
 		// namespace id
 		polarisDiscoveryProperties.setHeartbeatInterval(Long.valueOf(tsfHeartbeatProperties.computeHearbeatInterval()
 				.toStandardDuration().getMillis()).intValue());
-		polarisContextProperties.setNamespace(tsfDiscoveryProperties.getTsfNamespaceId());
-		polarisDiscoveryProperties.setNamespace(tsfDiscoveryProperties.getTsfNamespaceId());
-		System.setProperty("spring.cloud.polaris.namespace", tsfDiscoveryProperties.getTsfNamespaceId());
+		polarisContextProperties.setNamespace(tsfCoreProperties.getTsfNamespaceId());
+		polarisDiscoveryProperties.setNamespace(tsfCoreProperties.getTsfNamespaceId());
+		System.setProperty("spring.cloud.polaris.namespace", tsfCoreProperties.getTsfNamespaceId());
 
 		// application id
 		polarisDiscoveryProperties.setVersion(tsfDiscoveryProperties.getTsfProgVersion());
@@ -134,8 +134,8 @@ public class TsfDiscoveryConfigModifier implements PolarisConfigModifier {
 			String appName = RegistrationUtil.getAppName(tsfDiscoveryProperties, context.getEnvironment());
 			metadata.put(ConsulConstant.MetadataMapKey.SERVICE_NAME_KEY, RegistrationUtil.normalizeForDns(appName));
 			metadata.put(ConsulConstant.MetadataMapKey.INSTANCE_ID_KEY, RegistrationUtil.getInstanceId(tsfDiscoveryProperties, context));
-			if (StringUtils.isNotBlank(tsfDiscoveryProperties.getAclToken())) {
-				serverConnectorConfig.setToken(tsfDiscoveryProperties.getAclToken());
+			if (StringUtils.isNotBlank(tsfConsulProperties.getAclToken())) {
+				serverConnectorConfig.setToken(tsfConsulProperties.getAclToken());
 			}
 			metadata.put(ConsulConstant.MetadataMapKey.TAGS_KEY, JacksonUtils.serialize2Json(RegistrationUtil.createTags(tsfDiscoveryProperties)));
 			if (StringUtils.isNotBlank(tsfDiscoveryProperties.getDefaultQueryTag())) {
