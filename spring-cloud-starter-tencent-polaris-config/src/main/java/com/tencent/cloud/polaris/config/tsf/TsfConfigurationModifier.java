@@ -17,10 +17,15 @@
 
 package com.tencent.cloud.polaris.config.tsf;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.tencent.cloud.common.constant.OrderConstant;
+import com.tencent.cloud.polaris.config.config.ConfigFileGroup;
 import com.tencent.cloud.polaris.config.config.PolarisConfigProperties;
 import com.tencent.cloud.polaris.context.PolarisConfigModifier;
 import com.tencent.cloud.polaris.context.tsf.config.TsfCoreProperties;
+import com.tencent.cloud.polaris.context.tsf.consul.TsfConsulProperties;
 import com.tencent.polaris.factory.config.ConfigurationImpl;
 
 /**
@@ -33,17 +38,36 @@ public class TsfConfigurationModifier implements PolarisConfigModifier {
 
 	private final TsfCoreProperties tsfCoreProperties;
 
+	private final TsfConsulProperties tsfConsulProperties;
+
 	private final PolarisConfigProperties polarisConfigProperties;
 
-	public TsfConfigurationModifier(TsfCoreProperties tsfCoreProperties, PolarisConfigProperties polarisConfigProperties) {
+	public TsfConfigurationModifier(TsfCoreProperties tsfCoreProperties, TsfConsulProperties tsfConsulProperties, PolarisConfigProperties polarisConfigProperties) {
 		this.tsfCoreProperties = tsfCoreProperties;
+		this.tsfConsulProperties = tsfConsulProperties;
 		this.polarisConfigProperties = polarisConfigProperties;
 	}
 
 	@Override
 	public void modify(ConfigurationImpl configuration) {
 		if (polarisConfigProperties != null && tsfCoreProperties != null) {
-			polarisConfigProperties.setEnabled(tsfCoreProperties.isTsePolarisEnable());
+			polarisConfigProperties.setEnabled(true);
+			if (!tsfCoreProperties.isTsePolarisEnable()) {
+				polarisConfigProperties.setDataSource("consul");
+				polarisConfigProperties.setAddress("http://" + tsfConsulProperties.getHost() + ":" + tsfConsulProperties.getPort());
+				polarisConfigProperties.setPort(tsfConsulProperties.getPort());
+				polarisConfigProperties.setToken(tsfConsulProperties.getAclToken());
+				List<ConfigFileGroup> groups = new ArrayList<>();
+				polarisConfigProperties.setGroups(groups);
+				groups.clear();
+				ConfigFileGroup tsfGroup = new ConfigFileGroup();
+				tsfGroup.setNamespace("config");
+				tsfGroup.setName("application");
+				List<String> files = new ArrayList<>();
+				tsfGroup.setFiles(files);
+				files.add(tsfCoreProperties.getTsfNamespaceId() + "/");
+				files.add(tsfCoreProperties.getTsfApplicationId() + "/" + tsfCoreProperties.getTsfGroupId() + "/");
+			}
 		}
 	}
 

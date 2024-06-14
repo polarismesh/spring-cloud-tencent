@@ -21,10 +21,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.tencent.polaris.api.utils.StringUtils;
+import org.apache.commons.logging.Log;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.context.config.ConfigDataEnvironmentPostProcessor;
 import org.springframework.boot.env.EnvironmentPostProcessor;
+import org.springframework.boot.logging.DeferredLogFactory;
 import org.springframework.core.Ordered;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
@@ -34,12 +36,18 @@ import org.springframework.core.env.MapPropertySource;
  *
  * @author Haotian Zhang
  */
-public class TsfCoreEnvironmentPostProcessor implements EnvironmentPostProcessor, Ordered {
+public final class TsfCoreEnvironmentPostProcessor implements EnvironmentPostProcessor, Ordered {
 
 	/**
 	 * run before {@link ConfigDataEnvironmentPostProcessor}.
 	 */
 	public static final int ORDER = ConfigDataEnvironmentPostProcessor.ORDER - 1;
+
+	private final Log LOGGER;
+
+	private TsfCoreEnvironmentPostProcessor(DeferredLogFactory logFactory) {
+		this.LOGGER = logFactory.getLog(getClass());
+	}
 
 	@Override
 	public int getOrder() {
@@ -52,9 +60,58 @@ public class TsfCoreEnvironmentPostProcessor implements EnvironmentPostProcessor
 		if (StringUtils.isNotBlank(tsfAppId)) {
 			Map<String, Object> defaultProperties = new HashMap<>();
 
-			// TODO 接入consul配置后需要改动这个选项的判断
+			// tsf_application_id
+			String tsfApplicationId = environment.getProperty("tsf_application_id");
+			if (StringUtils.isBlank(tsfApplicationId)) {
+				LOGGER.error("tsf_application_id is empty");
+			}
+
+			// tsf_group_id
+			String tsfGroupId = environment.getProperty("tsf_group_id");
+			if (StringUtils.isBlank(tsfGroupId)) {
+				LOGGER.error("tsf_group_id is empty");
+			}
+
+			// tsf_namespace_id
+			String tsfNamespaceId = environment.getProperty("tsf_namespace_id");
+			if (StringUtils.isBlank(tsfNamespaceId)) {
+				LOGGER.error("tsf_namespace_id is empty");
+			}
+
+			// tsf_consul_ip
+			String tsfConsulIp = environment.getProperty("tsf_consul_ip");
+			if (StringUtils.isBlank(tsfConsulIp)) {
+				LOGGER.error("tsf_consul_ip is empty");
+			}
+
+			// tsf_consul_port
+			String tsfConsulPort = environment.getProperty("tsf_consul_port");
+			if (StringUtils.isBlank(tsfConsulPort)) {
+				LOGGER.error("tsf_consul_port is empty");
+			}
+
+			// tsf_token
+			String tsfConsulToken = environment.getProperty("tsf_token");
+			if (StringUtils.isBlank(tsfConsulToken)) {
+				LOGGER.error("tsf_token is empty");
+			}
+
 			// tse_polaris_enable
-			defaultProperties.put("spring.cloud.polaris.config.enabled", environment.getProperty("tse_polaris_enable", "false"));
+			String tsePolarisEnable = environment.getProperty("tse_polaris_enable", "false");
+			if (StringUtils.equals(tsePolarisEnable, "true")) {
+				defaultProperties.put("spring.cloud.polaris.config.enabled", "true");
+			}
+			else {
+				defaultProperties.put("spring.cloud.polaris.config.enabled", "true");
+				defaultProperties.put("spring.cloud.polaris.config.data-source", "consul");
+				defaultProperties.put("spring.cloud.polaris.config.address", "http://" + tsfConsulIp + ":" + tsfConsulPort);
+				defaultProperties.put("spring.cloud.polaris.config.port", tsfConsulPort);
+				defaultProperties.put("spring.cloud.polaris.config.token", tsfConsulToken);
+				defaultProperties.put("spring.cloud.polaris.config.groups[0].namespace", "config");
+				defaultProperties.put("spring.cloud.polaris.config.groups[0].name", "application");
+				defaultProperties.put("spring.cloud.polaris.config.groups[0].files[0]", tsfNamespaceId + "/");
+				defaultProperties.put("spring.cloud.polaris.config.groups[0].files[1]", tsfApplicationId + "/" + tsfGroupId + "/");
+			}
 
 			// tse_polaris_ip
 			defaultProperties.put("spring.cloud.polaris.address", "grpc://" + environment.getProperty("tse_polaris_ip", "") + ":8091");

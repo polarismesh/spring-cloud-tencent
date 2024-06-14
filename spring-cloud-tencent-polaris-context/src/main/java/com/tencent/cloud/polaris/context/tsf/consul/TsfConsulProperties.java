@@ -53,6 +53,9 @@ public class TsfConsulProperties {
 	@Value("${tsf_consul_ttl_read_timeout:5000}")
 	private int ttlReadTimeout = 5000; // default 5s
 
+	@Value("${tsf_token:${consul.token:${CONSUL_TOKEN:${spring.cloud.consul.token:${SPRING_CLOUD_CONSUL_TOKEN:}}}}}")
+	private String aclToken;
+
 	public String getHost() {
 		return host;
 	}
@@ -93,15 +96,23 @@ public class TsfConsulProperties {
 		this.ttlReadTimeout = ttlReadTimeout;
 	}
 
+	public String getAclToken() {
+		return aclToken;
+	}
+
+	public void setAclToken(String aclToken) {
+		this.aclToken = aclToken;
+	}
 
 	@Override
 	public String toString() {
-		return "ConsulProperties{" +
+		return "TsfConsulProperties{" +
 				"host='" + host + '\'' +
 				", scheme='" + scheme + '\'' +
 				", port=" + port +
 				", enabled=" + enabled +
 				", ttlReadTimeout=" + ttlReadTimeout +
+				", aclToken='" + aclToken + '\'' +
 				'}';
 	}
 }

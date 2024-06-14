@@ -20,6 +20,7 @@ import javax.servlet.ServletContext;
 
 import com.tencent.cloud.common.tsf.ConditionalOnTsfEnabled;
 import com.tencent.cloud.polaris.context.PolarisSDKContextManager;
+import com.tencent.cloud.polaris.context.tsf.config.TsfCoreProperties;
 import com.tencent.cloud.polaris.registry.PolarisServiceRegistryAutoConfiguration;
 import com.tencent.cloud.polaris.tsf.TsfDiscoveryProperties;
 import com.tencent.cloud.polaris.tsf.TsfHeartbeatProperties;
@@ -44,10 +45,12 @@ import org.springframework.context.annotation.Configuration;
 @ConditionalOnTsfEnabled
 @AutoConfigureBefore(PolarisServiceRegistryAutoConfiguration.class)
 public class TsfDiscoveryRegistryAutoConfiguration {
+
 	@Bean
 	@ConditionalOnMissingBean
-	public TsfMetadataPolarisRegistrationCustomizer tsfMetadataPolarisRegistrationCustomizer(TsfDiscoveryProperties tsfDiscoveryProperties) {
-		return new TsfMetadataPolarisRegistrationCustomizer(tsfDiscoveryProperties);
+	public TsfMetadataPolarisRegistrationCustomizer tsfMetadataPolarisRegistrationCustomizer(
+			TsfCoreProperties tsfCoreProperties, TsfDiscoveryProperties tsfDiscoveryProperties) {
+		return new TsfMetadataPolarisRegistrationCustomizer(tsfCoreProperties, tsfDiscoveryProperties);
 	}
 
 	@Bean
