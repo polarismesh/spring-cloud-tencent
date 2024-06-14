@@ -28,6 +28,16 @@ import com.tencent.cloud.polaris.tsf.TsfDiscoveryProperties;
 import com.tencent.cloud.polaris.tsf.consts.WarmupCons;
 import com.tencent.cloud.polaris.tsf.util.RegistrationUtil;
 
+import static com.tencent.cloud.common.tsf.TsfConstant.TSF_APPLICATION_ID;
+import static com.tencent.cloud.common.tsf.TsfConstant.TSF_GROUP_ID;
+import static com.tencent.cloud.common.tsf.TsfConstant.TSF_INSTNACE_ID;
+import static com.tencent.cloud.common.tsf.TsfConstant.TSF_NAMESPACE_ID;
+import static com.tencent.cloud.common.tsf.TsfConstant.TSF_PROG_VERSION;
+import static com.tencent.cloud.common.tsf.TsfConstant.TSF_REGION;
+import static com.tencent.cloud.common.tsf.TsfConstant.TSF_SDK_VERSION;
+import static com.tencent.cloud.common.tsf.TsfConstant.TSF_TAGS;
+import static com.tencent.cloud.common.tsf.TsfConstant.TSF_ZONE;
+
 /**
  *
  *
@@ -48,17 +58,17 @@ public class TsfMetadataPolarisRegistrationCustomizer implements PolarisRegistra
 	public void customize(PolarisRegistration registration) {
 		Map<String, String> metadata = registration.getMetadata();
 
-		metadata.put("TSF_APPLICATION_ID", tsfCoreProperties.getTsfApplicationId());
-		metadata.put("TSF_PROG_VERSION", tsfDiscoveryProperties.getTsfProgVersion());
-		metadata.put("TSF_GROUP_ID", tsfCoreProperties.getTsfGroupId());
-		metadata.put("TSF_NAMESPACE_ID", tsfCoreProperties.getTsfNamespaceId());
-		metadata.put("TSF_INSTNACE_ID", tsfDiscoveryProperties.getInstanceId());
-		metadata.put("TSF_REGION", tsfDiscoveryProperties.getTsfRegion());
-		metadata.put("TSF_ZONE", tsfDiscoveryProperties.getTsfZone());
+		metadata.put(TSF_APPLICATION_ID, tsfCoreProperties.getTsfApplicationId());
+		metadata.put(TSF_PROG_VERSION, tsfDiscoveryProperties.getTsfProgVersion());
+		metadata.put(TSF_GROUP_ID, tsfCoreProperties.getTsfGroupId());
+		metadata.put(TSF_NAMESPACE_ID, tsfCoreProperties.getTsfNamespaceId());
+		metadata.put(TSF_INSTNACE_ID, tsfDiscoveryProperties.getInstanceId());
+		metadata.put(TSF_REGION, tsfDiscoveryProperties.getTsfRegion());
+		metadata.put(TSF_ZONE, tsfDiscoveryProperties.getTsfZone());
 		// 处理预热相关的参数
 		metadata.put(WarmupCons.TSF_START_TIME, String.valueOf(System.currentTimeMillis()));
-		metadata.put("TSF_SDK_VERSION", SdkVersion.get());
-		metadata.put("TSF_TAGS", JacksonUtils.serialize2Json(RegistrationUtil.createTags(tsfDiscoveryProperties)));
+		metadata.put(TSF_SDK_VERSION, SdkVersion.get());
+		metadata.put(TSF_TAGS, JacksonUtils.serialize2Json(RegistrationUtil.createTags(tsfDiscoveryProperties)));
 		RegistrationUtil.appendMetaIpAddress(metadata);
 	}
 }
