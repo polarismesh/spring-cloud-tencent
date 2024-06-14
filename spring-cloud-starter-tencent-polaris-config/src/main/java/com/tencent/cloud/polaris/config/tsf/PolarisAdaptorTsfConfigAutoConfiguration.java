@@ -22,6 +22,7 @@ import com.tencent.cloud.polaris.config.ConditionalOnPolarisConfigEnabled;
 import com.tencent.cloud.polaris.config.config.PolarisConfigProperties;
 import com.tencent.cloud.polaris.config.tsf.controller.PolarisAdaptorTsfConfigController;
 import com.tencent.cloud.polaris.context.tsf.config.TsfCoreProperties;
+import com.tencent.cloud.polaris.context.tsf.consul.TsfConsulProperties;
 import com.tencent.tsf.consul.config.watch.TsfConsulConfigRefreshEventListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -71,7 +72,7 @@ public class PolarisAdaptorTsfConfigAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public TsfConfigurationModifier tsfConfigModifier(TsfCoreProperties tsfCoreProperties, PolarisConfigProperties polarisConfigProperties) {
-		return new TsfConfigurationModifier(tsfCoreProperties, polarisConfigProperties);
+	public TsfConfigurationModifier tsfConfigModifier(TsfCoreProperties tsfCoreProperties, TsfConsulProperties tsfConsulProperties, PolarisConfigProperties polarisConfigProperties) {
+		return new TsfConfigurationModifier(tsfCoreProperties, tsfConsulProperties, polarisConfigProperties);
 	}
 }

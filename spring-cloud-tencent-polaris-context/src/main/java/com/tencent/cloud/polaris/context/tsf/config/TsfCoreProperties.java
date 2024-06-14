@@ -37,6 +37,28 @@ public class TsfCoreProperties {
 	@Value("${tse_polaris_enable:false}")
 	private boolean tsePolarisEnable = false;
 
+	/**
+	 * tsf service consul registration tags.
+	 * <p>
+	 * applicationId 应用Id
+	 */
+	@Value("${tsf_application_id:}")
+	private String tsfApplicationId;
+
+	/**
+	 * tsf service consul registration tags.
+	 * <p>
+	 * groupId 部署组Id
+	 */
+	@Value("${tsf_group_id:}")
+	private String tsfGroupId;
+
+	/**
+	 * 仅本地测试时使用.
+	 */
+	@Value("${tsf_namespace_id:}")
+	private String tsfNamespaceId;
+
 	public String getTsePolarisIp() {
 		return tsePolarisIp;
 	}
@@ -61,12 +83,39 @@ public class TsfCoreProperties {
 		this.tsePolarisEnable = tsePolarisEnable;
 	}
 
+	public String getTsfApplicationId() {
+		return tsfApplicationId;
+	}
+
+	public void setTsfApplicationId(final String tsfApplicationId) {
+		this.tsfApplicationId = tsfApplicationId;
+	}
+
+	public String getTsfGroupId() {
+		return tsfGroupId;
+	}
+
+	public void setTsfGroupId(final String tsfGroupId) {
+		this.tsfGroupId = tsfGroupId;
+	}
+
+	public String getTsfNamespaceId() {
+		return tsfNamespaceId;
+	}
+
+	public void setTsfNamespaceId(String tsfNamespaceId) {
+		this.tsfNamespaceId = tsfNamespaceId;
+	}
+
 	@Override
 	public String toString() {
 		return "TsfCoreProperties{" +
 				"tsePolarisIp='" + tsePolarisIp + '\'' +
 				", tsfConsulEnable=" + tsfConsulEnable +
 				", tsePolarisEnable=" + tsePolarisEnable +
+				", tsfApplicationId='" + tsfApplicationId + '\'' +
+				", tsfGroupId='" + tsfGroupId + '\'' +
+				", tsfNamespaceId='" + tsfNamespaceId + '\'' +
 				'}';
 	}
 }

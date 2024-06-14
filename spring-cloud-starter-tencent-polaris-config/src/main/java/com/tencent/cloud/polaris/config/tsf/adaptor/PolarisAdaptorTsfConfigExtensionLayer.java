@@ -95,9 +95,7 @@ public class PolarisAdaptorTsfConfigExtensionLayer implements PolarisConfigCusto
 	}
 
 	/**
-	 * @see PolarisConfigCustomExtensionLayer#initConfigFiles(CompositePropertySource,
-	 *        PolarisPropertySourceManager,
-	 *        ConfigFileService)
+	 * @see PolarisConfigCustomExtensionLayer#initConfigFiles
 	 */
 	@Override
 	public void initConfigFiles(Environment environment, CompositePropertySource compositePropertySource,
