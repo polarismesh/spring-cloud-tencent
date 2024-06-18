@@ -18,7 +18,6 @@
 
 package com.tencent.cloud.plugin.trace;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -33,23 +32,20 @@ import com.tencent.polaris.api.utils.CollectionUtils;
 import com.tencent.polaris.assembly.api.AssemblyAPI;
 import com.tencent.polaris.assembly.api.pojo.TraceAttributes;
 
-public class TraceMetadataEnhancedPlugin implements EnhancedPlugin {
+public class TraceServerMetadataEnhancedPlugin implements EnhancedPlugin {
 
 	private final PolarisSDKContextManager polarisSDKContextManager;
 
-	private SpanAttributesProvider spanAttributesProvider;
+	private final SpanAttributesProvider spanAttributesProvider;
 
-	public TraceMetadataEnhancedPlugin(PolarisSDKContextManager polarisSDKContextManager) {
+	public TraceServerMetadataEnhancedPlugin(PolarisSDKContextManager polarisSDKContextManager, SpanAttributesProvider spanAttributesProvider) {
 		this.polarisSDKContextManager = polarisSDKContextManager;
-	}
-
-	public void setSpanAttributesProvider(SpanAttributesProvider spanAttributesProvider) {
 		this.spanAttributesProvider = spanAttributesProvider;
 	}
 
 	@Override
 	public EnhancedPluginType getType() {
-		return EnhancedPluginType.Client.PRE;
+		return EnhancedPluginType.Server.PRE;
 	}
 
 	@Override
@@ -65,7 +61,15 @@ public class TraceMetadataEnhancedPlugin implements EnhancedPlugin {
 		MetadataContext metadataContext = MetadataContextHolder.get();
 		Map<String, String> transitiveCustomAttributes = metadataContext.getFragmentContext(MetadataContext.FRAGMENT_TRANSITIVE);
 		if (CollectionUtils.isNotEmpty(transitiveCustomAttributes)) {
-			attributes.putAll(transitiveCustomAttributes);
+			for (Map.Entry<String, String> entry : transitiveCustomAttributes.entrySet()) {
+				attributes.put("custom." + entry.getKey(), entry.getValue());
+			}
+		}
+		Map<String, String> disposableCustomAttributes = metadataContext.getFragmentContext(MetadataContext.FRAGMENT_DISPOSABLE);
+		if (CollectionUtils.isNotEmpty(disposableCustomAttributes)) {
+			for (Map.Entry<String, String> entry : disposableCustomAttributes.entrySet()) {
+				attributes.put("custom." + entry.getKey(), entry.getValue());
+			}
 		}
 		TraceAttributes traceAttributes = new TraceAttributes();
 		traceAttributes.setAttributes(attributes);
@@ -75,7 +79,6 @@ public class TraceMetadataEnhancedPlugin implements EnhancedPlugin {
 
 	@Override
 	public int getOrder() {
-		return PluginOrderConstant.ClientPluginOrder.CONSUMER_TRACE_METADATA_PLUGIN_ORDER;
+		return PluginOrderConstant.ServerPluginOrder.PROVIDER_TRACE_METADATA_PLUGIN_ORDER;
 	}
-
 }

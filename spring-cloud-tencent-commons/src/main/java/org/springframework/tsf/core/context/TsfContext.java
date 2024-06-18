@@ -29,11 +29,13 @@ import com.tencent.polaris.metadata.core.TransitiveType;
 
 import org.springframework.tsf.core.entity.Tag;
 
-public class TsfContext {
+public final class TsfContext {
 
-	private static class Limit {
-		static final int MAX_KEY_LENGTH = 32;
-		static final int MAX_VALUE_LENGTH = 128;
+	static final int MAX_KEY_LENGTH = 32;
+	static final int MAX_VALUE_LENGTH = 128;
+
+	private TsfContext() {
+
 	}
 
 	public static void putTags(Map<String, String> tagMap, Tag.ControlFlag... flags) {
@@ -61,17 +63,16 @@ public class TsfContext {
 	}
 
 	private static void validateTag(String key, String value) {
-		int keyLength, valueLength;
-		keyLength = key.getBytes(StandardCharsets.UTF_8).length;
-		valueLength = value.getBytes(StandardCharsets.UTF_8).length;
+		int keyLength = key.getBytes(StandardCharsets.UTF_8).length;
+		int valueLength = value.getBytes(StandardCharsets.UTF_8).length;
 
-		if (keyLength > Limit.MAX_KEY_LENGTH) {
+		if (keyLength > MAX_KEY_LENGTH) {
 			throw new RuntimeException(String.format("Key \"%s\" length (after UTF-8 encoding) exceeding limit (%d)", key,
-					Limit.MAX_KEY_LENGTH));
+					MAX_KEY_LENGTH));
 		}
-		if (valueLength > Limit.MAX_VALUE_LENGTH) {
+		if (valueLength > MAX_VALUE_LENGTH) {
 			throw new RuntimeException(String.format("Value \"%s\" length (after UTF-8 encoding) exceeding limit (%d)", value,
-					Limit.MAX_VALUE_LENGTH));
+					MAX_VALUE_LENGTH));
 		}
 	}
 }
