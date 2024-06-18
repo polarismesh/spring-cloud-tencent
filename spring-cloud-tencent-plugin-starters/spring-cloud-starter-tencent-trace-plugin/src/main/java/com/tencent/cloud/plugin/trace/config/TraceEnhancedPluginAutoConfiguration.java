@@ -33,7 +33,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnPolarisEnabled
 @ConditionalOnProperty(value = "spring.cloud.polaris.trace.enabled", matchIfMissing = true)
-public class TracePropertiesAutoConfiguration {
+public class TraceEnhancedPluginAutoConfiguration {
 
 	@Bean
 	public TraceClientMetadataEnhancedPlugin traceClientMetadataEnhancedPlugin(

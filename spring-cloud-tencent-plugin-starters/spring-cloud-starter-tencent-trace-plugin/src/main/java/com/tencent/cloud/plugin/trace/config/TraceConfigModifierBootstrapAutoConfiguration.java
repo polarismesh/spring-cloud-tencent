@@ -25,6 +25,6 @@ import org.springframework.context.annotation.Import;
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnProperty("spring.cloud.polaris.enabled")
 @Import(TraceConfigModifierAutoConfiguration.class)
-public class TracePropertiesBootstrapAutoConfiguration {
+public class TraceConfigModifierBootstrapAutoConfiguration {
 
 }

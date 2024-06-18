@@ -52,7 +52,7 @@
 
 		<dependency>
 			<groupId>com.tencent.cloud</groupId>
-			<artifactId>spring-cloud-tencent-trace-plugin</artifactId>
+			<artifactId>spring-cloud-starter-tencent-trace-plugin</artifactId>
 		</dependency>
 	</dependencies>
 
