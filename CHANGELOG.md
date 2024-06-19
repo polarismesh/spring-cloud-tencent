@@ -19,3 +19,4 @@
 - [feat:add Tencent Cloud TSF support.](https://github.com/Tencent/spring-cloud-tencent/pull/1350)
 - [feat:support consul config.](https://github.com/Tencent/spring-cloud-tencent/pull/1352)
 - [feat:add trace report support.](https://github.com/Tencent/spring-cloud-tencent/pull/1353)
+- [fix: fix lossless test case unstable issues.](https://github.com/Tencent/spring-cloud-tencent/pull/1355)
