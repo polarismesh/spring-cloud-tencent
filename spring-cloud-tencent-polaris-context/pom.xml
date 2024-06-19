@@ -51,6 +51,84 @@
 
 		<dependency>
 			<groupId>com.tencent.polaris</groupId>
+			<artifactId>polaris-circuitbreaker-factory</artifactId>
+			<exclusions>
+				<exclusion>
+					<groupId>com.tencent.polaris</groupId>
+					<artifactId>router-rule</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>com.tencent.polaris</groupId>
+					<artifactId>router-nearby</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>com.tencent.polaris</groupId>
+					<artifactId>router-metadata</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>com.tencent.polaris</groupId>
+					<artifactId>circuitbreaker-errrate</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>com.tencent.polaris</groupId>
+					<artifactId>circuitbreaker-errcount</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>com.tencent.polaris</groupId>
+					<artifactId>circuitbreaker-composite</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>com.tencent.polaris</groupId>
+					<artifactId>stat-prometheus</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>com.tencent.polaris</groupId>
+					<artifactId>healthchecker-http</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>com.tencent.polaris</groupId>
+					<artifactId>healthchecker-tcp</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>com.tencent.polaris</groupId>
+					<artifactId>healthchecker-udp</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+
+		<dependency>
+			<groupId>com.tencent.polaris</groupId>
+			<artifactId>polaris-ratelimit-factory</artifactId>
+			<exclusions>
+				<exclusion>
+					<groupId>com.tencent.polaris</groupId>
+					<artifactId>router-rule</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>com.tencent.polaris</groupId>
+					<artifactId>router-nearby</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>com.tencent.polaris</groupId>
+					<artifactId>router-metadata</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>com.tencent.polaris</groupId>
+					<artifactId>ratelimiter-reject</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>com.tencent.polaris</groupId>
+					<artifactId>ratelimiter-unirate</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>com.tencent.polaris</groupId>
+					<artifactId>stat-prometheus</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+
+		<dependency>
+			<groupId>com.tencent.polaris</groupId>
 			<artifactId>polaris-client</artifactId>
 		</dependency>
 

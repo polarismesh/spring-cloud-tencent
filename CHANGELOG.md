@@ -18,3 +18,4 @@
 - [fix:fix the ratelimit bug for 2022](https://github.com/Tencent/spring-cloud-tencent/pull/1348)
 - [feat:add Tencent Cloud TSF support.](https://github.com/Tencent/spring-cloud-tencent/pull/1350)
 - [feat:support consul config.](https://github.com/Tencent/spring-cloud-tencent/pull/1352)
+- [feat:add trace report support.](https://github.com/Tencent/spring-cloud-tencent/pull/1353)
