@@ -17,9 +17,7 @@
 
 package com.tencent.cloud.polaris.registry;
 
-import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.polaris.PolarisDiscoveryProperties;
-import com.tencent.polaris.api.pojo.ServiceKey;
 import com.tencent.polaris.assembly.api.AssemblyAPI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -72,9 +70,6 @@ public class PolarisAutoServiceRegistration extends AbstractAutoServiceRegistrat
 		if (!this.registration.isRegisterEnabled()) {
 			LOGGER.debug("Registration disabled.");
 			return;
-		}
-		if (assemblyAPI != null) {
-			assemblyAPI.initService(new ServiceKey(MetadataContext.LOCAL_NAMESPACE, MetadataContext.LOCAL_SERVICE));
 		}
 		super.register();
 	}
