@@ -77,6 +77,9 @@ public final class TsfCoreEnvironmentPostProcessor implements EnvironmentPostPro
 			if (StringUtils.isBlank(tsfNamespaceId)) {
 				LOGGER.error("tsf_namespace_id is empty");
 			}
+			else {
+				defaultProperties.put("spring.cloud.polaris.namespace", tsfNamespaceId);
+			}
 
 			// tsf_consul_ip
 			String tsfConsulIp = environment.getProperty("tsf_consul_ip");
