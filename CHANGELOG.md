@@ -22,3 +22,4 @@
 - [feat:support consul config.](https://github.com/Tencent/spring-cloud-tencent/pull/1410)
 - [feat:add trace report support.](https://github.com/Tencent/spring-cloud-tencent/pull/1411)
 - [fix: fix lossless test case unstable issues.](https://github.com/Tencent/spring-cloud-tencent/pull/1412)
+- [feat:support consul service update task.](https://github.com/Tencent/spring-cloud-tencent/pull/1413)
