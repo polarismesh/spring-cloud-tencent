@@ -83,6 +83,7 @@ public class PolarisSwaggerAutoConfiguration {
 	}
 
 	@Bean
+	@ConditionalOnMissingBean
 	public OpenAPI polarisOpenAPI() {
 		return new OpenAPI()
 				.info(new Info()
