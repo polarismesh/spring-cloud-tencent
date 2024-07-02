@@ -46,7 +46,7 @@ public class PolarisContractProperties implements ContractProperties {
 	/**
 	 * Group to create swagger docket.
 	 */
-	private String group = "default";
+	private String group = "polaris";
 	/**
 	 * Base paths to be scanned. Split by ",".
 	 */
