@@ -39,7 +39,7 @@ public class TsfContractProperties implements ExtendedContractProperties {
 	@Value("${tsf.swagger.enabled:true}")
 	private boolean enabled;
 
-	@Value("${tsf.swagger.group:default}")
+	@Value("${tsf.swagger.group:polaris}")
 	private String groupName;
 
 	@Value("${tsf.swagger.basePath:/**}")
