@@ -104,6 +104,14 @@
 			<groupId>com.tencent.polaris</groupId>
 			<artifactId>polaris-assembly-factory</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>com.tencent.polaris</groupId>
+			<artifactId>polaris-circuitbreaker-factory</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.tencent.polaris</groupId>
+			<artifactId>polaris-ratelimit-factory</artifactId>
+		</dependency>
 		<!-- Polaris dependencies end -->
 
 		<dependency>
