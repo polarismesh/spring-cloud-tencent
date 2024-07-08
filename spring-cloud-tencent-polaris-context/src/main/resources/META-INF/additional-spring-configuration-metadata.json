@@ -17,21 +17,21 @@
       "name": "spring.cloud.polaris.namespace",
       "type": "java.lang.String",
       "description": "polaris namespace",
-      "default": "default",
+        "defaultValue": "default",
       "sourceType": "com.tencent.cloud.polaris.context.config.PolarisContextProperties"
     },
     {
       "name": "spring.cloud.polaris.service",
       "type": "java.lang.String",
       "description": "polaris service name",
-      "default": "${spring.application.name}",
+      "defaultValue": "${spring.application.name}",
       "sourceType": "com.tencent.cloud.polaris.context.config.PolarisContextProperties"
     },
     {
       "name": "spring.cloud.polaris.enabled",
       "type": "java.lang.Boolean",
       "description": "polaris enabled",
-      "default": "true",
+      "defaultValue": "true",
       "sourceType": "com.tencent.cloud.polaris.context.config.PolarisContextProperties"
     },
     {
