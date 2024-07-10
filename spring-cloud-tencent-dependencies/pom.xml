@@ -74,7 +74,7 @@
 		<revision>1.14.0-Hoxton.SR12-RC3</revision>
 
 		<!-- Polaris SDK version -->
-		<polaris.version>1.15.5</polaris.version>
+		<polaris.version>2.0.0.0-SNAPSHOT</polaris.version>
 
 		<!-- Dependencies -->
 		<guava.version>32.0.1-jre</guava.version>

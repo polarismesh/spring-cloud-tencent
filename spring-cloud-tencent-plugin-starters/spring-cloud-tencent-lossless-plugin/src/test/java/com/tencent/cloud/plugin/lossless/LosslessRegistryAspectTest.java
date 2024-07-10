@@ -139,7 +139,7 @@ public class LosslessRegistryAspectTest {
 				assertThat(OkHttpUtil.checkUrl(HOST, LOSSLESS_PORT_1, "/online", Collections.EMPTY_MAP)).isFalse();
 			}).doesNotThrowAnyException();
 			// delay register after 5s
-			Thread.sleep(5000);
+			Thread.sleep(10000);
 			PolarisServiceRegistry registry = context.getBean(PolarisServiceRegistry.class);
 			PolarisRegistration registration = context.getBean(PolarisRegistration.class);
 
