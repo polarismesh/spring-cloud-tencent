@@ -18,7 +18,9 @@
 package com.tencent.cloud.quickstart.caller.circuitbreaker;
 
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
 /**
  * CircuitBreakerQuickstartCalleeServiceWithFallback.
@@ -35,4 +37,12 @@ public interface CircuitBreakerQuickstartCalleeServiceWithFallback {
 	 */
 	@GetMapping("/quickstart/callee/circuitBreak")
 	String circuitBreak();
+
+	/**
+	 * Check circuit break with uid.
+	 * @param uid uid variable
+	 * @return circuit break info
+	 */
+	@GetMapping("/circuitBreak/wildcard/{uid}")
+	String circuitBreakWildcard(@PathVariable String uid);
 }

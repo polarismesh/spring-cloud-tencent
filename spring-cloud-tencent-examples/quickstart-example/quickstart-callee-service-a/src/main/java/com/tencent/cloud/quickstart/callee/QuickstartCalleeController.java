@@ -128,6 +128,17 @@ public class QuickstartCalleeController {
 		return String.format("Quickstart Callee Service [%s:%s] is called right.", ip, port);
 	}
 
+	/**
+	 * Check circuit break.
+	 *
+	 * @return circuit break info
+	 */
+	@GetMapping("/circuitBreak/wildcard/{uid}")
+	public String circuitBreakWildcard(@PathVariable String uid) throws InterruptedException {
+		LOG.info("Quickstart Callee Service uid {} [{}:{}] is called right.", uid, ip, port);
+		return String.format("Quickstart Callee Service %s [%s:%s] is called right.", uid, ip, port);
+	}
+
 	@GetMapping("/faultDetect")
 	public String health() {
 		LOG.info("Quickstart Callee Service [{}:{}] is detected right.", ip, port);
