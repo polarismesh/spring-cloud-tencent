@@ -42,6 +42,6 @@ public interface CircuitBreakerQuickstartCalleeService {
 	 * @param uid uid variable
 	 * @return circuit break info
 	 */
-	@GetMapping("/circuitBreak/wildcard/{uid}")
+	@GetMapping("/quickstart/callee/circuitBreak/wildcard/{uid}")
 	String circuitBreakWildcard(@PathVariable String uid);
 }
