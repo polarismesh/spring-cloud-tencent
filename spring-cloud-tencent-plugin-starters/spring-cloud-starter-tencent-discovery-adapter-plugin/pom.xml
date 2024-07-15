@@ -8,6 +8,18 @@
 		<version>${revision}</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>16</source>
+					<target>16</target>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
 	<modelVersion>4.0.0</modelVersion>
 
 	<artifactId>spring-cloud-starter-tencent-discovery-adapter-plugin</artifactId>
@@ -29,8 +41,8 @@
 		<dependency>
 			<groupId>com.alibaba.cloud</groupId>
 			<artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
-			<version>2021.0.5.0</version>
-			<scope>test</scope>
+			<version>2023.0.0.0-RC1</version>
+			<optional>true</optional>
 		</dependency>
 
 		<dependency>

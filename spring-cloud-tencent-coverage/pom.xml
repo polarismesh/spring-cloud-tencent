@@ -83,6 +83,11 @@
 			<groupId>com.tencent.cloud</groupId>
 			<artifactId>spring-cloud-tencent-gateway-plugin</artifactId>
 		</dependency>
+		
+		<dependency>
+			<groupId>com.tencent.cloud</groupId>
+			<artifactId>spring-cloud-tencent-lossless-plugin</artifactId>
+		</dependency>		
 	</dependencies>
 
 	<build>
