@@ -1,0 +1,28 @@
+server:
+  port: 48091
+spring:
+  application:
+    name: LosslessNacosCalleeService
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 9.134.5.52:8848
+        enabled: true
+        namespace: "test1"
+    polaris:
+      lossless:
+        enabled: true
+        healthCheckPath: /lossless/nacos/callee/health
+        healthCheckInterval: 5000
+lossless:
+  healthy:
+    delay:
+      second: 20
+management:
+  endpoints:
+    web:
+      exposure:
+        include:
+          - polaris-discovery
+          - polaris-ratelimit
+          - polaris-config
