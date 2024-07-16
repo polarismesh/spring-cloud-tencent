@@ -19,8 +19,6 @@
 package com.tencent.cloud.metadata.core;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -35,16 +33,14 @@ import com.tencent.cloud.common.util.JacksonUtils;
 import com.tencent.cloud.common.util.UrlUtils;
 import com.tencent.cloud.metadata.provider.ServletMetadataProvider;
 import com.tencent.cloud.polaris.context.config.PolarisContextProperties;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.springframework.core.annotation.Order;
 import org.springframework.lang.NonNull;
-import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import static com.tencent.cloud.common.constant.ContextConstant.UTF_8;
+
 import static com.tencent.cloud.common.constant.MetadataConstant.HeaderName.CUSTOM_DISPOSABLE_METADATA;
 import static com.tencent.cloud.common.constant.MetadataConstant.HeaderName.CUSTOM_METADATA;
 
