@@ -28,7 +28,6 @@ import com.tencent.cloud.polaris.contract.utils.PackageUtil;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.info.License;
-import org.springdoc.core.providers.ObjectMapperProvider;
 import org.springdoc.core.GroupedOpenApi;
 import org.springdoc.core.SpringDocConfiguration;
 import org.springdoc.core.providers.ObjectMapperProvider;
