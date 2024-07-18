@@ -80,9 +80,9 @@ public class QuickstartCalleeController {
 	 * @return information of callee
 	 */
 	@GetMapping("/info")
-	public ResponseEntity<String> info() {
+	public String info() {
 		LOG.info("Quickstart [{}] Service [{}:{}] is called. datasource = [{}].", appName, ip, port, dataSourceProperties);
-		return new ResponseEntity<>(String.format("Quickstart [%s] Service [%s:%s] is called. datasource = [%s].", appName, ip, port, dataSourceProperties), HttpStatus.OK);
+		return String.format("Quickstart [%s] Service [%s:%s] is called. datasource = [%s].", appName, ip, port, dataSourceProperties);
 	}
 
 	/**
