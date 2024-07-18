@@ -30,6 +30,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -117,6 +118,26 @@ public class QuickstartCalleeController {
 		}
 		LOG.info("Quickstart Callee Service [{}:{}] is called right.", ip, port);
 		return new ResponseEntity<>(String.format("Quickstart Callee Service [%s:%s] is called right.", ip, port), HttpStatus.OK);
+	}
+
+	/**
+	 * Check circuit break.
+	 *
+	 * @return circuit break info
+	 */
+	@GetMapping("/circuitBreak/wildcard/{uid}")
+	public ResponseEntity<String> circuitBreakWildcard(@PathVariable String uid) throws InterruptedException {
+		if (ifBadGateway) {
+			LOG.info("Quickstart Callee Service with uid {} [{}:{}] is called wrong.", uid, ip, port);
+			return new ResponseEntity<>("failed for call quickstart callee service wildcard.", HttpStatus.BAD_GATEWAY);
+		}
+		if (ifDelay) {
+			Thread.sleep(200);
+			LOG.info("Quickstart Callee Service uid {} [{}:{}] is called slow.", uid, ip, port);
+			return new ResponseEntity<>(String.format("Quickstart Callee Service [%s:%s] is called slow.", ip, port), HttpStatus.OK);
+		}
+		LOG.info("Quickstart Callee Service uid {} [{}:{}] is called right.", uid, ip, port);
+		return new ResponseEntity<>(String.format("Quickstart Callee Service %s [%s:%s] is called right.", uid, ip, port), HttpStatus.OK);
 	}
 
 	@GetMapping("/setBadGateway")

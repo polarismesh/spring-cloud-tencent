@@ -31,4 +31,9 @@ public class CircuitBreakerQuickstartCalleeServiceFallback implements CircuitBre
 	public String circuitBreak() {
 		return "fallback: trigger the refuse for service callee.";
 	}
+
+	@Override
+	public String circuitBreakWildcard(String uid) {
+		return String.format("fallback: trigger the refuse for service callee %s.", uid);
+	}
 }
