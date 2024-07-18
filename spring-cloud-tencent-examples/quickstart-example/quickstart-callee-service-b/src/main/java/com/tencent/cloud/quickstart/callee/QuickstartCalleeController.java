@@ -63,8 +63,6 @@ public class QuickstartCalleeController {
 	private boolean ifBadGateway = true;
 	private boolean ifDelay = true;
 
-	private boolean isInfoSuccess = true;
-
 	/**
 	 * Get sum of two value.
 	 * @param value1 value 1
@@ -83,13 +81,8 @@ public class QuickstartCalleeController {
 	 */
 	@GetMapping("/info")
 	public ResponseEntity<String> info() {
-		if (isInfoSuccess) {
-			LOG.info("Quickstart [{}] Service [{}:{}] is called. datasource = [{}].", appName, ip, port, dataSourceProperties);
-			return new ResponseEntity<>(String.format("Quickstart [%s] Service [%s:%s] is called. datasource = [%s].", appName, ip, port, dataSourceProperties), HttpStatus.OK);
-		}
-		else {
-			return new ResponseEntity<>(String.format("Failed to call quickstart [%s] service [%s:%s]. datasource = [%s].", appName, ip, port, dataSourceProperties), HttpStatus.BAD_GATEWAY);
-		}
+		LOG.info("Quickstart [{}] Service [{}:{}] is called. datasource = [{}].", appName, ip, port, dataSourceProperties);
+		return new ResponseEntity<>(String.format("Quickstart [%s] Service [%s:%s] is called. datasource = [%s].", appName, ip, port, dataSourceProperties), HttpStatus.OK);
 	}
 
 	/**
@@ -170,19 +163,6 @@ public class QuickstartCalleeController {
 		else {
 			LOG.info("info is set to no delay.");
 			return "info is set to no delay.";
-		}
-	}
-
-	@GetMapping("/setInfoSuccess")
-	public String setInfoSuccess(@RequestParam boolean param) {
-		this.isInfoSuccess = param;
-		if (param) {
-			LOG.info("infoSuccess is set to true.");
-			return "infoSuccess is set to true.";
-		}
-		else {
-			LOG.info("infoSuccess is set to false.");
-			return "infoSuccess is set to false.";
 		}
 	}
 
