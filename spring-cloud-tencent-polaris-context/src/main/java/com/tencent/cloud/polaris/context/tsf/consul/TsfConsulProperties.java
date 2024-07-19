@@ -18,7 +18,7 @@
 package com.tencent.cloud.polaris.context.tsf.consul;
 
 
-import jakarta.validation.constraints.NotNull;
+import javax.validation.constraints.NotNull;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.validation.annotation.Validated;

@@ -26,7 +26,7 @@ import com.tencent.cloud.common.util.JacksonUtils;
 import com.tencent.cloud.polaris.registry.PolarisRegistration;
 import com.tencent.cloud.polaris.registry.PolarisRegistrationCustomizer;
 import com.tencent.polaris.plugins.connector.common.constant.ConsulConstant;
-import jakarta.servlet.ServletContext;
+import javax.servlet.ServletContext;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.util.StringUtils;
