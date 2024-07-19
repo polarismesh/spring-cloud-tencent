@@ -22,11 +22,13 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.ServletContext;
+
 import com.tencent.cloud.common.util.JacksonUtils;
 import com.tencent.cloud.polaris.registry.PolarisRegistration;
 import com.tencent.cloud.polaris.registry.PolarisRegistrationCustomizer;
 import com.tencent.polaris.plugins.connector.common.constant.ConsulConstant;
-import javax.servlet.ServletContext;
+
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.util.StringUtils;

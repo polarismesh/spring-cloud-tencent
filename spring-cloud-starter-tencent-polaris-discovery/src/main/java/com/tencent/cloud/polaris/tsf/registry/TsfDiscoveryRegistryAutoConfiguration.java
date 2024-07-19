@@ -16,13 +16,14 @@
  */
 
 package com.tencent.cloud.polaris.tsf.registry;
+import javax.servlet.ServletContext;
 
 import com.tencent.cloud.polaris.context.PolarisSDKContextManager;
 import com.tencent.cloud.polaris.context.tsf.ConditionalOnTsfEnabled;
 import com.tencent.cloud.polaris.registry.PolarisServiceRegistryAutoConfiguration;
 import com.tencent.cloud.polaris.tsf.TsfDiscoveryProperties;
 import com.tencent.cloud.polaris.tsf.TsfHeartbeatProperties;
-import javax.servlet.ServletContext;
+
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
