@@ -1,5 +1,5 @@
 server:
-  port: 18081
+  port: 56789
 spring:
   application:
     name: provider-demo
@@ -7,8 +7,7 @@ spring:
     import: optional:polaris
   cloud:
     polaris:
-      config:
-        address: grpc://127.0.0.1:8091
+      address: grpc://127.0.0.1:8091
       namespace: default
       enabled: true
       stat:
