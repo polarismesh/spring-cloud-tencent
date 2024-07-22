@@ -5,10 +5,6 @@ spring:
     name: consumer-demo
   config:
     import: optional:polaris
-  cloud:
-    polaris:
-      address: grpc://127.0.0.1:8091
-      namespace: default_namespace
 
 feign:
   tsf:
