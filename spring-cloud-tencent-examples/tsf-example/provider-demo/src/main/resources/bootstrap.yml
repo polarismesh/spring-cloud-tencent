@@ -3,8 +3,6 @@ server:
 spring:
   application:
     name: provider-demo
-  config:
-    import: optional:polaris
   cloud:
     polaris:
       namespace: default
