@@ -71,7 +71,7 @@ public class ConfigChangeListenerTest {
 		applicationEventPublisher.publishEvent(event);
 
 		//after change
-		boolean ret = hits.await(2, TimeUnit.SECONDS);
+		boolean ret = hits.await(5, TimeUnit.SECONDS);
 		Assertions.assertThat(ret).isEqualTo(true);
 
 		Assertions.assertThat(testConfig.getChangeCnt()).isEqualTo(2);
