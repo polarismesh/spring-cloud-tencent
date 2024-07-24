@@ -18,8 +18,8 @@
 package com.tencent.cloud.polaris.tsf.registry;
 import javax.servlet.ServletContext;
 
+import com.tencent.cloud.common.tsf.ConditionalOnTsfEnabled;
 import com.tencent.cloud.polaris.context.PolarisSDKContextManager;
-import com.tencent.cloud.polaris.context.tsf.ConditionalOnTsfEnabled;
 import com.tencent.cloud.polaris.registry.PolarisServiceRegistryAutoConfiguration;
 import com.tencent.cloud.polaris.tsf.TsfDiscoveryProperties;
 import com.tencent.cloud.polaris.tsf.TsfHeartbeatProperties;
