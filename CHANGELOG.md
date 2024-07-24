@@ -16,5 +16,5 @@
 - [feat:add zero protection.](https://github.com/Tencent/spring-cloud-tencent/pull/1346)
 - [fix:fix no registry when lossless is disabled.](https://github.com/Tencent/spring-cloud-tencent/pull/1347)
 - [fix:fix the ratelimit bug for 2022](https://github.com/Tencent/spring-cloud-tencent/pull/1348)
-- [feat:add Tencent Cloud TSF support. ](https://github.com/Tencent/spring-cloud-tencent/pull/1350)
+- [feat:add Tencent Cloud TSF support.](https://github.com/Tencent/spring-cloud-tencent/pull/1350)
 - 
