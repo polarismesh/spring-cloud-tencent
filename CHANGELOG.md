@@ -21,3 +21,4 @@
 - [feat:add trace report support.](https://github.com/Tencent/spring-cloud-tencent/pull/1396)
 - [feat:support consul service update task.](https://github.com/Tencent/spring-cloud-tencent/pull/1397)
 - [fix:fix app starting failed when user using custom OpenAPI bean.](https://github.com/Tencent/spring-cloud-tencent/pull/1398)
+- [fix: memory cost too many when using wildcard feign calls](https://github.com/Tencent/spring-cloud-tencent/pull/1400)
