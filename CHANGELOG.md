@@ -24,3 +24,4 @@
 - [fix: fix lossless test case unstable issues.](https://github.com/Tencent/spring-cloud-tencent/pull/1412)
 - [feat:support consul service update task.](https://github.com/Tencent/spring-cloud-tencent/pull/1413)
 - [fix:fix app starting failed when user using custom OpenAPI bean.](https://github.com/Tencent/spring-cloud-tencent/pull/1414)
+- [fix: move ConditionalOnTsfEnabled to spring-cloud-tencent-commons and fix PolarisInetUtilsAutoConfiguration.](https://github.com/Tencent/spring-cloud-tencent/pull/1415)

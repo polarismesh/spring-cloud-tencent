@@ -17,10 +17,10 @@
 
 package com.tencent.cloud.polaris.config.tsf;
 
+import com.tencent.cloud.common.tsf.ConditionalOnTsfEnabled;
 import com.tencent.cloud.polaris.config.ConditionalOnPolarisConfigEnabled;
 import com.tencent.cloud.polaris.config.config.PolarisConfigProperties;
 import com.tencent.cloud.polaris.config.tsf.controller.PolarisAdaptorTsfConfigController;
-import com.tencent.cloud.polaris.context.tsf.ConditionalOnTsfEnabled;
 import com.tencent.cloud.polaris.context.tsf.config.TsfCoreProperties;
 import com.tencent.cloud.polaris.context.tsf.consul.TsfConsulProperties;
 import com.tencent.tsf.consul.config.watch.TsfConsulConfigRefreshEventListener;
