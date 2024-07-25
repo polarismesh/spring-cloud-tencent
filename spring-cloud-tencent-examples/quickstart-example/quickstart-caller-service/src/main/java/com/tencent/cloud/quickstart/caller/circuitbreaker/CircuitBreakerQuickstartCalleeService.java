@@ -19,6 +19,7 @@ package com.tencent.cloud.quickstart.caller.circuitbreaker;
 
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
 /**
  * Circuit breaker example callee provider.
@@ -35,4 +36,12 @@ public interface CircuitBreakerQuickstartCalleeService {
 	 */
 	@GetMapping("/quickstart/callee/circuitBreak")
 	String circuitBreak();
+
+	/**
+	 * Check circuit break with uid.
+	 * @param uid uid variable
+	 * @return circuit break info
+	 */
+	@GetMapping("/quickstart/callee/circuitBreak/wildcard/{uid}")
+	String circuitBreakWildcard(@PathVariable String uid);
 }
