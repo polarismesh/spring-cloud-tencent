@@ -16,7 +16,7 @@
  */
 package com.tencent.cloud.polaris.contract.tsf;
 
-import com.tencent.cloud.polaris.context.tsf.ConditionalOnTsfEnabled;
+import com.tencent.cloud.common.tsf.ConditionalOnTsfEnabled;
 import com.tencent.cloud.polaris.contract.config.PolarisContractProperties;
 import io.swagger.v3.oas.models.OpenAPI;
 import org.springdoc.core.providers.ObjectMapperProvider;

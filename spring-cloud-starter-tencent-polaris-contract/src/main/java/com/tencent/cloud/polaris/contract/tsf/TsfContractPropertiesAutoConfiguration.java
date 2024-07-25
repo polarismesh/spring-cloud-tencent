@@ -17,7 +17,7 @@
 
 package com.tencent.cloud.polaris.contract.tsf;
 
-import com.tencent.cloud.polaris.context.tsf.ConditionalOnTsfEnabled;
+import com.tencent.cloud.common.tsf.ConditionalOnTsfEnabled;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
