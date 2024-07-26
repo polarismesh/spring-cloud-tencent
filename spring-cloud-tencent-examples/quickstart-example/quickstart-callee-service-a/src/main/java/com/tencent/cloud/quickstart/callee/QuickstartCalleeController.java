@@ -28,6 +28,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -104,6 +105,17 @@ public class QuickstartCalleeController {
 	public String circuitBreak() {
 		LOG.info("Quickstart Callee Service [{}:{}] is called right.", ip, port);
 		return String.format("Quickstart Callee Service [%s:%s] is called right.", ip, port);
+	}
+
+	/**
+	 * Check circuit break.
+	 *
+	 * @return circuit break info
+	 */
+	@GetMapping("/circuitBreak/wildcard/{uid}")
+	public String circuitBreakWildcard(@PathVariable String uid) throws InterruptedException {
+		LOG.info("Quickstart Callee Service uid {} [{}:{}] is called right.", uid, ip, port);
+		return String.format("Quickstart Callee Service %s [%s:%s] is called right.", uid, ip, port);
 	}
 
 	@GetMapping("/faultDetect")
