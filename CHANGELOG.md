@@ -22,3 +22,4 @@
 - [fix:fix sct-all wrong spring boot version obtain.](https://github.com/Tencent/spring-cloud-tencent/pull/1204)
 - fix:fix restTemplateCustomizer bean conflict causing service to fail to start properly.
 - fix:fix NullPointerException when properties contain kv with null value.
+- [fix: memory not released while using wildcard api call with circuitbreaker](https://github.com/Tencent/spring-cloud-tencent/pull/1361)
