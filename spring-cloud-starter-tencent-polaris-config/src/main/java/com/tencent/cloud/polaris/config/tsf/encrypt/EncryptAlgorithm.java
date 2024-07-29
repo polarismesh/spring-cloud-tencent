@@ -71,7 +71,7 @@ public class EncryptAlgorithm {
 				return new String(enryptedContent);
 			}
 			catch (Exception e) {
-				throw new RuntimeException("[SCTT Encrypt] Failed encrypt.", e);
+				throw new RuntimeException("Failed encrypt.", e);
 			}
 		}
 
@@ -110,7 +110,7 @@ public class EncryptAlgorithm {
 				return new String(result);
 			}
 			catch (Exception e) {
-				throw new RuntimeException("[SCTT Encrypt] Failed decrypt.", e);
+				throw new RuntimeException("Failed decrypt.", e);
 			}
 		}
 	}
@@ -139,7 +139,7 @@ public class EncryptAlgorithm {
 		private static final long serialVersionUID = -2843758461182470411L;
 
 		public PasswordNotFoundException() {
-			super("[SCTT Encrypt] Password not found.");
+			super("Password not found.");
 		}
 
 	}

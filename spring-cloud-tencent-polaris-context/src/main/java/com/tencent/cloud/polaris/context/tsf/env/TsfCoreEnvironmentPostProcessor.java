@@ -106,14 +106,15 @@ public final class TsfCoreEnvironmentPostProcessor implements EnvironmentPostPro
 			}
 			else {
 				defaultProperties.put("spring.cloud.polaris.config.enabled", "true");
+				defaultProperties.put("spring.cloud.polaris.config.internal-enabled", "false");
 				defaultProperties.put("spring.cloud.polaris.config.data-source", "consul");
 				defaultProperties.put("spring.cloud.polaris.config.address", "http://" + tsfConsulIp + ":" + tsfConsulPort);
 				defaultProperties.put("spring.cloud.polaris.config.port", tsfConsulPort);
 				defaultProperties.put("spring.cloud.polaris.config.token", tsfConsulToken);
 				defaultProperties.put("spring.cloud.polaris.config.groups[0].namespace", "config");
 				defaultProperties.put("spring.cloud.polaris.config.groups[0].name", "application");
-				defaultProperties.put("spring.cloud.polaris.config.groups[0].files[0]", tsfNamespaceId + "/");
-				defaultProperties.put("spring.cloud.polaris.config.groups[0].files[1]", tsfApplicationId + "/" + tsfGroupId + "/");
+				defaultProperties.put("spring.cloud.polaris.config.groups[0].files[0]", tsfApplicationId + "/" + tsfGroupId + "/");
+				defaultProperties.put("spring.cloud.polaris.config.groups[0].files[1]", tsfNamespaceId + "/");
 			}
 
 			// tse_polaris_ip

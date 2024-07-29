@@ -23,5 +23,6 @@
 - [fix: fix lossless test case unstable issues.](https://github.com/Tencent/spring-cloud-tencent/pull/1324)
 - [feat:support consul service update task.](https://github.com/Tencent/spring-cloud-tencent/pull/1329)
 - [fix:fix app starting failed when user using custom OpenAPI bean.](https://github.com/Tencent/spring-cloud-tencent/pull/1330)
+- [feat:support consul config data.](https://github.com/Tencent/spring-cloud-tencent/pull/1331)
 - [fix: move ConditionalOnTsfEnabled to spring-cloud-tencent-commons and fix PolarisInetUtilsAutoConfiguration.](https://github.com/Tencent/spring-cloud-tencent/pull/1354)
 - [fix: memory cost too many when using wildcard feign calls](https://github.com/Tencent/spring-cloud-tencent/pull/1356)
