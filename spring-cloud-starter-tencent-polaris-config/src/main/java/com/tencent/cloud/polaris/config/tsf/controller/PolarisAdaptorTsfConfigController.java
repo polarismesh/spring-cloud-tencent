@@ -18,11 +18,15 @@
 package com.tencent.cloud.polaris.config.tsf.controller;
 
 
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.tencent.cloud.polaris.config.tsf.cache.PolarisPropertyCache;
+import com.tencent.cloud.polaris.config.adapter.PolarisPropertySource;
+import com.tencent.cloud.polaris.config.adapter.PolarisPropertySourceManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,7 +48,7 @@ public class PolarisAdaptorTsfConfigController {
 	Environment environment;
 
 	public PolarisAdaptorTsfConfigController() {
-		LOG.info("[SCTT Config] init PolarisAdaptorTsfConfigController");
+		LOG.info("init PolarisAdaptorTsfConfigController");
 	}
 
 	/**
@@ -52,7 +56,13 @@ public class PolarisAdaptorTsfConfigController {
 	 */
 	@RequestMapping("/tsf/innerApi/config/findAllConfig")
 	public Map<String, Object> findAllConfig() {
-		Set<String> keys = PolarisPropertyCache.getInstance().getCache();
+		List<PolarisPropertySource> propertySourceList = PolarisPropertySourceManager.getAllPropertySources();
+
+		Set<String> keys = new HashSet<>();
+		for (PolarisPropertySource propertySource : propertySourceList) {
+			keys.addAll(Arrays.asList(propertySource.getPropertyNames()));
+		}
+
 		return keys.stream()
 				.collect(HashMap::new, (map, key) -> map.put(key, environment.getProperty(key)), HashMap::putAll);
 	}
