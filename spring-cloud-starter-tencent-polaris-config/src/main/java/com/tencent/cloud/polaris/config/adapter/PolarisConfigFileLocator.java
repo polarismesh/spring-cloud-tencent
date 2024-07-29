@@ -117,6 +117,9 @@ public class PolarisConfigFileLocator implements PropertySourceLocator {
 	}
 
 	private void initInternalConfigFiles(CompositePropertySource compositePropertySource) {
+		if (!polarisConfigProperties.isInternalEnabled()) {
+			return;
+		}
 		List<ConfigFileMetadata> internalConfigFiles = getInternalConfigFiles();
 
 		for (ConfigFileMetadata configFile : internalConfigFiles) {

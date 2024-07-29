@@ -30,7 +30,7 @@ public class ConfigEncryptAESProvider extends ConfigEncryptProvider {
 			return EncryptAlgorithm.AES256.encrypt(content, password);
 		}
 		catch (Exception e) {
-			log.error("[SCTT Config] Error on encrypting.", e);
+			log.error("Error on encrypting.", e);
 			throw e;
 		}
 	}
@@ -41,7 +41,7 @@ public class ConfigEncryptAESProvider extends ConfigEncryptProvider {
 			return EncryptAlgorithm.AES256.decrypt(encryptedContent, password);
 		}
 		catch (Exception e) {
-			log.error("[SCTT Config] Error on decrypting.", e);
+			log.error("Error on decrypting.", e);
 			throw e;
 		}
 	}

@@ -3,8 +3,6 @@ server:
 spring:
   application:
     name: provider-demo
-  config:
-    import: optional:polaris
   cloud:
     polaris:
       config:
@@ -26,3 +24,9 @@ logging:
     name: /tsf-demo-logs/${spring.application.name}/root.log
   level:
     root: INFO
+management:
+  endpoints:
+    web:
+      exposure:
+        include:
+          - polaris-config
