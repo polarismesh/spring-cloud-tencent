@@ -91,6 +91,7 @@ public class PolarisConfigFileLocatorTest {
 
 		when(polarisConfigProperties.isEnabled()).thenReturn(true);
 		when(polarisConfigProperties.getGroups()).thenReturn(null);
+		when(polarisConfigProperties.isInternalEnabled()).thenReturn(true);
 		when(environment.getActiveProfiles()).thenReturn(new String[] {});
 
 		PropertySource<?> propertySource = locator.locate(environment);
@@ -139,6 +140,7 @@ public class PolarisConfigFileLocatorTest {
 
 		when(polarisConfigProperties.isEnabled()).thenReturn(true);
 		when(polarisConfigProperties.getGroups()).thenReturn(null);
+		when(polarisConfigProperties.isInternalEnabled()).thenReturn(true);
 		when(environment.getActiveProfiles()).thenReturn(new String[] {"dev"});
 
 		PropertySource<?> propertySource = locator.locate(environment);
@@ -177,6 +179,7 @@ public class PolarisConfigFileLocatorTest {
 
 		when(polarisConfigProperties.isEnabled()).thenReturn(true);
 		when(polarisConfigProperties.getGroups()).thenReturn(customFiles);
+		when(polarisConfigProperties.isInternalEnabled()).thenReturn(true);
 		when(environment.getActiveProfiles()).thenReturn(new String[] {});
 
 		// file1.properties

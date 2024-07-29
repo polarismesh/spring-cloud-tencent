@@ -23,6 +23,7 @@ import com.tencent.polaris.logging.PolarisLogging;
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
 import org.springframework.boot.context.event.ApplicationFailedEvent;
 import org.springframework.boot.context.logging.LoggingApplicationListener;
+import org.springframework.cloud.context.environment.EnvironmentChangeEvent;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.event.GenericApplicationListener;
 import org.springframework.core.ResolvableType;
@@ -45,7 +46,8 @@ public class PolarisLoggingApplicationListener implements GenericApplicationList
 			return false;
 		}
 		return ApplicationEnvironmentPreparedEvent.class.isAssignableFrom(type)
-				|| ApplicationFailedEvent.class.isAssignableFrom(type);
+				|| ApplicationFailedEvent.class.isAssignableFrom(type)
+				|| EnvironmentChangeEvent.class.isAssignableFrom(type);
 	}
 
 	@Override

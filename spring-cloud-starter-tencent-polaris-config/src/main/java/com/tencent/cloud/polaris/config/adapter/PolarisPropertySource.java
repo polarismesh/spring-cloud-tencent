@@ -20,6 +20,7 @@ package com.tencent.cloud.polaris.config.adapter;
 
 import java.util.Map;
 
+import com.tencent.cloud.polaris.config.utils.PolarisPropertySourceUtils;
 import com.tencent.polaris.configuration.api.core.ConfigKVFile;
 
 import org.springframework.core.env.MapPropertySource;
@@ -40,7 +41,7 @@ public class PolarisPropertySource extends MapPropertySource {
 	private final ConfigKVFile configKVFile;
 
 	public PolarisPropertySource(String namespace, String group, String fileName, ConfigKVFile configKVFile, Map<String, Object> source) {
-		super(namespace + "-" + group + "-" + fileName, source);
+		super(PolarisPropertySourceUtils.generateName(namespace, group, fileName), source);
 
 		this.namespace = namespace;
 		this.group = group;
@@ -64,7 +65,7 @@ public class PolarisPropertySource extends MapPropertySource {
 		return namespace + "-" + group + "-" + fileName;
 	}
 
-	ConfigKVFile getConfigKVFile() {
+	public ConfigKVFile getConfigKVFile() {
 		return configKVFile;
 	}
 

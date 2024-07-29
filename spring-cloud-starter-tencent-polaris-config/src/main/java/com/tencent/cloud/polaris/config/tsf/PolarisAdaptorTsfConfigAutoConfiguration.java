@@ -27,7 +27,6 @@ import com.tencent.tsf.consul.config.watch.TsfConsulConfigRefreshEventListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
@@ -46,8 +45,7 @@ public class PolarisAdaptorTsfConfigAutoConfiguration {
 
 	{
 		System.setProperty("spring.cloud.polaris.config.refresh-type", "refresh_context");
-		LOGGER.info(
-				"[SCTT Config] PolarisAdaptorTsfConfigAutoConfiguration init set spring.cloud.polaris.config.refresh-type to refresh_context");
+		LOGGER.info("PolarisAdaptorTsfConfigAutoConfiguration init set spring.cloud.polaris.config.refresh-type to refresh_context");
 	}
 
 	@Bean
@@ -65,7 +63,7 @@ public class PolarisAdaptorTsfConfigAutoConfiguration {
 	 */
 	@Bean
 	@ConditionalOnMissingBean
-	@ConditionalOnExpression("${spring.cloud.consul.config.enabled:true} == false and ${tsf.config.instance.released-config.lookup.enabled:true} == true")
+	@ConditionalOnProperty(name = "tsf.config.instance.released-config.lookup.enabled", matchIfMissing = true)
 	public PolarisAdaptorTsfConfigController polarisAdaptorTsfConfigController() {
 		return new PolarisAdaptorTsfConfigController();
 	}

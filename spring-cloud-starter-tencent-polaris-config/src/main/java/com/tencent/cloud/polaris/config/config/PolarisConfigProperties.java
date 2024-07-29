@@ -91,6 +91,11 @@ public class PolarisConfigProperties {
 	 */
 	private String localFileRootPath = "./polaris/backup/config";
 
+	/**
+	 * If internal config file enabled.
+	 */
+	private boolean internalEnabled = true;
+
 	public boolean isEnabled() {
 		return enabled;
 	}
@@ -179,6 +184,14 @@ public class PolarisConfigProperties {
 		this.localFileRootPath = localFileRootPath;
 	}
 
+	public boolean isInternalEnabled() {
+		return internalEnabled;
+	}
+
+	public void setInternalEnabled(boolean internalEnabled) {
+		this.internalEnabled = internalEnabled;
+	}
+
 	@Override
 	public String toString() {
 		return "PolarisConfigProperties{" +
@@ -193,6 +206,7 @@ public class PolarisConfigProperties {
 				", groups=" + groups +
 				", dataSource='" + dataSource + '\'' +
 				", localFileRootPath='" + localFileRootPath + '\'' +
+				", internalEnabled=" + internalEnabled +
 				'}';
 	}
 }
