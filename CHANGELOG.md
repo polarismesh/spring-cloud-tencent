@@ -23,3 +23,4 @@
 - [fix:fix app starting failed when user using custom OpenAPI bean.](https://github.com/Tencent/spring-cloud-tencent/pull/1398)
 - [fix: memory cost too many when using wildcard feign calls](https://github.com/Tencent/spring-cloud-tencent/pull/1400)
 - [feat:support consul config data.](https://github.com/Tencent/spring-cloud-tencent/pull/1401)
+- [feat: support otel trace](https://github.com/Tencent/spring-cloud-tencent/pull/1402)

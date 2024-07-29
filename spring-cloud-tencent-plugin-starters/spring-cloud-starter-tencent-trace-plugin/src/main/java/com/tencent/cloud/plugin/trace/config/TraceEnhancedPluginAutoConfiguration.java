@@ -19,7 +19,6 @@
 package com.tencent.cloud.plugin.trace.config;
 
 import com.tencent.cloud.plugin.trace.SpanAttributesProvider;
-import com.tencent.cloud.plugin.trace.TraceClientMetadataEnhancedPlugin;
 import com.tencent.cloud.plugin.trace.TraceServerMetadataEnhancedPlugin;
 import com.tencent.cloud.polaris.context.ConditionalOnPolarisEnabled;
 import com.tencent.cloud.polaris.context.PolarisSDKContextManager;
@@ -34,12 +33,6 @@ import org.springframework.context.annotation.Configuration;
 @ConditionalOnPolarisEnabled
 @ConditionalOnProperty(value = "spring.cloud.polaris.trace.enabled", matchIfMissing = true)
 public class TraceEnhancedPluginAutoConfiguration {
-
-	@Bean
-	public TraceClientMetadataEnhancedPlugin traceClientMetadataEnhancedPlugin(
-			PolarisSDKContextManager polarisSDKContextManager, @Autowired(required = false) SpanAttributesProvider spanAttributesProvider) {
-		return new TraceClientMetadataEnhancedPlugin(polarisSDKContextManager, spanAttributesProvider);
-	}
 
 	@Bean
 	public TraceServerMetadataEnhancedPlugin traceServerMetadataEnhancedPlugin(
