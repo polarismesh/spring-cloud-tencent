@@ -19,5 +19,6 @@
 		<module>quickstart-caller-service</module>
 		<module>quickstart-callee-service-a</module>
 		<module>quickstart-callee-service-b</module>
+		<module>quickstart-gateway-mvc-service</module>
 	</modules>
 </project>
