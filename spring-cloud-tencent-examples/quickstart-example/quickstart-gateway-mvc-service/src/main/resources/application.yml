@@ -1,16 +1,11 @@
 server:
-  port: 48080
+  port: 48085
 spring:
   application:
     name: QuickStartGatewayMvcService
   config:
     import: optional:polaris
   cloud:
-    tencent:
-      plugin:
-        router:
-          feature-env:
-            enabled: true
     polaris:
       address: grpc://119.91.66.223:8091
       namespace: default
