@@ -24,7 +24,6 @@ import java.util.Map;
 
 import com.tencent.cloud.common.util.inet.PolarisInetUtils;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.cloud.commons.util.InetUtils;
 
@@ -42,11 +41,6 @@ public class TsfDiscoveryProperties {
 	protected static final String MANAGEMENT = "management";
 
 	private InetUtils.HostInfo hostInfo;
-
-	/**
-	 * Tags to use when registering service.
-	 */
-	private List<String> tags = new ArrayList<>();
 
 	/**
 	 * If service discovery enabled.
@@ -133,33 +127,6 @@ public class TsfDiscoveryProperties {
 	private String serviceName;
 
 	/**
-	 * Unique service instance id.
-	 */
-	@Value("${tsf_instance_id:${spring.cloud.consul.discovery.instanceId:${SPRING_CLOUD_CONSUL_DISCOVERY_INSTANCEID:}}}")
-	private String instanceId;
-
-	/**
-	 * Service instance zone.
-	 */
-	private String instanceZone;
-
-	/**
-	 * Service instance group.
-	 */
-	private String instanceGroup;
-
-	/**
-	 * Service instance zone comes from metadata.
-	 * This allows changing the metadata tag name.
-	 */
-	private String defaultZoneMetadataName = "zone";
-
-	/**
-	 * Whether to register an http or https service.
-	 */
-	private String scheme = "http";
-
-	/**
 	 * Suffix to use when registering management service.
 	 */
 	private String managementSuffix = MANAGEMENT;
@@ -215,30 +182,6 @@ public class TsfDiscoveryProperties {
 	private Boolean healthCheckTlsSkipVerify;
 
 	/**
-	 * tsf service consul registration tags.
-	 *
-	 * progVersion 包版本
-	 */
-	@Value("${tsf_prog_version:}")
-	private String tsfProgVersion;
-
-	/**
-	 * tsf service consul registration tags.
-	 *
-	 * 地域信息
-	 */
-	@Value("${tsf_region:}")
-	private String tsfRegion;
-
-	/**
-	 * tsf service consul registration tags.
-	 *
-	 * 可用区信息
-	 */
-	@Value("${tsf_zone:}")
-	private String tsfZone;
-
-	/**
 	 * 有状态服务回调的线程池.
 	 */
 	private int callbackPoolSize = 10;
@@ -246,7 +189,6 @@ public class TsfDiscoveryProperties {
 	private long callbackInitialDelay = 10 * 1000L;
 
 	private long callbackErrorDelay = 30 * 1000L;
-
 
 	/**
 	 * 是否开启零实例保护，默认开启。开启时如果 consul 返回在线实例为0，用上次的缓存（正常来说线上环境不应该有provider全下线的情况）.
@@ -294,14 +236,6 @@ public class TsfDiscoveryProperties {
 
 	private void setHostInfo(InetUtils.HostInfo hostInfo) {
 		this.hostInfo = hostInfo;
-	}
-
-	public List<String> getTags() {
-		return tags;
-	}
-
-	public void setTags(List<String> tags) {
-		this.tags = tags;
 	}
 
 	public boolean isEnabled() {
@@ -433,46 +367,6 @@ public class TsfDiscoveryProperties {
 		this.serviceName = serviceName;
 	}
 
-	public String getInstanceId() {
-		return instanceId;
-	}
-
-	public void setInstanceId(String instanceId) {
-		this.instanceId = instanceId;
-	}
-
-	public String getInstanceZone() {
-		return instanceZone;
-	}
-
-	public void setInstanceZone(String instanceZone) {
-		this.instanceZone = instanceZone;
-	}
-
-	public String getInstanceGroup() {
-		return instanceGroup;
-	}
-
-	public void setInstanceGroup(String instanceGroup) {
-		this.instanceGroup = instanceGroup;
-	}
-
-	public String getDefaultZoneMetadataName() {
-		return defaultZoneMetadataName;
-	}
-
-	public void setDefaultZoneMetadataName(String defaultZoneMetadataName) {
-		this.defaultZoneMetadataName = defaultZoneMetadataName;
-	}
-
-	public String getScheme() {
-		return scheme;
-	}
-
-	public void setScheme(String scheme) {
-		this.scheme = scheme;
-	}
-
 	public String getManagementSuffix() {
 		return managementSuffix;
 	}
@@ -553,30 +447,6 @@ public class TsfDiscoveryProperties {
 		this.healthCheckTlsSkipVerify = healthCheckTlsSkipVerify;
 	}
 
-	public String getTsfProgVersion() {
-		return tsfProgVersion;
-	}
-
-	public void setTsfProgVersion(final String tsfProgVersion) {
-		this.tsfProgVersion = tsfProgVersion;
-	}
-
-	public String getTsfRegion() {
-		return tsfRegion;
-	}
-
-	public void setTsfRegion(final String tsfRegion) {
-		this.tsfRegion = tsfRegion;
-	}
-
-	public String getTsfZone() {
-		return tsfZone;
-	}
-
-	public void setTsfZone(final String tsfZone) {
-		this.tsfZone = tsfZone;
-	}
-
 	public Map<String, String> getServiceMeta() {
 		return serviceMeta;
 	}
@@ -629,7 +499,6 @@ public class TsfDiscoveryProperties {
 	public String toString() {
 		return "ConsulDiscoveryProperties{" +
 				"hostInfo=" + hostInfo +
-				", tags=" + tags +
 				", enabled=" + enabled +
 				", managementTags=" + managementTags +
 				", healthCheckPath='" + healthCheckPath + '\'' +
@@ -647,11 +516,6 @@ public class TsfDiscoveryProperties {
 				", catalogServicesWatchDelay=" + catalogServicesWatchDelay +
 				", catalogServicesWatchTimeout=" + catalogServicesWatchTimeout +
 				", serviceName='" + serviceName + '\'' +
-				", instanceId='" + instanceId + '\'' +
-				", instanceZone='" + instanceZone + '\'' +
-				", instanceGroup='" + instanceGroup + '\'' +
-				", defaultZoneMetadataName='" + defaultZoneMetadataName + '\'' +
-				", scheme='" + scheme + '\'' +
 				", managementSuffix='" + managementSuffix + '\'' +
 				", serverListQueryTags=" + serverListQueryTags +
 				", datacenters=" + datacenters +

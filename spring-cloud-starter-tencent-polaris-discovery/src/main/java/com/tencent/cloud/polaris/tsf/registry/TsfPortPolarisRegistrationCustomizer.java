@@ -17,6 +17,7 @@
 
 package com.tencent.cloud.polaris.tsf.registry;
 
+import com.tencent.cloud.polaris.context.tsf.config.TsfCoreProperties;
 import com.tencent.cloud.polaris.registry.PolarisRegistration;
 import com.tencent.cloud.polaris.registry.PolarisRegistrationCustomizer;
 import com.tencent.cloud.polaris.tsf.TsfDiscoveryProperties;
@@ -37,15 +38,17 @@ public class TsfPortPolarisRegistrationCustomizer implements PolarisRegistration
 	private final AutoServiceRegistrationProperties autoServiceRegistrationProperties;
 	private final ApplicationContext context;
 	private final TsfDiscoveryProperties tsfDiscoveryProperties;
+	private final TsfCoreProperties tsfCoreProperties;
 	private final TsfHeartbeatProperties tsfHeartbeatProperties;
 	private final SDKContext sdkContext;
 
 	public TsfPortPolarisRegistrationCustomizer(AutoServiceRegistrationProperties autoServiceRegistrationProperties,
-			ApplicationContext context, TsfDiscoveryProperties tsfDiscoveryProperties,
+			ApplicationContext context, TsfDiscoveryProperties tsfDiscoveryProperties, TsfCoreProperties tsfCoreProperties,
 			TsfHeartbeatProperties tsfHeartbeatProperties, SDKContext sdkContext) {
 		this.autoServiceRegistrationProperties = autoServiceRegistrationProperties;
 		this.context = context;
 		this.tsfDiscoveryProperties = tsfDiscoveryProperties;
+		this.tsfCoreProperties = tsfCoreProperties;
 		this.tsfHeartbeatProperties = tsfHeartbeatProperties;
 		this.sdkContext = sdkContext;
 	}
@@ -56,7 +59,7 @@ public class TsfPortPolarisRegistrationCustomizer implements PolarisRegistration
 			registration.setPort(tsfDiscoveryProperties.getPort());
 		}
 		// we know the port and can set the check
-		RegistrationUtil.setCheck(autoServiceRegistrationProperties, tsfDiscoveryProperties, context,
+		RegistrationUtil.setCheck(autoServiceRegistrationProperties, tsfDiscoveryProperties, tsfCoreProperties, context,
 				tsfHeartbeatProperties, registration, sdkContext.getConfig());
 	}
 }

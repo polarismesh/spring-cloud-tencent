@@ -75,7 +75,7 @@ public final class SpringWebExpressionLabelUtils {
 				labels.put(labelKey, getCookieValue(exchange.getRequest(), cookieKey));
 			}
 			else if (ExpressionLabelUtils.isMethodLabel(labelKey)) {
-				labels.put(labelKey, exchange.getRequest().getMethodValue());
+				labels.put(labelKey, exchange.getRequest().getMethod().toString());
 			}
 			else if (ExpressionLabelUtils.isUriLabel(labelKey)) {
 				labels.put(labelKey, exchange.getRequest().getURI().getPath());
@@ -118,7 +118,7 @@ public final class SpringWebExpressionLabelUtils {
 				labels.put(labelKey, getCookieValue(request, cookieKey));
 			}
 			else if (ExpressionLabelUtils.isMethodLabel(labelKey)) {
-				labels.put(labelKey, request.getMethodValue());
+				labels.put(labelKey, request.getMethod().toString());
 			}
 			else if (ExpressionLabelUtils.isUriLabel(labelKey)) {
 				labels.put(labelKey, request.getURI().getPath());
@@ -129,7 +129,7 @@ public final class SpringWebExpressionLabelUtils {
 	}
 
 	public static String getHeaderValue(ServerHttpRequest request, String key) {
-		return getHeaderValue(request, key, StringUtils.EMPTY);
+		return getHeaderValue(request, key, null);
 	}
 
 	public static String getHeaderValue(ServerHttpRequest request, String key, String defaultValue) {
@@ -141,7 +141,7 @@ public final class SpringWebExpressionLabelUtils {
 	}
 
 	public static String getQueryValue(ServerHttpRequest request, String key) {
-		return getQueryValue(request, key, StringUtils.EMPTY);
+		return getQueryValue(request, key, null);
 	}
 
 	public static String getQueryValue(ServerHttpRequest request, String key, String defaultValue) {
@@ -157,7 +157,7 @@ public final class SpringWebExpressionLabelUtils {
 	}
 
 	public static String getCookieValue(ServerHttpRequest request, String key) {
-		return getCookieValue(request, key, StringUtils.EMPTY);
+		return getCookieValue(request, key, null);
 	}
 
 	public static String getCookieValue(ServerHttpRequest request, String key, String defaultValue) {
@@ -181,7 +181,7 @@ public final class SpringWebExpressionLabelUtils {
 	public static String getCookieValue(HttpRequest request, String key) {
 		String first = request.getHeaders().getFirst(HttpHeaders.COOKIE);
 		if (StringUtils.isEmpty(first)) {
-			return StringUtils.EMPTY;
+			return null;
 		}
 		String[] cookieArray = StringUtils.split(first, ";");
 		for (String cookieItem : cookieArray) {
@@ -190,6 +190,6 @@ public final class SpringWebExpressionLabelUtils {
 				return cookieKv[1];
 			}
 		}
-		return StringUtils.EMPTY;
+		return null;
 	}
 }

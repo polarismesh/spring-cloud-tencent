@@ -22,7 +22,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-import com.tencent.cloud.common.metadata.config.MetadataLocalProperties;
 import com.tencent.cloud.common.util.ApplicationContextAwareUtils;
 import com.tencent.polaris.metadata.core.MessageMetadataContainer;
 import com.tencent.polaris.metadata.core.MetadataContainer;
@@ -43,8 +42,6 @@ import static com.tencent.cloud.common.metadata.MetadataContext.FRAGMENT_UPSTREA
  */
 public final class MetadataContextHolder {
 
-	private static MetadataLocalProperties metadataLocalProperties;
-
 	private static StaticMetadataManager staticMetadataManager;
 
 	static {
@@ -60,27 +57,37 @@ public final class MetadataContextHolder {
 
 	private static MetadataContext createMetadataManager() {
 		MetadataContext metadataManager = new MetadataContext();
-		if (metadataLocalProperties == null) {
-			metadataLocalProperties = ApplicationContextAwareUtils.getApplicationContext()
-					.getBean(MetadataLocalProperties.class);
-		}
 		if (staticMetadataManager == null) {
 			staticMetadataManager = ApplicationContextAwareUtils.getApplicationContext()
 					.getBean(StaticMetadataManager.class);
 		}
+		// local custom metadata
 		MetadataContainer metadataContainer = metadataManager.getMetadataContainer(MetadataType.CUSTOM, false);
+		Map<String, String> mergedStaticMetadata = staticMetadataManager.getMergedStaticMetadata();
+		for (Map.Entry<String, String> entry : mergedStaticMetadata.entrySet()) {
+			metadataContainer.putMetadataStringValue(entry.getKey(), entry.getValue(), TransitiveType.NONE);
+		}
+		// local custom transitive metadata
 		Map<String, String> mergedStaticTransitiveMetadata = staticMetadataManager.getMergedStaticTransitiveMetadata();
 		for (Map.Entry<String, String> entry : mergedStaticTransitiveMetadata.entrySet()) {
 			metadataContainer.putMetadataStringValue(entry.getKey(), entry.getValue(), TransitiveType.PASS_THROUGH);
 		}
+		// local custom disposable metadata
 		Map<String, String> mergedStaticDisposableMetadata = staticMetadataManager.getMergedStaticDisposableMetadata();
 		for (Map.Entry<String, String> entry : mergedStaticDisposableMetadata.entrySet()) {
 			metadataContainer.putMetadataStringValue(entry.getKey(), entry.getValue(), TransitiveType.DISPOSABLE);
 		}
-
+		// local trans header
 		if (StringUtils.hasText(staticMetadataManager.getTransHeader())) {
 			String transHeader = staticMetadataManager.getTransHeader();
 			metadataContainer.putMetadataMapValue(MetadataContext.FRAGMENT_RAW_TRANSHEADERS, transHeader, "", TransitiveType.NONE);
+		}
+
+		// local application disposable metadata
+		MetadataContainer applicationMetadataContainer = metadataManager.getMetadataContainer(MetadataType.APPLICATION, false);
+		Map<String, String> mergedApplicationMetadata = staticMetadataManager.getMergedStaticMetadata();
+		for (Map.Entry<String, String> entry : mergedApplicationMetadata.entrySet()) {
+			applicationMetadataContainer.putMetadataStringValue(entry.getKey(), entry.getValue(), TransitiveType.DISPOSABLE);
 		}
 		return metadataManager;
 	}
@@ -133,24 +140,36 @@ public final class MetadataContextHolder {
 	 * Save metadata map to thread local.
 	 *
 	 * @param dynamicTransitiveMetadata custom metadata collection
-	 * @param dynamicDisposableMetadata custom disposable metadata connection
+	 * @param dynamicDisposableMetadata custom disposable metadata collection
+	 * @param dynamicApplicationMetadata application metadata collection
 	 * @param callerMetadataProvider caller metadata provider
 	 */
 	public static void init(Map<String, String> dynamicTransitiveMetadata, Map<String, String> dynamicDisposableMetadata,
-			MetadataProvider callerMetadataProvider) {
+			Map<String, String> dynamicApplicationMetadata, MetadataProvider callerMetadataProvider) {
 		com.tencent.polaris.metadata.core.manager.MetadataContextHolder.refresh(metadataManager -> {
+			// caller transitive metadata to local custom transitive metadata
 			MetadataContainer metadataContainerUpstream = metadataManager.getMetadataContainer(MetadataType.CUSTOM, false);
 			if (!CollectionUtils.isEmpty(dynamicTransitiveMetadata)) {
 				for (Map.Entry<String, String> entry : dynamicTransitiveMetadata.entrySet()) {
 					metadataContainerUpstream.putMetadataStringValue(entry.getKey(), entry.getValue(), TransitiveType.PASS_THROUGH);
 				}
 			}
+			// caller disposable metadata to caller custom disposable metadata
 			MetadataContainer metadataContainerDownstream = metadataManager.getMetadataContainer(MetadataType.CUSTOM, true);
 			if (!CollectionUtils.isEmpty(dynamicDisposableMetadata)) {
 				for (Map.Entry<String, String> entry : dynamicDisposableMetadata.entrySet()) {
 					metadataContainerDownstream.putMetadataStringValue(entry.getKey(), entry.getValue(), TransitiveType.DISPOSABLE);
 				}
 			}
+			// caller application metadata to caller application disposable metadata
+			MetadataContainer applicationMetadataContainerDownstream = metadataManager.getMetadataContainer(MetadataType.APPLICATION, true);
+			if (!CollectionUtils.isEmpty(dynamicApplicationMetadata)) {
+				for (Map.Entry<String, String> entry : dynamicApplicationMetadata.entrySet()) {
+					applicationMetadataContainerDownstream.putMetadataStringValue(entry.getKey(), entry.getValue(), TransitiveType.DISPOSABLE);
+				}
+			}
+
+			// caller message metadata
 			if (callerMetadataProvider != null) {
 				MessageMetadataContainer callerMessageContainer = metadataManager.getMetadataContainer(MetadataType.MESSAGE, true);
 				callerMessageContainer.setMetadataProvider(callerMetadataProvider);

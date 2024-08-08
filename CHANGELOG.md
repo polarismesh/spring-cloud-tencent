@@ -24,3 +24,4 @@
 - [fix: memory cost too many when using wildcard feign calls](https://github.com/Tencent/spring-cloud-tencent/pull/1400)
 - [feat:support consul config data.](https://github.com/Tencent/spring-cloud-tencent/pull/1401)
 - [feat: support otel trace](https://github.com/Tencent/spring-cloud-tencent/pull/1402)
+- [feat:support TSF router.](https://github.com/Tencent/spring-cloud-tencent/pull/1403)

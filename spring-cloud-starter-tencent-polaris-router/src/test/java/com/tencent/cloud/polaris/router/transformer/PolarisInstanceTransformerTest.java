@@ -23,7 +23,6 @@ import com.tencent.cloud.common.util.ApplicationContextAwareUtils;
 import com.tencent.cloud.rpc.enhancement.transformer.PolarisInstanceTransformer;
 import com.tencent.polaris.api.pojo.DefaultInstance;
 import com.tencent.polaris.api.pojo.Instance;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
@@ -37,25 +36,20 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class PolarisInstanceTransformerTest {
 
-	private static MockedStatic<ApplicationContextAwareUtils> mockedApplicationContextAwareUtils;
-
-	@BeforeAll
-	public static void beforeAll() {
-		mockedApplicationContextAwareUtils = Mockito.mockStatic(ApplicationContextAwareUtils.class);
-		mockedApplicationContextAwareUtils.when(() -> ApplicationContextAwareUtils.getProperties("spring.cloud.polaris.namespace"))
-				.thenReturn("default");
-		mockedApplicationContextAwareUtils.when(() -> ApplicationContextAwareUtils.getProperties("spring.cloud.polaris.service"))
-				.thenReturn("test");
-	}
-
-
 	@Test
 	public void test() {
-		PolarisInstanceTransformer polarisInstanceTransformer = new PolarisInstanceTransformer();
-		DefaultInstance instance = new DefaultInstance();
-		instance.setZone("zone");
-		PolarisServiceInstance polarisServiceInstance = new PolarisServiceInstance(instance);
-		Instance instance1 = polarisInstanceTransformer.transform(polarisServiceInstance);
-		assertThat(instance1.getZone()).isEqualTo("zone");
+		try (
+				MockedStatic<ApplicationContextAwareUtils> mockedApplicationContextAwareUtils = Mockito.mockStatic(ApplicationContextAwareUtils.class)) {
+			mockedApplicationContextAwareUtils.when(() -> ApplicationContextAwareUtils.getProperties("spring.cloud.polaris.namespace"))
+					.thenReturn("default");
+			mockedApplicationContextAwareUtils.when(() -> ApplicationContextAwareUtils.getProperties("spring.cloud.polaris.service"))
+					.thenReturn("test");
+			PolarisInstanceTransformer polarisInstanceTransformer = new PolarisInstanceTransformer();
+			DefaultInstance instance = new DefaultInstance();
+			instance.setZone("zone");
+			PolarisServiceInstance polarisServiceInstance = new PolarisServiceInstance(instance);
+			Instance instance1 = polarisInstanceTransformer.transform(polarisServiceInstance);
+			assertThat(instance1.getZone()).isEqualTo("zone");
+		}
 	}
 }

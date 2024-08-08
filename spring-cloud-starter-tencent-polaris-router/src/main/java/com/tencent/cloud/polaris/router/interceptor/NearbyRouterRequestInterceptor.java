@@ -18,13 +18,13 @@
 
 package com.tencent.cloud.polaris.router.interceptor;
 
-import java.util.HashSet;
-import java.util.Set;
-
+import com.tencent.cloud.common.metadata.MetadataContextHolder;
 import com.tencent.cloud.polaris.router.PolarisRouterContext;
 import com.tencent.cloud.polaris.router.config.properties.PolarisNearByRouterProperties;
 import com.tencent.cloud.polaris.router.spi.RouterRequestInterceptor;
-import com.tencent.polaris.api.pojo.RouteArgument;
+import com.tencent.polaris.metadata.core.MetadataContainer;
+import com.tencent.polaris.metadata.core.MetadataType;
+import com.tencent.polaris.metadata.core.TransitiveType;
 import com.tencent.polaris.plugins.router.nearby.NearbyRouter;
 import com.tencent.polaris.router.api.rpc.ProcessRoutersRequest;
 
@@ -42,13 +42,10 @@ public class NearbyRouterRequestInterceptor implements RouterRequestInterceptor 
 
 	@Override
 	public void apply(ProcessRoutersRequest request, PolarisRouterContext routerContext) {
-		if (!polarisNearByRouterProperties.isEnabled()) {
-			return;
-		}
-
-		Set<RouteArgument> routeArguments = new HashSet<>(1);
-		routeArguments.add(RouteArgument.buildCustom(NearbyRouter.ROUTER_ENABLED, "true"));
-
-		request.putRouterArgument(NearbyRouter.ROUTER_TYPE_NEAR_BY, routeArguments);
+		// set nearby router enable
+		boolean nearbyRouterEnabled = polarisNearByRouterProperties.isEnabled();
+		MetadataContainer metadataContainer = MetadataContextHolder.get()
+				.getMetadataContainer(MetadataType.CUSTOM, false);
+		metadataContainer.putMetadataMapValue(NearbyRouter.ROUTER_TYPE_NEAR_BY, NearbyRouter.ROUTER_ENABLED, String.valueOf(nearbyRouterEnabled), TransitiveType.NONE);
 	}
 }

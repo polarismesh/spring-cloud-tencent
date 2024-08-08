@@ -32,7 +32,6 @@ import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
 import com.tencent.cloud.common.pojo.PolarisServiceInstance;
 import com.tencent.cloud.common.util.JacksonUtils;
-import com.tencent.cloud.polaris.router.resttemplate.PolarisLoadBalancerRequest;
 import com.tencent.cloud.polaris.router.spi.RouterRequestInterceptor;
 import com.tencent.cloud.polaris.router.spi.RouterResponseInterceptor;
 import com.tencent.cloud.rpc.enhancement.transformer.InstanceTransformer;
@@ -100,14 +99,9 @@ public class PolarisRouterServiceInstanceListSupplier extends DelegatingServiceI
 		PolarisRouterContext routerContext = null;
 
 		DefaultRequestContext requestContext = (DefaultRequestContext) request.getContext();
-		if (requestContext != null) {
-			if (requestContext instanceof RequestDataContext) {
-				routerContext = buildRouterContext(((RequestDataContext) requestContext).getClientRequest().getHeaders());
-			}
-			else if (requestContext.getClientRequest() instanceof PolarisLoadBalancerRequest) {
-				routerContext = buildRouterContext(((PolarisLoadBalancerRequest<?>) requestContext.getClientRequest()).getRequest()
-						.getHeaders());
-			}
+		if (requestContext instanceof RequestDataContext) {
+			routerContext = buildRouterContext(((RequestDataContext) requestContext).getClientRequest()
+					.getHeaders());
 		}
 
 		if (routerContext == null) {
@@ -120,14 +114,10 @@ public class PolarisRouterServiceInstanceListSupplier extends DelegatingServiceI
 
 	PolarisRouterContext buildRouterContext(HttpHeaders headers) {
 		Collection<String> labelHeaderValues = headers.get(RouterConstant.ROUTER_LABEL_HEADER);
-
 		if (CollectionUtils.isEmpty(labelHeaderValues)) {
-			return null;
+			labelHeaderValues = new ArrayList<>();
 		}
-
 		PolarisRouterContext routerContext = new PolarisRouterContext();
-
-		routerContext.putLabels(RouterConstant.TRANSITIVE_LABELS, MetadataContextHolder.get().getTransitiveMetadata());
 
 		Map<String, String> labelHeaderValuesMap = new HashMap<>();
 		try {
@@ -178,6 +168,7 @@ public class PolarisRouterServiceInstanceListSupplier extends DelegatingServiceI
 		serviceInfo.setNamespace(MetadataContext.LOCAL_NAMESPACE);
 		serviceInfo.setService(MetadataContext.LOCAL_SERVICE);
 		processRoutersRequest.setSourceService(serviceInfo);
+		processRoutersRequest.setMetadataContainerGroup(MetadataContextHolder.get().getMetadataContainerGroup(false));
 		return processRoutersRequest;
 	}
 
