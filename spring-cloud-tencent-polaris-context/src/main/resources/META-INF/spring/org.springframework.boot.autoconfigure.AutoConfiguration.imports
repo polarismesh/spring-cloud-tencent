@@ -2,3 +2,4 @@ com.tencent.cloud.polaris.context.config.PolarisContextAutoConfiguration
 com.tencent.cloud.polaris.context.config.PolarisContextPostConfiguration
 com.tencent.cloud.polaris.context.tsf.config.TsfCorePropertiesAutoConfiguration
 com.tencent.cloud.polaris.context.tsf.consul.TsfConsulAutoConfiguration
+com.tencent.cloud.polaris.context.tsf.metadata.TsfInstanceMetadataAutoConfiguration

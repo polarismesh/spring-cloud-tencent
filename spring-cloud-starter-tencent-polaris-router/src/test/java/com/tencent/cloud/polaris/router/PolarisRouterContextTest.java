@@ -20,7 +20,6 @@ package com.tencent.cloud.polaris.router;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 import com.google.common.collect.Sets;
 import com.tencent.cloud.common.constant.RouterConstant;
@@ -96,21 +95,5 @@ public class PolarisRouterContextTest {
 
 		String resolvedLabel = routerContext.getLabel("k1");
 		assertThat(resolvedLabel).isEqualTo("v1");
-	}
-
-	@Test
-	public void testGetLabelAsSet() {
-		Map<String, String> labels = new HashMap<>();
-		labels.put("k1", "v1,v2,v3");
-
-		PolarisRouterContext routerContext = new PolarisRouterContext();
-		routerContext.putLabels(RouterConstant.ROUTER_LABELS, labels);
-
-		Set<String> resolvedLabels = routerContext.getLabelAsSet("k1");
-
-		assertThat(resolvedLabels.size()).isEqualTo(3);
-		assertThat(resolvedLabels).contains("v1");
-		assertThat(resolvedLabels).contains("v2");
-		assertThat(resolvedLabels).contains("v3");
 	}
 }

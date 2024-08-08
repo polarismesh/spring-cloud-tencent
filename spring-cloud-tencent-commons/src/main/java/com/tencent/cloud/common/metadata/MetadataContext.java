@@ -57,6 +57,16 @@ public class MetadataContext extends com.tencent.polaris.metadata.core.manager.M
 	public static final String FRAGMENT_UPSTREAM_DISPOSABLE = "upstream-disposable";
 
 	/**
+	 * disposable Context.
+	 */
+	public static final String FRAGMENT_APPLICATION = "application";
+
+	/**
+	 * upstream disposable Context.
+	 */
+	public static final String FRAGMENT_UPSTREAM_APPLICATION = "upstream-application";
+
+	/**
 	 * the key of the header(key) list needed to be transmitted from upstream to downstream.
 	 */
 	public static final String FRAGMENT_RAW_TRANSHEADERS = "trans-headers";
@@ -93,8 +103,6 @@ public class MetadataContext extends com.tencent.polaris.metadata.core.manager.M
 		if (!StringUtils.hasText(namespace)) {
 			LOG.error("namespace should not be blank. please configure spring.cloud.polaris.namespace or "
 					+ "spring.cloud.polaris.discovery.namespace");
-			throw new RuntimeException("namespace should not be blank. please configure spring.cloud.polaris.namespace or "
-					+ "spring.cloud.polaris.discovery.namespace");
 		}
 		namespace = DiscoveryUtil.rewriteNamespace(namespace);
 		LOCAL_NAMESPACE = namespace;
@@ -109,8 +117,6 @@ public class MetadataContext extends com.tencent.polaris.metadata.core.manager.M
 		if (!StringUtils.hasText(serviceName)) {
 			LOG.error("service name should not be blank. please configure spring.cloud.polaris.service or "
 					+ "spring.cloud.polaris.discovery.service or spring.application.name");
-			throw new RuntimeException("service name should not be blank. please configure spring.cloud.polaris.service or "
-					+ "spring.cloud.polaris.discovery.service or spring.application.name");
 		}
 		serviceName = DiscoveryUtil.rewriteServiceId(serviceName);
 		LOCAL_SERVICE = serviceName;
@@ -120,8 +126,8 @@ public class MetadataContext extends com.tencent.polaris.metadata.core.manager.M
 		super(MetadataConstant.POLARIS_TRANSITIVE_HEADER_PREFIX);
 	}
 
-	private Map<String, String> getMetadataAsMap(MetadataType metadataType, TransitiveType transitiveType, boolean downstream) {
-		MetadataContainer metadataContainer = getMetadataContainer(metadataType, downstream);
+	private Map<String, String> getMetadataAsMap(MetadataType metadataType, TransitiveType transitiveType, boolean caller) {
+		MetadataContainer metadataContainer = getMetadataContainer(metadataType, caller);
 		Map<String, String> values = new HashMap<>();
 		metadataContainer.iterateMetadataValues(new BiConsumer<String, MetadataValue>() {
 			@Override
@@ -144,8 +150,8 @@ public class MetadataContext extends com.tencent.polaris.metadata.core.manager.M
 		}
 	}
 
-	private Map<String, String> getMapMetadataAsMap(MetadataType metadataType, String mapKey, TransitiveType transitiveType, boolean downstream) {
-		MetadataContainer metadataContainer = getMetadataContainer(metadataType, downstream);
+	private Map<String, String> getMapMetadataAsMap(MetadataType metadataType, String mapKey, TransitiveType transitiveType, boolean caller) {
+		MetadataContainer metadataContainer = getMetadataContainer(metadataType, caller);
 		Map<String, String> values = new HashMap<>();
 		MetadataValue metadataValue = metadataContainer.getMetadataValue(mapKey);
 		if (!(metadataValue instanceof MetadataMapValue)) {
@@ -167,8 +173,8 @@ public class MetadataContext extends com.tencent.polaris.metadata.core.manager.M
 	}
 
 	private void putMapMetadataAsMap(MetadataType metadataType, String mapKey,
-			TransitiveType transitiveType, boolean downstream, Map<String, String> values) {
-		MetadataContainer metadataContainer = getMetadataContainer(metadataType, downstream);
+			TransitiveType transitiveType, boolean caller, Map<String, String> values) {
+		MetadataContainer metadataContainer = getMetadataContainer(metadataType, caller);
 		for (Map.Entry<String, String> entry : values.entrySet()) {
 			metadataContainer.putMetadataMapValue(mapKey, entry.getKey(), entry.getValue(), transitiveType);
 		}
@@ -178,8 +184,20 @@ public class MetadataContext extends com.tencent.polaris.metadata.core.manager.M
 		return getFragmentContext(FRAGMENT_DISPOSABLE);
 	}
 
+	public void setDisposableMetadata(Map<String, String> disposableMetadata) {
+		putFragmentContext(FRAGMENT_DISPOSABLE, Collections.unmodifiableMap(disposableMetadata));
+	}
+
 	public Map<String, String> getTransitiveMetadata() {
 		return getFragmentContext(FRAGMENT_TRANSITIVE);
+	}
+
+	public void setTransitiveMetadata(Map<String, String> transitiveMetadata) {
+		putFragmentContext(FRAGMENT_TRANSITIVE, Collections.unmodifiableMap(transitiveMetadata));
+	}
+
+	public Map<String, String> getApplicationMetadata() {
+		return getFragmentContext(FRAGMENT_APPLICATION);
 	}
 
 	public Map<String, String> getCustomMetadata() {
@@ -227,14 +245,6 @@ public class MetadataContext extends com.tencent.polaris.metadata.core.manager.M
 		metadataContainer.putMetadataMapObjectValue(FRAGMENT_LB_METADATA, key, value);
 	}
 
-	public void setTransitiveMetadata(Map<String, String> transitiveMetadata) {
-		putFragmentContext(FRAGMENT_TRANSITIVE, Collections.unmodifiableMap(transitiveMetadata));
-	}
-
-	public void setDisposableMetadata(Map<String, String> disposableMetadata) {
-		putFragmentContext(FRAGMENT_DISPOSABLE, Collections.unmodifiableMap(disposableMetadata));
-	}
-
 	public void setUpstreamDisposableMetadata(Map<String, String> upstreamDisposableMetadata) {
 		putFragmentContext(FRAGMENT_UPSTREAM_DISPOSABLE, Collections.unmodifiableMap(upstreamDisposableMetadata));
 	}
@@ -255,6 +265,10 @@ public class MetadataContext extends com.tencent.polaris.metadata.core.manager.M
 			return getMetadataAsMap(MetadataType.CUSTOM, TransitiveType.DISPOSABLE, false);
 		case FRAGMENT_UPSTREAM_DISPOSABLE:
 			return getMetadataAsMap(MetadataType.CUSTOM, TransitiveType.DISPOSABLE, true);
+		case FRAGMENT_APPLICATION:
+			return getMetadataAsMap(MetadataType.APPLICATION, TransitiveType.DISPOSABLE, false);
+		case FRAGMENT_UPSTREAM_APPLICATION:
+			return getMetadataAsMap(MetadataType.APPLICATION, TransitiveType.DISPOSABLE, true);
 		case FRAGMENT_RAW_TRANSHEADERS:
 			return getMapMetadataAsMap(MetadataType.CUSTOM, FRAGMENT_RAW_TRANSHEADERS, TransitiveType.NONE, false);
 		case FRAGMENT_RAW_TRANSHEADERS_KV:
@@ -288,6 +302,12 @@ public class MetadataContext extends com.tencent.polaris.metadata.core.manager.M
 			break;
 		case FRAGMENT_UPSTREAM_DISPOSABLE:
 			putMetadataAsMap(MetadataType.CUSTOM, TransitiveType.DISPOSABLE, true, context);
+			break;
+		case FRAGMENT_APPLICATION:
+			putMetadataAsMap(MetadataType.APPLICATION, TransitiveType.DISPOSABLE, false, context);
+			break;
+		case FRAGMENT_UPSTREAM_APPLICATION:
+			putMetadataAsMap(MetadataType.APPLICATION, TransitiveType.DISPOSABLE, true, context);
 			break;
 		case FRAGMENT_RAW_TRANSHEADERS:
 			putMapMetadataAsMap(MetadataType.CUSTOM, FRAGMENT_RAW_TRANSHEADERS, TransitiveType.NONE, false, context);

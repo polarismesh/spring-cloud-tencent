@@ -20,6 +20,7 @@ package com.tencent.cloud.rpc.enhancement.transformer;
 
 import com.tencent.cloud.common.pojo.PolarisServiceInstance;
 import com.tencent.polaris.api.pojo.DefaultInstance;
+import com.tencent.polaris.api.utils.CollectionUtils;
 
 import org.springframework.cloud.client.ServiceInstance;
 
@@ -38,6 +39,9 @@ public class PolarisInstanceTransformer implements InstanceTransformer {
 			instance.setZone(polarisServiceInstance.getPolarisInstance().getZone());
 			instance.setCampus(polarisServiceInstance.getPolarisInstance().getCampus());
 			instance.setWeight(polarisServiceInstance.getPolarisInstance().getWeight());
+			if (CollectionUtils.isNotEmpty(polarisServiceInstance.getServiceMetadata())) {
+				instance.getServiceMetadata().putAll(polarisServiceInstance.getServiceMetadata());
+			}
 		}
 	}
 

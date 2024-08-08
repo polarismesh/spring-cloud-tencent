@@ -20,8 +20,8 @@ package com.tencent.cloud.polaris.context;
 
 import com.tencent.cloud.common.metadata.StaticMetadataManager;
 import com.tencent.polaris.api.plugin.common.ValueContext;
-import com.tencent.polaris.api.plugin.route.LocationLevel;
 import com.tencent.polaris.client.api.SDKContext;
+import com.tencent.polaris.specification.api.v1.traffic.manage.RoutingProto;
 import org.apache.commons.lang.StringUtils;
 
 /**
@@ -39,13 +39,13 @@ public class PostInitPolarisSDKContext {
 
 		ValueContext valueContext = sdkContext.getValueContext();
 		if (StringUtils.isNotBlank(region)) {
-			valueContext.setValue(LocationLevel.region.name(), region);
+			valueContext.setValue(RoutingProto.NearbyRoutingConfig.LocationLevel.REGION.name(), region);
 		}
 		if (StringUtils.isNotBlank(zone)) {
-			valueContext.setValue(LocationLevel.zone.name(), zone);
+			valueContext.setValue(RoutingProto.NearbyRoutingConfig.LocationLevel.ZONE.name(), zone);
 		}
 		if (StringUtils.isNotBlank(campus)) {
-			valueContext.setValue(LocationLevel.campus.name(), campus);
+			valueContext.setValue(RoutingProto.NearbyRoutingConfig.LocationLevel.CAMPUS.name(), campus);
 		}
 	}
 }

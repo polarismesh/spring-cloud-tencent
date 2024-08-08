@@ -18,35 +18,21 @@
 
 package com.tencent.cloud.polaris.router.resttemplate;
 
-import java.io.UnsupportedEncodingException;
 import java.net.URI;
-import java.net.URLDecoder;
-import java.net.URLEncoder;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
 
-import com.tencent.cloud.common.constant.RouterConstant;
-import com.tencent.cloud.common.metadata.MetadataContext;
+import com.tencent.cloud.common.constant.OrderConstant;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
-import com.tencent.cloud.common.metadata.StaticMetadataManager;
-import com.tencent.cloud.common.util.ApplicationContextAwareUtils;
-import com.tencent.cloud.common.util.JacksonUtils;
-import com.tencent.cloud.common.util.expresstion.SpringWebExpressionLabelUtils;
-import com.tencent.cloud.polaris.context.config.PolarisContextProperties;
-import com.tencent.cloud.polaris.router.RouterRuleLabelResolver;
-import com.tencent.cloud.polaris.router.spi.SpringWebRouterLabelResolver;
+import com.tencent.polaris.metadata.core.MessageMetadataContainer;
+import com.tencent.polaris.metadata.core.MetadataContainer;
+import com.tencent.polaris.metadata.core.MetadataType;
+import feign.Request;
+import io.netty.handler.codec.http.HttpHeaderNames;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.MockedStatic;
-import org.mockito.Mockito;
-import org.mockito.junit.jupiter.MockitoExtension;
 
-import org.springframework.core.Ordered;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpRequest;
@@ -54,14 +40,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.client.ClientHttpRequestExecution;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.mock.http.client.MockClientHttpResponse;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import static com.tencent.cloud.common.constant.ContextConstant.UTF_8;
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mockStatic;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 /**
@@ -69,115 +52,58 @@ import static org.mockito.Mockito.when;
  *
  * @author liuye, Haotian Zhang
  */
-@ExtendWith(MockitoExtension.class)
+@ExtendWith(SpringExtension.class)
+@SpringBootTest(classes = RouterLabelRestTemplateInterceptorTest.TestApplication.class,
+		properties = {"spring.cloud.polaris.namespace=test", "spring.application.name=test", "spring.cloud.gateway.enabled=false"})
 public class RouterLabelRestTemplateInterceptorTest {
-
-	private static final String testNamespaceAndService = "testNamespaceAndService";
-	@Mock
-
-	private SpringWebRouterLabelResolver routerLabelResolver;
-	@Mock
-	private StaticMetadataManager staticMetadataManager;
-	@Mock
-	private RouterRuleLabelResolver routerRuleLabelResolver;
-	@Mock
-	private PolarisContextProperties polarisContextProperties;
 
 	@Mock
 	private ClientHttpRequestExecution clientHttpRequestExecution;
 
-
 	@Test
-	public void testRouterContext() throws Exception {
-		try (
-				MockedStatic<ApplicationContextAwareUtils> mockedApplicationContextAwareUtils = mockStatic(ApplicationContextAwareUtils.class);
-				MockedStatic<MetadataContextHolder> mockedMetadataContextHolder = mockStatic(MetadataContextHolder.class)
-		) {
-			mockedApplicationContextAwareUtils.when(() -> ApplicationContextAwareUtils.getProperties(anyString()))
-					.thenReturn(testNamespaceAndService);
+	public void testRouterLabel() throws Exception {
+		RouterLabelRestTemplateInterceptor routerLabelRestTemplateInterceptor = new RouterLabelRestTemplateInterceptor();
 
-			String calleeService = "calleeService";
-			HttpRequest request = new MockedHttpRequest("http://" + calleeService + "/user/get");
+		assertThat(routerLabelRestTemplateInterceptor.getOrder()).isEqualTo(OrderConstant.Client.RestTemplate.ROUTER_LABEL_INTERCEPTOR_ORDER);
 
-			// mock local metadata
-			Map<String, String> localMetadata = new HashMap<>();
-			localMetadata.put("k1", "v1");
-			localMetadata.put("k2", "v2");
-			when(staticMetadataManager.getMergedStaticMetadata()).thenReturn(localMetadata);
-			Map<String, String> routerLabels = new HashMap<>(localMetadata);
+		String calleeService = "calleeService";
+		HttpRequest request = new MockedHttpRequest("http://" + calleeService + "/test/path?q1=a1");
 
-			// mock expression rule labels
-			Set<String> expressionKeys = new HashSet<>();
-			expressionKeys.add("${http.method}");
-			expressionKeys.add("${http.uri}");
-			when(routerRuleLabelResolver.getExpressionLabelKeys(testNamespaceAndService, testNamespaceAndService, calleeService)).thenReturn(expressionKeys);
-			routerLabels.putAll(SpringWebExpressionLabelUtils.resolve(request, expressionKeys));
+		ClientHttpResponse mockedResponse = new MockClientHttpResponse(new byte[] {}, HttpStatus.OK);
+		when(clientHttpRequestExecution.execute(eq(request), any())).thenReturn(mockedResponse);
 
-			// mock custom resolved from request
-			Map<String, String> customResolvedLabels = new HashMap<>();
-			customResolvedLabels.put("k2", "v22");
-			customResolvedLabels.put("k4", "v4");
-			when(routerLabelResolver.resolve(request, null, expressionKeys)).thenReturn(customResolvedLabels);
-			routerLabels.putAll(customResolvedLabels);
+		routerLabelRestTemplateInterceptor.intercept(request, null, clientHttpRequestExecution);
 
-			MetadataContext metadataContext = Mockito.mock(MetadataContext.class);
-
-			// mock transitive metadata
-			Map<String, String> transitiveLabels = new HashMap<>();
-			transitiveLabels.put("k1", "v1");
-			transitiveLabels.put("k2", "v22");
-			when(metadataContext.getTransitiveMetadata()).thenReturn(transitiveLabels);
-			routerLabels.putAll(transitiveLabels);
-
-			mockedMetadataContextHolder.when(MetadataContextHolder::get).thenReturn(metadataContext);
-
-			RouterLabelRestTemplateInterceptor routerLabelRestTemplateInterceptor = new RouterLabelRestTemplateInterceptor(
-					Collections.singletonList(routerLabelResolver), staticMetadataManager, routerRuleLabelResolver, polarisContextProperties);
-
-			ClientHttpResponse mockedResponse = new MockClientHttpResponse(new byte[] {}, HttpStatus.OK);
-			when(clientHttpRequestExecution.execute(eq(request), any())).thenReturn(mockedResponse);
-
-			assertThat(routerLabelRestTemplateInterceptor.getOrder()).isEqualTo(Ordered.LOWEST_PRECEDENCE);
-
-			routerLabelRestTemplateInterceptor.intercept(request, null, clientHttpRequestExecution);
-
-			verify(staticMetadataManager).getMergedStaticMetadata();
-			verify(routerRuleLabelResolver).getExpressionLabelKeys(testNamespaceAndService, testNamespaceAndService, calleeService);
-			verify(routerLabelResolver).resolve(request, null, expressionKeys);
-
-
-			Map<String, String> headers = JacksonUtils.deserialize2Map(URLDecoder.decode(Objects.requireNonNull(request.getHeaders()
-					.get(RouterConstant.ROUTER_LABEL_HEADER)).get(0), "UTF-8"));
-			assertThat("v1").isEqualTo(headers.get("k1"));
-			assertThat("v22").isEqualTo(headers.get("k2"));
-			assertThat("v4").isEqualTo(headers.get("k4"));
-			assertThat("GET").isEqualTo(headers.get("${http.method}"));
-			assertThat("/user/get").isEqualTo(headers.get("${http.uri}"));
-			String encodedLabelsContent;
-			try {
-				encodedLabelsContent = URLEncoder.encode(JacksonUtils.serialize2Json(routerLabels), UTF_8);
-			}
-			catch (UnsupportedEncodingException e) {
-				throw new RuntimeException("unsupported charset exception " + UTF_8);
-			}
-			assertThat(mockedResponse.getHeaders().get(RouterConstant.ROUTER_LABEL_HEADER).get(0))
-					.isEqualTo(encodedLabelsContent);
-		}
+		// get message metadata container
+		MetadataContainer metadataContainer = MetadataContextHolder.get()
+				.getMetadataContainer(MetadataType.MESSAGE, false);
+		// method
+		assertThat(metadataContainer.getRawMetadataStringValue(MessageMetadataContainer.LABEL_KEY_METHOD)).isEqualTo(Request.HttpMethod.POST.toString());
+		// path
+		assertThat(metadataContainer.getRawMetadataStringValue(MessageMetadataContainer.LABEL_KEY_PATH)).isEqualTo("/test/path");
+		// header
+		assertThat(metadataContainer.getRawMetadataMapValue(MessageMetadataContainer.LABEL_MAP_KEY_HEADER, "uid")).isEqualTo("1000");
+		// cookie
+		assertThat(metadataContainer.getRawMetadataMapValue(MessageMetadataContainer.LABEL_MAP_KEY_COOKIE, "k1")).isEqualTo("v1");
+		// query
+		assertThat(metadataContainer.getRawMetadataMapValue(MessageMetadataContainer.LABEL_MAP_KEY_QUERY, "q1")).isEqualTo("a1");
 	}
 
 	static class MockedHttpRequest implements HttpRequest {
 
-		private URI uri;
+		private final URI uri;
 
-		private HttpHeaders httpHeaders = new HttpHeaders();
+		private final HttpHeaders httpHeaders = new HttpHeaders();
 
 		MockedHttpRequest(String url) {
 			this.uri = URI.create(url);
+			this.httpHeaders.add("uid", "1000");
+			this.httpHeaders.add(HttpHeaderNames.COOKIE.toString(), "k1=v1");
 		}
 
 		@Override
 		public HttpMethod getMethod() {
-			return HttpMethod.GET;
+			return HttpMethod.POST;
 		}
 
 		@Override
@@ -189,5 +115,10 @@ public class RouterLabelRestTemplateInterceptorTest {
 		public HttpHeaders getHeaders() {
 			return httpHeaders;
 		}
+	}
+
+	@SpringBootApplication
+	protected static class TestApplication {
+
 	}
 }
