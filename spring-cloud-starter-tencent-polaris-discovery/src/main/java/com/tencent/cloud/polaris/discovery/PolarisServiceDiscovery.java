@@ -67,7 +67,7 @@ public class PolarisServiceDiscovery {
 		InstancesResponse filteredInstances = polarisDiscoveryHandler.getHealthyInstances(serviceId);
 		ServiceInstances serviceInstances = filteredInstances.toServiceInstances();
 		for (Instance instance : serviceInstances.getInstances()) {
-			instances.add(new PolarisServiceInstance(instance));
+			instances.add(new PolarisServiceInstance(instance, filteredInstances.getMetadata()));
 		}
 		return instances;
 	}

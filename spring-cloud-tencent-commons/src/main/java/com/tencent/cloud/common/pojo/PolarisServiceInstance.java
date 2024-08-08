@@ -18,10 +18,12 @@
 package com.tencent.cloud.common.pojo;
 
 import java.net.URI;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
 import com.tencent.polaris.api.pojo.Instance;
+import com.tencent.polaris.api.utils.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 
 import org.springframework.cloud.client.DefaultServiceInstance;
@@ -40,7 +42,13 @@ public class PolarisServiceInstance implements ServiceInstance {
 
 	private final String scheme;
 
+	private final Map<String, String> serviceMetadata;
+
 	public PolarisServiceInstance(Instance instance) {
+		this(instance, null);
+	}
+
+	public PolarisServiceInstance(Instance instance, Map<String, String> metadata) {
 		this.instance = instance;
 		this.isSecure = StringUtils.equalsIgnoreCase(instance.getProtocol(), "https");
 		if (isSecure) {
@@ -48,6 +56,10 @@ public class PolarisServiceInstance implements ServiceInstance {
 		}
 		else {
 			scheme = "http";
+		}
+		this.serviceMetadata = new HashMap<>();
+		if (CollectionUtils.isNotEmpty(metadata)) {
+			this.serviceMetadata.putAll(metadata);
 		}
 	}
 
@@ -95,6 +107,10 @@ public class PolarisServiceInstance implements ServiceInstance {
 		return this.scheme;
 	}
 
+	public Map<String, String> getServiceMetadata() {
+		return serviceMetadata;
+	}
+
 	/**
 	 * To fix loadbalancer not working bug when importing spring-retry.
 	 * @param o object
@@ -115,5 +131,15 @@ public class PolarisServiceInstance implements ServiceInstance {
 	@Override
 	public int hashCode() {
 		return Objects.hash(instance, scheme);
+	}
+
+	@Override
+	public String toString() {
+		return "PolarisServiceInstance{" +
+				"instance=" + instance +
+				", isSecure=" + isSecure +
+				", scheme='" + scheme + '\'' +
+				", serviceMetadata=" + serviceMetadata +
+				'}';
 	}
 }

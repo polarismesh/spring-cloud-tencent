@@ -17,6 +17,8 @@
 
 package com.tencent.cloud.polaris.router.config.properties;
 
+import com.tencent.polaris.api.rpc.RuleBasedRouterFailoverType;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
@@ -29,6 +31,8 @@ public class PolarisRuleBasedRouterProperties {
 
 	private boolean enabled = true;
 
+	private RuleBasedRouterFailoverType failOver = RuleBasedRouterFailoverType.all;
+
 	public boolean isEnabled() {
 		return enabled;
 	}
@@ -37,10 +41,19 @@ public class PolarisRuleBasedRouterProperties {
 		this.enabled = enabled;
 	}
 
+	public RuleBasedRouterFailoverType getFailOver() {
+		return failOver;
+	}
+
+	public void setFailOver(RuleBasedRouterFailoverType failOver) {
+		this.failOver = failOver;
+	}
+
 	@Override
 	public String toString() {
-		return "PolarisNearByRouterProperties{" +
+		return "PolarisRuleBasedRouterProperties{" +
 				"enabled=" + enabled +
+				", failOver=" + failOver +
 				'}';
 	}
 }

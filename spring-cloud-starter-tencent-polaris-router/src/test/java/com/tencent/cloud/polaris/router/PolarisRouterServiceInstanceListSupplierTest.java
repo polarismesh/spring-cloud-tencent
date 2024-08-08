@@ -24,7 +24,6 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import com.tencent.cloud.common.constant.RouterConstant;
@@ -38,7 +37,6 @@ import com.tencent.cloud.polaris.router.config.properties.PolarisRuleBasedRouter
 import com.tencent.cloud.polaris.router.interceptor.MetadataRouterRequestInterceptor;
 import com.tencent.cloud.polaris.router.interceptor.NearbyRouterRequestInterceptor;
 import com.tencent.cloud.polaris.router.interceptor.RuleBasedRouterRequestInterceptor;
-import com.tencent.cloud.polaris.router.resttemplate.PolarisLoadBalancerRequest;
 import com.tencent.cloud.polaris.router.spi.RouterRequestInterceptor;
 import com.tencent.cloud.polaris.router.spi.RouterResponseInterceptor;
 import com.tencent.cloud.rpc.enhancement.transformer.PolarisInstanceTransformer;
@@ -46,9 +44,11 @@ import com.tencent.polaris.api.exception.PolarisException;
 import com.tencent.polaris.api.pojo.DefaultInstance;
 import com.tencent.polaris.api.pojo.DefaultServiceInstances;
 import com.tencent.polaris.api.pojo.Instance;
-import com.tencent.polaris.api.pojo.RouteArgument;
 import com.tencent.polaris.api.pojo.ServiceInstances;
 import com.tencent.polaris.api.pojo.ServiceKey;
+import com.tencent.polaris.metadata.core.MetadataContainer;
+import com.tencent.polaris.metadata.core.MetadataType;
+import com.tencent.polaris.metadata.core.TransitiveType;
 import com.tencent.polaris.plugins.router.metadata.MetadataRouter;
 import com.tencent.polaris.plugins.router.nearby.NearbyRouter;
 import com.tencent.polaris.plugins.router.rule.RuleBasedRouter;
@@ -66,7 +66,6 @@ import reactor.core.publisher.Flux;
 
 import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.cloud.client.loadbalancer.DefaultRequest;
-import org.springframework.cloud.client.loadbalancer.DefaultRequestContext;
 import org.springframework.cloud.client.loadbalancer.RequestData;
 import org.springframework.cloud.client.loadbalancer.RequestDataContext;
 import org.springframework.cloud.loadbalancer.core.ServiceInstanceListSupplier;
@@ -123,27 +122,18 @@ public class PolarisRouterServiceInstanceListSupplierTest {
 			PolarisRouterServiceInstanceListSupplier polarisSupplier = new PolarisRouterServiceInstanceListSupplier(
 					delegate, routerAPI, requestInterceptors, null, new PolarisInstanceTransformer());
 
+			MetadataContainer metadataContainer = MetadataContextHolder.get()
+					.getMetadataContainer(MetadataType.CUSTOM, false);
+			metadataContainer.putMetadataStringValue("system-metadata-router-keys", "k2", TransitiveType.NONE);
+
 			ServiceInstances serviceInstances = assembleServiceInstances();
 			PolarisRouterContext routerContext = assembleRouterContext();
-
-			Map<String, String> oldRouterLabels = routerContext.getLabels(RouterConstant.ROUTER_LABELS);
-			Map<String, String> newRouterLabels = new HashMap<>(oldRouterLabels);
-			newRouterLabels.put("system-metadata-router-keys", "k2");
-			routerContext.putLabels(RouterConstant.ROUTER_LABELS, newRouterLabels);
 
 			ProcessRoutersRequest request = polarisSupplier.buildProcessRoutersRequest(serviceInstances, routerContext);
 			polarisSupplier.processRouterRequestInterceptors(request, routerContext);
 
-			Set<RouteArgument> routerMetadata = request.getRouterArguments(MetadataRouter.ROUTER_TYPE_METADATA);
-
-			assertThat(routerMetadata.size()).isEqualTo(1);
-			assertThat(request.getRouterArguments(NearbyRouter.ROUTER_TYPE_NEAR_BY).size()).isEqualTo(0);
-			assertThat(request.getRouterArguments(RuleBasedRouter.ROUTER_TYPE_RULE_BASED).size()).isEqualTo(1);
-
-			for (RouteArgument routeArgument : request.getRouterArguments(RuleBasedRouter.ROUTER_TYPE_RULE_BASED)) {
-				assertThat(routeArgument.getKey()).isEqualTo(RuleBasedRouter.ROUTER_ENABLED);
-				assertThat(routeArgument.getValue()).isEqualTo("false");
-			}
+			String result = metadataContainer.getRawMetadataMapValue(MetadataRouter.ROUTER_TYPE_METADATA, MetadataRouter.KEY_METADATA_KEYS);
+			assertThat(result).isEqualTo("k2");
 		}
 	}
 
@@ -166,22 +156,10 @@ public class PolarisRouterServiceInstanceListSupplierTest {
 			ProcessRoutersRequest request = polarisSupplier.buildProcessRoutersRequest(serviceInstances, routerContext);
 			polarisSupplier.processRouterRequestInterceptors(request, routerContext);
 
-			Set<RouteArgument> routerMetadata = request.getRouterArguments(NearbyRouter.ROUTER_TYPE_NEAR_BY);
-
-			assertThat(request.getRouterArguments(MetadataRouter.ROUTER_TYPE_METADATA).size()).isEqualTo(0);
-			assertThat(routerMetadata.size()).isEqualTo(1);
-
-			for (RouteArgument routeArgument : routerMetadata) {
-				assertThat(routeArgument.getKey()).isEqualTo(RuleBasedRouter.ROUTER_ENABLED);
-				assertThat(routeArgument.getValue()).isEqualTo("true");
-			}
-
-			assertThat(request.getRouterArguments(RuleBasedRouter.ROUTER_TYPE_RULE_BASED).size()).isEqualTo(1);
-
-			for (RouteArgument routeArgument : request.getRouterArguments(RuleBasedRouter.ROUTER_TYPE_RULE_BASED)) {
-				assertThat(routeArgument.getKey()).isEqualTo(RuleBasedRouter.ROUTER_ENABLED);
-				assertThat(routeArgument.getValue()).isEqualTo("false");
-			}
+			MetadataContainer metadataContainer = MetadataContextHolder.get()
+					.getMetadataContainer(MetadataType.CUSTOM, false);
+			String result = metadataContainer.getRawMetadataMapValue(NearbyRouter.ROUTER_TYPE_NEAR_BY, NearbyRouter.ROUTER_ENABLED);
+			assertThat(result).isEqualTo("true");
 		}
 	}
 
@@ -204,11 +182,10 @@ public class PolarisRouterServiceInstanceListSupplierTest {
 			ProcessRoutersRequest request = polarisSupplier.buildProcessRoutersRequest(serviceInstances, routerContext);
 			polarisSupplier.processRouterRequestInterceptors(request, routerContext);
 
-			Set<RouteArgument> routerMetadata = request.getRouterArguments(RuleBasedRouter.ROUTER_TYPE_RULE_BASED);
-
-			assertThat(routerMetadata.size()).isEqualTo(3);
-			assertThat(request.getRouterArguments(MetadataRouter.ROUTER_TYPE_METADATA).size()).isEqualTo(0);
-			assertThat(request.getRouterArguments(NearbyRouter.ROUTER_TYPE_NEAR_BY).size()).isEqualTo(0);
+			MetadataContainer metadataContainer = MetadataContextHolder.get()
+					.getMetadataContainer(MetadataType.CUSTOM, false);
+			String result = metadataContainer.getRawMetadataMapValue(RuleBasedRouter.ROUTER_TYPE_RULE_BASED, RuleBasedRouter.ROUTER_ENABLED);
+			assertThat(result).isEqualTo("true");
 		}
 	}
 
@@ -242,7 +219,7 @@ public class PolarisRouterServiceInstanceListSupplierTest {
 
 		HttpHeaders headers = new HttpHeaders();
 		PolarisRouterContext context = polarisSupplier.buildRouterContext(headers);
-		assertThat(context).isNull();
+		assertThat(context).isNotNull();
 
 		// mock
 		try (MockedStatic<ApplicationContextAwareUtils> mockedApplicationContextAwareUtils = Mockito.mockStatic(ApplicationContextAwareUtils.class)) {
@@ -269,25 +246,6 @@ public class PolarisRouterServiceInstanceListSupplierTest {
 		try (MockedStatic<ApplicationContextAwareUtils> mockedApplicationContextAwareUtils = Mockito.mockStatic(ApplicationContextAwareUtils.class)) {
 			mockedApplicationContextAwareUtils.when(() -> ApplicationContextAwareUtils.getProperties(anyString()))
 					.thenReturn(testCallerService);
-
-			PolarisRouterServiceInstanceListSupplier polarisSupplier = new PolarisRouterServiceInstanceListSupplier(
-					delegate, routerAPI, requestInterceptors, null, new PolarisInstanceTransformer());
-
-			MockServerHttpRequest httpRequest = MockServerHttpRequest.get("/" + testCalleeService + "/users")
-					.header("k1", "v1")
-					.queryParam("userid", "zhangsan")
-					.build();
-			RequestDataContext requestDataContext = new RequestDataContext(new RequestData(httpRequest), "blue");
-			DefaultRequest request = new DefaultRequest(requestDataContext);
-			assertThat(polarisSupplier.get(request)).isNull();
-		}
-	}
-
-	@Test
-	public void testGet03() {
-		try (MockedStatic<ApplicationContextAwareUtils> mockedApplicationContextAwareUtils = Mockito.mockStatic(ApplicationContextAwareUtils.class)) {
-			mockedApplicationContextAwareUtils.when(() -> ApplicationContextAwareUtils.getProperties(anyString()))
-					.thenReturn(testCallerService);
 			MetadataContextHolder.set(new MetadataContext());
 			mockedApplicationContextAwareUtils.when(() -> delegate.get())
 					.thenReturn(assembleServers());
@@ -299,14 +257,14 @@ public class PolarisRouterServiceInstanceListSupplierTest {
 
 			MockServerHttpRequest httpRequest = MockServerHttpRequest.get("/" + testCalleeService + "/users")
 					.header("k1", "v1")
-					.header(RouterConstant.ROUTER_LABEL_HEADER, "{\"k1\":\"v1\"}")
 					.queryParam("userid", "zhangsan")
 					.build();
-			DefaultRequestContext requestDataContext = new DefaultRequestContext(new PolarisLoadBalancerRequest(httpRequest, null), "blue");
+			RequestDataContext requestDataContext = new RequestDataContext(new RequestData(httpRequest), "blue");
 			DefaultRequest request = new DefaultRequest(requestDataContext);
-			assertThat(polarisSupplier.get(request).blockFirst().size()).isEqualTo(0);
+			assertThat(polarisSupplier.get(request)).isNotNull();
 		}
 	}
+
 	private void setTransitiveMetadata() {
 		if (initTransitiveMetadata.compareAndSet(false, true)) {
 			// mock transitive metadata

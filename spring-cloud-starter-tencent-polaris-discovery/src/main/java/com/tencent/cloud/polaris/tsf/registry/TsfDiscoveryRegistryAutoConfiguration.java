@@ -47,19 +47,12 @@ public class TsfDiscoveryRegistryAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public TsfMetadataPolarisRegistrationCustomizer tsfMetadataPolarisRegistrationCustomizer(
-			TsfCoreProperties tsfCoreProperties, TsfDiscoveryProperties tsfDiscoveryProperties) {
-		return new TsfMetadataPolarisRegistrationCustomizer(tsfCoreProperties, tsfDiscoveryProperties);
-	}
-
-	@Bean
-	@ConditionalOnMissingBean
 	public TsfPortPolarisRegistrationCustomizer tsfPortPolarisRegistrationCustomizer(
 			AutoServiceRegistrationProperties autoServiceRegistrationProperties,
-			ApplicationContext context, TsfDiscoveryProperties tsfDiscoveryProperties,
+			ApplicationContext context, TsfDiscoveryProperties tsfDiscoveryProperties, TsfCoreProperties tsfCoreProperties,
 			TsfHeartbeatProperties tsfHeartbeatProperties, PolarisSDKContextManager polarisSDKContextManager) {
 		return new TsfPortPolarisRegistrationCustomizer(autoServiceRegistrationProperties, context,
-				tsfDiscoveryProperties, tsfHeartbeatProperties, polarisSDKContextManager.getSDKContext());
+				tsfDiscoveryProperties, tsfCoreProperties, tsfHeartbeatProperties, polarisSDKContextManager.getSDKContext());
 	}
 
 	@Bean

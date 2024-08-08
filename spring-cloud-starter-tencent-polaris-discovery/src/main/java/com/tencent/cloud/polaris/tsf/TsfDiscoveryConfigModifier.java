@@ -26,6 +26,7 @@ import com.tencent.cloud.common.util.JacksonUtils;
 import com.tencent.cloud.polaris.PolarisDiscoveryProperties;
 import com.tencent.cloud.polaris.context.PolarisConfigModifier;
 import com.tencent.cloud.polaris.context.config.PolarisContextProperties;
+import com.tencent.cloud.polaris.context.tsf.TsfUtils;
 import com.tencent.cloud.polaris.context.tsf.config.TsfCoreProperties;
 import com.tencent.cloud.polaris.context.tsf.consul.TsfConsulProperties;
 import com.tencent.cloud.polaris.tsf.util.RegistrationUtil;
@@ -84,10 +85,10 @@ public class TsfDiscoveryConfigModifier implements PolarisConfigModifier {
 		System.setProperty("spring.cloud.polaris.namespace", tsfCoreProperties.getTsfNamespaceId());
 
 		// application id
-		polarisDiscoveryProperties.setVersion(tsfDiscoveryProperties.getTsfProgVersion());
+		polarisDiscoveryProperties.setVersion(tsfCoreProperties.getTsfProgVersion());
 
 		// instance id
-		polarisDiscoveryProperties.setInstanceId(tsfDiscoveryProperties.getInstanceId());
+		polarisDiscoveryProperties.setInstanceId(tsfCoreProperties.getInstanceId());
 
 		boolean consulEnable = tsfCoreProperties.isTsfConsulEnable();
 		boolean polarisEnable = tsfCoreProperties.isTsePolarisEnable();
@@ -133,11 +134,11 @@ public class TsfDiscoveryConfigModifier implements PolarisConfigModifier {
 			Map<String, String> metadata = serverConnectorConfig.getMetadata();
 			String appName = RegistrationUtil.getAppName(tsfDiscoveryProperties, context.getEnvironment());
 			metadata.put(ConsulConstant.MetadataMapKey.SERVICE_NAME_KEY, RegistrationUtil.normalizeForDns(appName));
-			metadata.put(ConsulConstant.MetadataMapKey.INSTANCE_ID_KEY, RegistrationUtil.getInstanceId(tsfDiscoveryProperties, context));
+			metadata.put(ConsulConstant.MetadataMapKey.INSTANCE_ID_KEY, RegistrationUtil.getInstanceId(tsfCoreProperties, context));
 			if (StringUtils.isNotBlank(tsfConsulProperties.getAclToken())) {
 				serverConnectorConfig.setToken(tsfConsulProperties.getAclToken());
 			}
-			metadata.put(ConsulConstant.MetadataMapKey.TAGS_KEY, JacksonUtils.serialize2Json(RegistrationUtil.createTags(tsfDiscoveryProperties)));
+			metadata.put(ConsulConstant.MetadataMapKey.TAGS_KEY, JacksonUtils.serialize2Json(TsfUtils.createTags(tsfCoreProperties)));
 			if (StringUtils.isNotBlank(tsfDiscoveryProperties.getDefaultQueryTag())) {
 				metadata.put(ConsulConstant.MetadataMapKey.QUERY_TAG_KEY, tsfDiscoveryProperties.getDefaultQueryTag());
 			}

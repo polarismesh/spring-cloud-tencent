@@ -123,4 +123,10 @@ public class QuickstartCalleeController {
 		LOG.info("Quickstart Callee Service [{}:{}] is detected right.", ip, port);
 		return String.format("Quickstart Callee Service [%s:%s] is detected right.", ip, port);
 	}
+
+	@GetMapping("/test/{num}/echo")
+	public String test(@PathVariable int num) {
+		LOG.info("Quickstart Callee Service [%s] is detected right.", num);
+		return String.format("Quickstart Callee Service [%s] is detected right.", num);
+	}
 }

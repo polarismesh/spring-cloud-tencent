@@ -48,8 +48,6 @@ import static com.tencent.cloud.polaris.extend.nacos.NacosContextProperties.DEFA
  */
 public class PolarisRegistration implements Registration {
 
-	private static final String METADATA_KEY_IP = "internal-ip";
-	private static final String METADATA_KEY_ADDRESS = "internal-address";
 	private static final String GROUP_SERVER_ID_FORMAT = "%s__%s";
 	private static final String NACOS_CLUSTER = "nacos.cluster";
 
@@ -115,10 +113,6 @@ public class PolarisRegistration implements Registration {
 		// generate metadata
 		if (CollectionUtils.isEmpty(metadata)) {
 			Map<String, String> instanceMetadata = new HashMap<>();
-
-			// put internal metadata
-			instanceMetadata.put(METADATA_KEY_IP, host);
-			instanceMetadata.put(METADATA_KEY_ADDRESS, host + ":" + port);
 
 			// put internal-nacos-cluster if necessary
 			if (Objects.nonNull(nacosContextProperties)) {

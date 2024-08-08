@@ -138,7 +138,7 @@ public final class ExpressionLabelUtils {
 	}
 
 	public static String getQueryValue(String queryString, String queryKey) {
-		return getQueryValue(queryString, queryKey, StringUtils.EMPTY);
+		return getQueryValue(queryString, queryKey, null);
 	}
 
 	public static String getQueryValue(String queryString, String queryKey, String defaultValue) {
@@ -160,31 +160,31 @@ public final class ExpressionLabelUtils {
 
 	public static String getFirstValue(Map<String, Collection<String>> valueMaps, String key) {
 		if (CollectionUtils.isEmpty(valueMaps)) {
-			return StringUtils.EMPTY;
+			return null;
 		}
 
 		Collection<String> values = valueMaps.get(key);
 
 		if (CollectionUtils.isEmpty(values)) {
-			return StringUtils.EMPTY;
+			return null;
 		}
 
 		for (String value : values) {
 			return value;
 		}
 
-		return StringUtils.EMPTY;
+		return null;
 	}
 
 	public static String getCookieFirstValue(Map<String, Collection<String>> valueMaps, String key) {
 		if (CollectionUtils.isEmpty(valueMaps)) {
-			return StringUtils.EMPTY;
+			return null;
 		}
 
 		Collection<String> values = valueMaps.get(HttpHeaderNames.COOKIE.toString());
 
 		if (CollectionUtils.isEmpty(values)) {
-			return StringUtils.EMPTY;
+			return null;
 		}
 
 		for (String value : values) {
@@ -196,6 +196,6 @@ public final class ExpressionLabelUtils {
 				}
 			}
 		}
-		return StringUtils.EMPTY;
+		return null;
 	}
 }

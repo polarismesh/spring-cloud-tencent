@@ -13,28 +13,31 @@
  * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
- *
  */
 
-package com.tencent.cloud.polaris.router.config;
+package com.tencent.cloud.polaris.context.tsf.metadata;
 
-import com.tencent.cloud.polaris.router.feign.RouterLabelFeignInterceptor;
+import com.tencent.cloud.common.spi.InstanceMetadataProvider;
+import com.tencent.cloud.common.tsf.ConditionalOnTsfEnabled;
+import com.tencent.cloud.polaris.context.config.PolarisContextAutoConfiguration;
+import com.tencent.cloud.polaris.context.tsf.config.TsfCoreProperties;
 
-import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * Auto configuration for feign components.
- * @author lepdou 2022-07-04
+ * Auto configuration for instanceMetadataProvider for TSF.
+ *
+ * @author Hoatian Zhang
  */
 @Configuration(proxyBeanMethods = false)
-@ConditionalOnPolarisRouterEnabled
-@ConditionalOnClass(name = {"feign.RequestInterceptor"})
-public class FeignAutoConfiguration {
+@AutoConfigureAfter(PolarisContextAutoConfiguration.class)
+@ConditionalOnTsfEnabled
+public class TsfInstanceMetadataAutoConfiguration {
 
 	@Bean
-	public RouterLabelFeignInterceptor routerLabelInterceptor() {
-		return new RouterLabelFeignInterceptor();
+	public InstanceMetadataProvider tsfInstanceMetadataProvider(TsfCoreProperties tsfCoreProperties) {
+		return new TsfInstanceMetadataProvider(tsfCoreProperties);
 	}
 }
