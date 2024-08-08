@@ -18,7 +18,6 @@
 package com.tencent.cloud.polaris.router.beanprocessor;
 
 import com.tencent.cloud.common.util.BeanFactoryUtils;
-import com.tencent.cloud.polaris.router.resttemplate.PolarisLoadBalancerInterceptor;
 import com.tencent.cloud.polaris.router.spi.SpringWebRouterLabelResolver;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
