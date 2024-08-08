@@ -39,6 +39,7 @@ import feign.Request;
 
 import org.springframework.util.CollectionUtils;
 
+import static com.tencent.cloud.common.constant.MetadataConstant.HeaderName.APPLICATION_METADATA;
 import static com.tencent.cloud.common.constant.MetadataConstant.HeaderName.CUSTOM_DISPOSABLE_METADATA;
 import static com.tencent.cloud.common.constant.MetadataConstant.HeaderName.CUSTOM_METADATA;
 
@@ -64,6 +65,7 @@ public class EncodeTransferMedataFeignEnhancedPlugin implements EnhancedPlugin {
 		MetadataContext metadataContext = MetadataContextHolder.get();
 		Map<String, String> customMetadata = metadataContext.getCustomMetadata();
 		Map<String, String> disposableMetadata = metadataContext.getDisposableMetadata();
+		Map<String, String> applicationMetadata = metadataContext.getApplicationMetadata();
 		Map<String, String> transHeaders = metadataContext.getTransHeadersKV();
 
 		MessageMetadataContainer calleeMessageMetadataContainer = metadataContext.getMetadataContainer(MetadataType.MESSAGE, false);
@@ -76,6 +78,9 @@ public class EncodeTransferMedataFeignEnhancedPlugin implements EnhancedPlugin {
 
 		// process custom metadata
 		this.buildMetadataHeader(request, customMetadata, CUSTOM_METADATA);
+
+		// add application metadata
+		this.buildMetadataHeader(request, applicationMetadata, APPLICATION_METADATA);
 
 		// set headers that need to be transmitted from the upstream
 		this.buildTransmittedHeader(request, transHeaders);

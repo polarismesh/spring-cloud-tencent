@@ -17,14 +17,12 @@
 
 package com.tencent.cloud.polaris.tsf.util;
 
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 
 import com.ecwid.consul.v1.agent.model.NewService;
 import com.tencent.cloud.common.util.AddressUtils;
 import com.tencent.cloud.common.util.JacksonUtils;
-import com.tencent.cloud.common.util.inet.PolarisInetUtils;
+import com.tencent.cloud.polaris.context.tsf.config.TsfCoreProperties;
 import com.tencent.cloud.polaris.tsf.TsfDiscoveryProperties;
 import com.tencent.cloud.polaris.tsf.TsfHeartbeatProperties;
 import com.tencent.polaris.api.config.Configuration;
@@ -58,15 +56,6 @@ public final class RegistrationUtil {
 	 */
 	public static final String ID = "consul";
 	private static final Logger LOGGER = LoggerFactory.getLogger(RegistrationUtil.class);
-	/**
-	 * IPV4.
-	 */
-	public static String TSF_ADDRESS_IPV4 = "TSF_ADDRESS_IPV4";
-
-	/**
-	 * IPV6.
-	 */
-	public static String TSF_ADDRESS_IPV6 = "TSF_ADDRESS_IPV6";
 
 	private RegistrationUtil() {
 	}
@@ -79,7 +68,7 @@ public final class RegistrationUtil {
 		return env.getProperty("spring.application.name", "application");
 	}
 
-	public static String getInstanceId(TsfDiscoveryProperties properties, ApplicationContext context) {
+	public static String getInstanceId(TsfCoreProperties properties, ApplicationContext context) {
 		// tsf consul 不支持 dns，所以这里不需要 normalize，并且由于优雅下线，readiness probe 联动都是依赖 service id 的，normalize 后两边对不上，所以需要去掉 normalize
 		if (!StringUtils.hasText(properties.getInstanceId())) {
 			return IdUtils.getDefaultInstanceId(context.getEnvironment(), false);
@@ -123,40 +112,8 @@ public final class RegistrationUtil {
 		return normalized.toString();
 	}
 
-	public static List<String> createTags(TsfDiscoveryProperties properties) {
-		List<String> tags = new LinkedList<>(properties.getTags());
-
-		if (StringUtils.hasText(properties.getInstanceZone())) {
-			tags.add(properties.getDefaultZoneMetadataName() + "=" + properties.getInstanceZone());
-		}
-		if (StringUtils.hasText(properties.getInstanceGroup())) {
-			tags.add("group=" + properties.getInstanceGroup());
-		}
-
-		//store the secure flag in the tags so that clients will be able to figure out whether to use http or https automatically
-		tags.add("secure=" + properties.getScheme().equalsIgnoreCase("https"));
-
-		return tags;
-	}
-
-	public static Map<String, String> appendMetaIpAddress(Map<String, String> meta) {
-		if (meta == null) {
-			return null;
-		}
-		String ipv4Address = PolarisInetUtils.getIpString(false);
-		if (ipv4Address != null) {
-			meta.put(TSF_ADDRESS_IPV4, ipv4Address);
-		}
-
-		String ipv6Address = PolarisInetUtils.getIpString(true);
-		if (ipv6Address != null) {
-			meta.put(TSF_ADDRESS_IPV6, ipv6Address);
-		}
-		return meta;
-	}
-
 	public static void setCheck(AutoServiceRegistrationProperties autoServiceRegistrationProperties,
-			TsfDiscoveryProperties properties, ApplicationContext context,
+			TsfDiscoveryProperties properties, TsfCoreProperties tsfCoreProperties, ApplicationContext context,
 			TsfHeartbeatProperties tsfHeartbeatProperties, Registration registration, Configuration configuration) {
 		if (properties.isRegisterHealthCheck()) {
 			Integer checkPort;
@@ -171,7 +128,7 @@ public final class RegistrationUtil {
 			for (ServerConnectorConfigImpl config : configuration.getGlobal().getServerConnectors()) {
 				if (org.apache.commons.lang.StringUtils.equals(config.getId(), ID)) {
 					Map<String, String> metadata = config.getMetadata();
-					NewService.Check check = createCheck(checkPort, tsfHeartbeatProperties, properties);
+					NewService.Check check = createCheck(checkPort, tsfHeartbeatProperties, properties, tsfCoreProperties);
 					String checkJson = JacksonUtils.serialize2Json(check);
 					LOGGER.debug("Check is : {}", checkJson);
 					metadata.put(ConsulConstant.MetadataMapKey.CHECK_KEY, checkJson);
@@ -182,7 +139,7 @@ public final class RegistrationUtil {
 	}
 
 	public static NewService.Check createCheck(Integer port, TsfHeartbeatProperties ttlConfig,
-			TsfDiscoveryProperties properties) {
+			TsfDiscoveryProperties properties, TsfCoreProperties tsfCoreProperties) {
 		NewService.Check check = new NewService.Check();
 		if (ttlConfig.isEnabled()) {
 			check.setTtl(ttlConfig.getTtl());
@@ -196,7 +153,7 @@ public final class RegistrationUtil {
 			check.setHttp(properties.getHealthCheckUrl());
 		}
 		else {
-			check.setHttp(String.format("%s://%s:%s%s", properties.getScheme(),
+			check.setHttp(String.format("%s://%s:%s%s", tsfCoreProperties.getScheme(),
 					AddressUtils.getIpCompatible(properties.getHostname()), port,
 					properties.getHealthCheckPath()));
 		}

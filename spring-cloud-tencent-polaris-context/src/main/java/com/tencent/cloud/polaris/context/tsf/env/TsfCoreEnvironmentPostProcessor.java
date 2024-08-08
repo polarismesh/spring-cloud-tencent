@@ -123,6 +123,9 @@ public final class TsfCoreEnvironmentPostProcessor implements EnvironmentPostPro
 			// tse_polaris_ip
 			defaultProperties.put("spring.cloud.polaris.stat.port", environment.getProperty("tsf_sctt_extensions_port", "11134"));
 
+			// rule based router fail over type
+			defaultProperties.put("spring.cloud.polaris.router.rule-router.fail-over", "none");
+
 			MapPropertySource propertySource = new MapPropertySource("tsf-polaris-properties", defaultProperties);
 			environment.getPropertySources().addFirst(propertySource);
 		}

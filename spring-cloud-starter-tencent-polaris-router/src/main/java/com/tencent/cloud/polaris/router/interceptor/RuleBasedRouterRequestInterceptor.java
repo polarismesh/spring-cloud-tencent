@@ -18,19 +18,15 @@
 
 package com.tencent.cloud.polaris.router.interceptor;
 
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-
-import com.tencent.cloud.common.constant.RouterConstant;
+import com.tencent.cloud.common.metadata.MetadataContextHolder;
 import com.tencent.cloud.polaris.router.PolarisRouterContext;
 import com.tencent.cloud.polaris.router.config.properties.PolarisRuleBasedRouterProperties;
 import com.tencent.cloud.polaris.router.spi.RouterRequestInterceptor;
-import com.tencent.polaris.api.pojo.RouteArgument;
+import com.tencent.polaris.metadata.core.MetadataContainer;
+import com.tencent.polaris.metadata.core.MetadataType;
+import com.tencent.polaris.metadata.core.TransitiveType;
 import com.tencent.polaris.plugins.router.rule.RuleBasedRouter;
 import com.tencent.polaris.router.api.rpc.ProcessRoutersRequest;
-
-import org.springframework.util.CollectionUtils;
 
 /**
  * Router request interceptor for rule based router.
@@ -46,24 +42,12 @@ public class RuleBasedRouterRequestInterceptor implements RouterRequestIntercept
 
 	@Override
 	public void apply(ProcessRoutersRequest request, PolarisRouterContext routerContext) {
+		// set rule based router enable
 		boolean ruleBasedRouterEnabled = polarisRuleBasedRouterProperties.isEnabled();
-
-		// set dynamic switch for rule based router
-		Set<RouteArgument> routeArguments = new HashSet<>();
-		routeArguments.add(RouteArgument.buildCustom(RuleBasedRouter.ROUTER_ENABLED, String.valueOf(ruleBasedRouterEnabled)));
-
-		// The label information that the rule based routing depends on
-		// is placed in the metadata of the source service for transmission.
-		// Later, can consider putting it in routerMetadata like other routers.
-		if (ruleBasedRouterEnabled) {
-			Map<String, String> ruleRouterLabels = routerContext.getLabels(RouterConstant.ROUTER_LABELS);
-			if (!CollectionUtils.isEmpty(ruleRouterLabels)) {
-				for (Map.Entry<String, String> label : ruleRouterLabels.entrySet()) {
-					routeArguments.add(RouteArgument.fromLabel(label.getKey(), label.getValue()));
-				}
-			}
-		}
-
-		request.putRouterArgument(RuleBasedRouter.ROUTER_TYPE_RULE_BASED, routeArguments);
+		MetadataContainer metadataContainer = MetadataContextHolder.get()
+				.getMetadataContainer(MetadataType.CUSTOM, false);
+		metadataContainer.putMetadataMapValue(RuleBasedRouter.ROUTER_TYPE_RULE_BASED, RuleBasedRouter.ROUTER_ENABLED, String.valueOf(ruleBasedRouterEnabled), TransitiveType.NONE);
+		// set rule based router fail over type.
+		request.setRuleBasedRouterFailoverType(polarisRuleBasedRouterProperties.getFailOver());
 	}
 }
