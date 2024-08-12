@@ -22,10 +22,10 @@ import com.tencent.cloud.common.constant.OrderConstant;
 import com.tencent.cloud.polaris.context.PolarisConfigModifier;
 import com.tencent.cloud.polaris.router.config.properties.PolarisNearByRouterProperties;
 import com.tencent.polaris.api.config.consumer.ServiceRouterConfig;
-import com.tencent.polaris.api.plugin.route.LocationLevel;
 import com.tencent.polaris.factory.config.ConfigurationImpl;
 import com.tencent.polaris.plugins.router.healthy.RecoverRouterConfig;
 import com.tencent.polaris.plugins.router.nearby.NearbyRouterConfig;
+import com.tencent.polaris.specification.api.v1.traffic.manage.RoutingProto;
 import org.apache.commons.lang.StringUtils;
 
 /**
@@ -53,7 +53,8 @@ public class RouterConfigModifier implements PolarisConfigModifier {
 				.setPluginConfig(ServiceRouterConfig.DEFAULT_ROUTER_RECOVER, recoverRouterConfig);
 
 		if (StringUtils.isNotBlank(polarisNearByRouterProperties.getMatchLevel())) {
-			LocationLevel locationLevel = LocationLevel.valueOf(polarisNearByRouterProperties.getMatchLevel());
+			RoutingProto.NearbyRoutingConfig.LocationLevel locationLevel =
+					RoutingProto.NearbyRoutingConfig.LocationLevel.valueOf(StringUtils.upperCase(polarisNearByRouterProperties.getMatchLevel()));
 			NearbyRouterConfig nearbyRouterConfig = configuration.getConsumer().getServiceRouter().getPluginConfig(
 					ServiceRouterConfig.DEFAULT_ROUTER_NEARBY, NearbyRouterConfig.class);
 			nearbyRouterConfig.setMatchLevel(locationLevel);
