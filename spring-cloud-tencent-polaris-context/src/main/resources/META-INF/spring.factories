@@ -2,7 +2,8 @@ org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
   com.tencent.cloud.polaris.context.config.PolarisContextAutoConfiguration,\
   com.tencent.cloud.polaris.context.config.PolarisContextPostConfiguration,\
   com.tencent.cloud.polaris.context.tsf.config.TsfCorePropertiesAutoConfiguration,\
-  com.tencent.cloud.polaris.context.tsf.consul.TsfConsulAutoConfiguration
+  com.tencent.cloud.polaris.context.tsf.consul.TsfConsulAutoConfiguration,\
+  com.tencent.cloud.polaris.context.tsf.metadata.TsfInstanceMetadataAutoConfiguration
 org.springframework.cloud.bootstrap.BootstrapConfiguration=\
   com.tencent.cloud.polaris.context.config.PolarisContextBootstrapAutoConfiguration,\
   com.tencent.cloud.polaris.context.tsf.config.TsfCorePropertiesBootstrapConfiguration,\

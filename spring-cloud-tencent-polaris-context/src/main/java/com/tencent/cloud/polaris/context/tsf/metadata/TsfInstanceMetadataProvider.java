@@ -49,7 +49,7 @@ public class TsfInstanceMetadataProvider implements InstanceMetadataProvider {
 
 	@Override
 	public Map<String, String> getMetadata() {
-		return new HashMap<>() {{
+		return new HashMap<String, String>() {{
 			put(TsfMetadataConstants.TSF_PROG_VERSION, tsfCoreProperties.getTsfProgVersion());
 			put(TsfMetadataConstants.TSF_APPLICATION_ID, tsfCoreProperties.getTsfApplicationId());
 			put(TsfMetadataConstants.TSF_GROUP_ID, tsfCoreProperties.getTsfGroupId());
