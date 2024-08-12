@@ -40,7 +40,7 @@ public class PolarisInstanceTransformer implements InstanceTransformer {
 			instance.setCampus(polarisServiceInstance.getPolarisInstance().getCampus());
 			instance.setWeight(polarisServiceInstance.getPolarisInstance().getWeight());
 			if (CollectionUtils.isNotEmpty(polarisServiceInstance.getServiceMetadata())) {
-				instance.getServiceMetadata().putAll(polarisServiceInstance.getServiceMetadata());
+				instance.setServiceMetadata(polarisServiceInstance.getServiceMetadata());
 			}
 		}
 	}

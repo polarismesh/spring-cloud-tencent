@@ -82,7 +82,6 @@ public class PolarisRegistrationTest {
 		doReturn(true).when(consulContextProperties).isRegister();
 
 		// mock NacosContextProperties
-		// mock NacosContextProperties
 		nacosContextProperties = mock(NacosContextProperties.class);
 		doReturn(true).when(nacosContextProperties).isEnabled();
 		doReturn(true).when(nacosContextProperties).isRegisterEnabled();

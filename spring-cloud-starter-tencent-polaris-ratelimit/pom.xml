@@ -41,6 +41,10 @@
 				</exclusion>
 				<exclusion>
 					<groupId>com.tencent.polaris</groupId>
+					<artifactId>router-namespace</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>com.tencent.polaris</groupId>
 					<artifactId>router-canary</artifactId>
 				</exclusion>
 				<exclusion>

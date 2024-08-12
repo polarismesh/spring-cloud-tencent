@@ -25,3 +25,4 @@
 - [feat:support consul config data.](https://github.com/Tencent/spring-cloud-tencent/pull/1401)
 - [feat: support otel trace](https://github.com/Tencent/spring-cloud-tencent/pull/1402)
 - [feat:support TSF router.](https://github.com/Tencent/spring-cloud-tencent/pull/1403)
+- [feat:upgrade nearby router and add namespace nearby router.](https://github.com/Tencent/spring-cloud-tencent/pull/1404)

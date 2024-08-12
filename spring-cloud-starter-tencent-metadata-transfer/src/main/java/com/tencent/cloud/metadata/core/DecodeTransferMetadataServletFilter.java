@@ -95,7 +95,6 @@ public class DecodeTransferMetadataServletFilter extends OncePerRequestFilter {
 		MetadataContextHolder.init(mergedTransitiveMetadata, mergedDisposableMetadata, mergedApplicationMetadata, callerMessageMetadataProvider);
 
 		TransHeadersTransfer.transfer(httpServletRequest);
-
 		try {
 			filterChain.doFilter(httpServletRequest, httpServletResponse);
 		}
