@@ -36,6 +36,10 @@
 				</exclusion>
 				<exclusion>
 					<groupId>com.tencent.polaris</groupId>
+					<artifactId>router-namespace</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>com.tencent.polaris</groupId>
 					<artifactId>router-metadata</artifactId>
 				</exclusion>
 				<exclusion>
@@ -107,6 +111,10 @@
 				<exclusion>
 					<groupId>com.tencent.polaris</groupId>
 					<artifactId>router-nearby</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>com.tencent.polaris</groupId>
+					<artifactId>router-namespace</artifactId>
 				</exclusion>
 				<exclusion>
 					<groupId>com.tencent.polaris</groupId>

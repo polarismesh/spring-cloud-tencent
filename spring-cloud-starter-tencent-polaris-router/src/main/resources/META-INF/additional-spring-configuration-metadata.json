@@ -9,14 +9,14 @@
     {
       "name": "spring.cloud.polaris.router.nearby-router.enabled",
       "type": "java.lang.Boolean",
-      "defaultValue": true,
+      "defaultValue": false,
       "description": "the switch for nearby router."
     },
     {
       "name": "spring.cloud.polaris.router.nearby-router.matchLevel",
       "type": "java.lang.String",
-      "defaultValue": "zone",
-      "description": "the match level for nearby router, options can be region/zone/campus."
+      "defaultValue": "ZONE",
+      "description": "the match level for nearby router, options can be REGION/ZONE/CAMPUS."
     },
     {
       "name": "spring.cloud.polaris.router.rule-router.enabled",
@@ -31,10 +31,41 @@
       "description": "the fail over type for rule based router."
     },
     {
+      "name": "spring.cloud.polaris.router.namespace-router.enabled",
+      "type": "java.lang.Boolean",
+      "defaultValue": false,
+      "description": "the switch for namespace router."
+    },
+    {
+      "name": "spring.cloud.polaris.router.namespace-router.failOver",
+      "type": "java.lang.String",
+      "defaultValue": "all",
+      "description": "the fail over type for namespace router."
+    },
+    {
       "name": "spring.cloud.polaris.router.enabled",
       "type": "java.lang.Boolean",
       "defaultValue": true,
       "description": "the switch for router module."
+    }
+  ],
+  "hints": [
+    {
+      "name": "spring.cloud.polaris.router.nearby-router.matchLevel",
+      "values": [
+        {
+          "value": "CAMPUS"
+        },
+        {
+          "value": "ZONE"
+        },
+        {
+          "value": "REGION"
+        },
+        {
+          "value": "ALL"
+        }
+      ]
     }
   ]
 }

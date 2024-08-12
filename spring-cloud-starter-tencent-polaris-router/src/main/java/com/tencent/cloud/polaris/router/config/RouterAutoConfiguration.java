@@ -23,9 +23,11 @@ import java.util.Collections;
 import java.util.List;
 
 import com.tencent.cloud.polaris.router.config.properties.PolarisMetadataRouterProperties;
+import com.tencent.cloud.polaris.router.config.properties.PolarisNamespaceRouterProperties;
 import com.tencent.cloud.polaris.router.config.properties.PolarisNearByRouterProperties;
 import com.tencent.cloud.polaris.router.config.properties.PolarisRuleBasedRouterProperties;
 import com.tencent.cloud.polaris.router.interceptor.MetadataRouterRequestInterceptor;
+import com.tencent.cloud.polaris.router.interceptor.NamespaceRouterRequestInterceptor;
 import com.tencent.cloud.polaris.router.interceptor.NearbyRouterRequestInterceptor;
 import com.tencent.cloud.polaris.router.interceptor.RuleBasedRouterRequestInterceptor;
 import com.tencent.cloud.polaris.router.resttemplate.RouterLabelRestTemplateInterceptor;
@@ -70,6 +72,11 @@ public class RouterAutoConfiguration {
 		return new RuleBasedRouterRequestInterceptor(polarisRuleBasedRouterProperties);
 	}
 
+	@Bean
+	@ConditionalOnProperty(value = "spring.cloud.polaris.router.namespace-router.enabled", matchIfMissing = true)
+	public NamespaceRouterRequestInterceptor namespaceRouterRequestInterceptor(PolarisNamespaceRouterProperties polarisNamespaceRouterProperties) {
+		return new NamespaceRouterRequestInterceptor(polarisNamespaceRouterProperties);
+	}
 
 	/**
 	 * Create when gateway application is SCG.

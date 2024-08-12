@@ -39,8 +39,8 @@ public class CustomMetadata implements InstanceMetadataProvider {
 		return metadata;
 	}
 
-	@Override
-	public String getZone() {
-		return "shenzhen-zone-1";
-	}
+//	@Override
+//	public String getZone() {
+//		return "shenzhen-zone-1";
+//	}
 }

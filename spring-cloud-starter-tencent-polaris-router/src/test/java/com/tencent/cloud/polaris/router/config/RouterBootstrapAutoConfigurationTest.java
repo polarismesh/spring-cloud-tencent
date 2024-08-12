@@ -49,7 +49,7 @@ public class RouterBootstrapAutoConfigurationTest {
 					RpcEnhancementAutoConfiguration.class,
 					RouterBootstrapAutoConfiguration.class))
 			.withPropertyValues("spring.cloud.polaris.enabled=true")
-			.withPropertyValues("spring.cloud.polaris.router.nearby-router.matchLevel=campus")
+			.withPropertyValues("spring.cloud.polaris.router.nearby-router.matchLevel=CAMPUS")
 			.withPropertyValues("spring.cloud.polaris.circuitbreaker.enabled=true");
 
 	@Test
@@ -61,7 +61,7 @@ public class RouterBootstrapAutoConfigurationTest {
 			routerConfigModifier.modify((ConfigurationImpl) configuration);
 			NearbyRouterConfig nearbyRouterConfig = configuration.getConsumer().getServiceRouter().getPluginConfig(
 					ServiceRouterConfig.DEFAULT_ROUTER_NEARBY, NearbyRouterConfig.class);
-			Assertions.assertEquals("campus", nearbyRouterConfig.getMatchLevel().name());
+			Assertions.assertEquals("CAMPUS", nearbyRouterConfig.getMatchLevel().name());
 		});
 	}
 }
