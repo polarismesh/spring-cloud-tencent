@@ -56,7 +56,7 @@ public class TsfContractProperties implements ExtendedContractProperties {
 
 	@Override
 	public boolean isEnabled() {
-		return false;
+		return enabled;
 	}
 
 	@Override
