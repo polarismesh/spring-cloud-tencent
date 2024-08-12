@@ -26,3 +26,4 @@
 - [feat: support otel trace](https://github.com/Tencent/spring-cloud-tencent/pull/1402)
 - [feat:support TSF router.](https://github.com/Tencent/spring-cloud-tencent/pull/1403)
 - [feat:upgrade nearby router and add namespace nearby router.](https://github.com/Tencent/spring-cloud-tencent/pull/1404)
+- [fix:fix contract reporting bug when using TSF.](https://github.com/Tencent/spring-cloud-tencent/pull/1406)

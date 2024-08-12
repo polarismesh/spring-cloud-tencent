@@ -161,17 +161,11 @@ public class PolarisContractProperties implements ContractProperties {
 
 	@Override
 	public boolean isReportEnabled() {
-		if (Objects.nonNull(extendContractProperties)) {
-			return extendContractProperties.isReportEnabled();
-		}
 		return reportEnabled;
 	}
 
 	@Override
 	public void setReportEnabled(boolean reportEnabled) {
-		if (Objects.nonNull(extendContractProperties)) {
-			extendContractProperties.setReportEnabled(reportEnabled);
-		}
 		this.reportEnabled = reportEnabled;
 	}
 
