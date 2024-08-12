@@ -74,4 +74,14 @@ public class TsfInstanceMetadataProvider implements InstanceMetadataProvider {
 			}
 		}};
 	}
+
+	@Override
+	public String getRegion() {
+		return tsfCoreProperties.getTsfRegion();
+	}
+
+	@Override
+	public String getZone() {
+		return tsfCoreProperties.getTsfZone();
+	}
 }

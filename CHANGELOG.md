@@ -28,3 +28,4 @@
 - [fix: memory cost too many when using wildcard feign calls](https://github.com/Tencent/spring-cloud-tencent/pull/1356)
 - [feat: support otel trace](https://github.com/Tencent/spring-cloud-tencent/pull/1363)
 - [feat:support TSF router.](https://github.com/Tencent/spring-cloud-tencent/pull/1368)
+- [feat:upgrade nearby router and add namespace nearby router.](https://github.com/Tencent/spring-cloud-tencent/pull/1371)
