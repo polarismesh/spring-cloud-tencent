@@ -17,19 +17,21 @@
 
 package com.tencent.cloud.polaris.router.config.properties;
 
+import com.tencent.polaris.api.rpc.NamespaceRouterFailoverType;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
- * the configuration for nearby router.
+ * the configuration for namespace router.
  *
  * @author lepdou 2022-05-23
  */
-@ConfigurationProperties(prefix = "spring.cloud.polaris.router.nearby-router")
-public class PolarisNearByRouterProperties {
+@ConfigurationProperties(prefix = "spring.cloud.polaris.router.namespace-router")
+public class PolarisNamespaceRouterProperties {
 
 	private boolean enabled = false;
 
-	private String matchLevel;
+	private NamespaceRouterFailoverType failOver = NamespaceRouterFailoverType.all;
 
 	public boolean isEnabled() {
 		return enabled;
@@ -39,19 +41,19 @@ public class PolarisNearByRouterProperties {
 		this.enabled = enabled;
 	}
 
-	public String getMatchLevel() {
-		return matchLevel;
+	public NamespaceRouterFailoverType getFailOver() {
+		return failOver;
 	}
 
-	public void setMatchLevel(String matchLevel) {
-		this.matchLevel = matchLevel;
+	public void setFailOver(NamespaceRouterFailoverType failOver) {
+		this.failOver = failOver;
 	}
 
 	@Override
 	public String toString() {
-		return "PolarisNearByRouterProperties{" +
+		return "PolarisNamespaceRouterProperties{" +
 				"enabled=" + enabled +
-				", matchLevel='" + matchLevel + '\'' +
+				", failOver=" + failOver +
 				'}';
 	}
 }

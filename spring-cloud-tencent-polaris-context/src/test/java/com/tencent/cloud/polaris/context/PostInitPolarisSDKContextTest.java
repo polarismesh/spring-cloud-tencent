@@ -19,8 +19,8 @@ package com.tencent.cloud.polaris.context;
 
 import com.tencent.cloud.common.metadata.StaticMetadataManager;
 import com.tencent.polaris.api.plugin.common.ValueContext;
-import com.tencent.polaris.api.plugin.route.LocationLevel;
 import com.tencent.polaris.client.api.SDKContext;
+import com.tencent.polaris.specification.api.v1.traffic.manage.RoutingProto;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -55,9 +55,9 @@ public final class PostInitPolarisSDKContextTest {
 		when(staticMetadataManager.getCampus()).thenReturn(CAMPUS);
 
 		new PostInitPolarisSDKContext(sdkContext, staticMetadataManager);
-		String regionName = valueContext.getValue(LocationLevel.region.name());
-		String zoneName = valueContext.getValue(LocationLevel.zone.name());
-		String campusName = valueContext.getValue(LocationLevel.campus.name());
+		String regionName = valueContext.getValue(RoutingProto.NearbyRoutingConfig.LocationLevel.REGION.name());
+		String zoneName = valueContext.getValue(RoutingProto.NearbyRoutingConfig.LocationLevel.ZONE.name());
+		String campusName = valueContext.getValue(RoutingProto.NearbyRoutingConfig.LocationLevel.CAMPUS.name());
 
 		Assertions.assertThat(regionName).isEqualTo(REGION);
 		Assertions.assertThat(zoneName).isEqualTo(ZONE);
