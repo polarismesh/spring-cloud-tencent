@@ -30,8 +30,8 @@ public class NacosRegistrationTransformer implements RegistrationTransformer {
 
 	@Override
 	public void transformCustom(DefaultInstance instance, Registration registration) {
-		if (registration instanceof NacosRegistration nacosRegistration) {
-			NacosDiscoveryProperties nacosDiscoveryProperties = nacosRegistration.getNacosDiscoveryProperties();
+		if (registration instanceof NacosRegistration) {
+			NacosDiscoveryProperties nacosDiscoveryProperties = ((NacosRegistration) registration).getNacosDiscoveryProperties();
 			String namespace = nacosDiscoveryProperties.getNamespace();
 			if (StringUtils.isBlank(namespace)) {
 				namespace = "default";
