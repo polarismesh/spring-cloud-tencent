@@ -105,6 +105,7 @@ public final class TsfCoreEnvironmentPostProcessor implements EnvironmentPostPro
 				defaultProperties.put("spring.cloud.polaris.config.enabled", "true");
 			}
 			else {
+				defaultProperties.put("spring.cloud.polaris.contract.report.enabled", "false");
 				defaultProperties.put("spring.cloud.polaris.config.enabled", "true");
 				defaultProperties.put("spring.cloud.polaris.config.internal-enabled", "false");
 				defaultProperties.put("spring.cloud.polaris.config.data-source", "consul");
