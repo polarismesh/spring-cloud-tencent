@@ -18,29 +18,21 @@
 
 package com.tencent.cloud.metadata.config;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 import com.tencent.cloud.common.constant.OrderConstant;
 import com.tencent.cloud.metadata.core.DecodeTransferMetadataReactiveFilter;
 import com.tencent.cloud.metadata.core.DecodeTransferMetadataServletFilter;
-import com.tencent.cloud.metadata.core.EncodeTransferMedataFeignInterceptor;
-import com.tencent.cloud.metadata.core.EncodeTransferMedataRestTemplateInterceptor;
-import com.tencent.cloud.metadata.core.EncodeTransferMedataScgFilter;
-import com.tencent.cloud.metadata.core.EncodeTransferMedataWebClientFilter;
+import com.tencent.cloud.metadata.core.EncodeTransferMedataFeignEnhancedPlugin;
+import com.tencent.cloud.metadata.core.EncodeTransferMedataRestTemplateEnhancedPlugin;
+import com.tencent.cloud.metadata.core.EncodeTransferMedataScgEnhancedPlugin;
+import com.tencent.cloud.metadata.core.EncodeTransferMedataWebClientEnhancedPlugin;
+import com.tencent.cloud.polaris.context.config.PolarisContextProperties;
 
-import org.springframework.beans.factory.SmartInitializingSingleton;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
-import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.client.ClientHttpRequestInterceptor;
-import org.springframework.web.client.RestTemplate;
-import org.springframework.web.reactive.function.client.WebClient;
 
 import static javax.servlet.DispatcherType.ASYNC;
 import static javax.servlet.DispatcherType.ERROR;
@@ -74,8 +66,8 @@ public class MetadataTransferAutoConfiguration {
 		}
 
 		@Bean
-		public DecodeTransferMetadataServletFilter metadataServletFilter() {
-			return new DecodeTransferMetadataServletFilter();
+		public DecodeTransferMetadataServletFilter metadataServletFilter(PolarisContextProperties polarisContextProperties) {
+			return new DecodeTransferMetadataServletFilter(polarisContextProperties);
 		}
 	}
 
@@ -87,8 +79,8 @@ public class MetadataTransferAutoConfiguration {
 	protected static class MetadataReactiveFilterConfig {
 
 		@Bean
-		public DecodeTransferMetadataReactiveFilter metadataReactiveFilter() {
-			return new DecodeTransferMetadataReactiveFilter();
+		public DecodeTransferMetadataReactiveFilter metadataReactiveFilter(PolarisContextProperties polarisContextProperties) {
+			return new DecodeTransferMetadataReactiveFilter(polarisContextProperties);
 		}
 	}
 
@@ -97,11 +89,12 @@ public class MetadataTransferAutoConfiguration {
 	 */
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(name = "org.springframework.cloud.gateway.filter.GlobalFilter")
+	@ConditionalOnProperty(value = "spring.cloud.tencent.rpc-enhancement.enabled", havingValue = "true", matchIfMissing = true)
 	protected static class MetadataTransferScgFilterConfig {
 
 		@Bean
-		public GlobalFilter encodeTransferMedataScgFilter() {
-			return new EncodeTransferMedataScgFilter();
+		public EncodeTransferMedataScgEnhancedPlugin encodeTransferMedataScgEnhancedPlugin() {
+			return new EncodeTransferMedataScgEnhancedPlugin();
 		}
 	}
 
@@ -110,11 +103,12 @@ public class MetadataTransferAutoConfiguration {
 	 */
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(name = "feign.Feign")
+	@ConditionalOnProperty(value = "spring.cloud.tencent.rpc-enhancement.enabled", havingValue = "true", matchIfMissing = true)
 	protected static class MetadataTransferFeignInterceptorConfig {
 
 		@Bean
-		public EncodeTransferMedataFeignInterceptor encodeTransferMedataFeignInterceptor() {
-			return new EncodeTransferMedataFeignInterceptor();
+		public EncodeTransferMedataFeignEnhancedPlugin encodeTransferMedataFeignEnhancedPlugin() {
+			return new EncodeTransferMedataFeignEnhancedPlugin();
 		}
 	}
 
@@ -123,23 +117,12 @@ public class MetadataTransferAutoConfiguration {
 	 */
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(name = "org.springframework.web.client.RestTemplate")
+	@ConditionalOnProperty(value = "spring.cloud.tencent.rpc-enhancement.enabled", havingValue = "true", matchIfMissing = true)
 	protected static class MetadataTransferRestTemplateConfig {
 
-		@Autowired(required = false)
-		private List<RestTemplate> restTemplates = Collections.emptyList();
-
 		@Bean
-		public EncodeTransferMedataRestTemplateInterceptor encodeTransferMedataRestTemplateInterceptor() {
-			return new EncodeTransferMedataRestTemplateInterceptor();
-		}
-
-		@Bean
-		public SmartInitializingSingleton addEncodeTransferMetadataInterceptorForRestTemplate(EncodeTransferMedataRestTemplateInterceptor interceptor) {
-			return () -> restTemplates.forEach(restTemplate -> {
-				List<ClientHttpRequestInterceptor> list = new ArrayList<>(restTemplate.getInterceptors());
-				list.add(interceptor);
-				restTemplate.setInterceptors(list);
-			});
+		public EncodeTransferMedataRestTemplateEnhancedPlugin encodeTransferMedataRestTemplateEnhancedPlugin() {
+			return new EncodeTransferMedataRestTemplateEnhancedPlugin();
 		}
 	}
 
@@ -148,20 +131,12 @@ public class MetadataTransferAutoConfiguration {
 	 */
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(name = "org.springframework.web.reactive.function.client.WebClient")
+	@ConditionalOnProperty(value = "spring.cloud.tencent.rpc-enhancement.enabled", havingValue = "true", matchIfMissing = true)
 	protected static class MetadataTransferWebClientConfig {
-		@Autowired(required = false)
-		private List<WebClient.Builder> webClientBuilder = Collections.emptyList();
 
 		@Bean
-		public EncodeTransferMedataWebClientFilter encodeTransferMedataWebClientFilter() {
-			return new EncodeTransferMedataWebClientFilter();
-		}
-
-		@Bean
-		public SmartInitializingSingleton addEncodeTransferMetadataFilterForWebClient(EncodeTransferMedataWebClientFilter filter) {
-			return () -> webClientBuilder.forEach(webClient -> {
-				webClient.filter(filter);
-			});
+		public EncodeTransferMedataWebClientEnhancedPlugin encodeTransferMedataWebClientEnhancedPlugin() {
+			return new EncodeTransferMedataWebClientEnhancedPlugin();
 		}
 	}
 }
