@@ -32,6 +32,8 @@ import org.springframework.cloud.client.serviceregistry.Registration;
  */
 public interface RegistrationTransformer {
 
+	String getRegistry();
+
 	default Instance transform(Registration registration) {
 		DefaultInstance instance = new DefaultInstance();
 		transformDefault(instance, registration);
@@ -40,6 +42,7 @@ public interface RegistrationTransformer {
 	}
 
 	default void transformDefault(DefaultInstance instance, Registration registration) {
+		instance.setRegistry(getRegistry());
 		instance.setNamespace(MetadataContext.LOCAL_NAMESPACE);
 		instance.setService(registration.getServiceId());
 		instance.setProtocol(registration.getScheme());
