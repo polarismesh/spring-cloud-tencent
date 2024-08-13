@@ -20,7 +20,14 @@ package com.tencent.cloud.polaris.router.config;
 
 import com.tencent.cloud.polaris.context.config.PolarisContextAutoConfiguration;
 import com.tencent.cloud.polaris.router.RouterConfigModifier;
+import com.tencent.cloud.polaris.router.config.properties.PolarisNearByRouterProperties;
 import com.tencent.cloud.rpc.enhancement.config.RpcEnhancementAutoConfiguration;
+import com.tencent.polaris.api.config.Configuration;
+import com.tencent.polaris.api.config.consumer.ServiceRouterConfig;
+import com.tencent.polaris.factory.ConfigAPIFactory;
+import com.tencent.polaris.factory.config.ConfigurationImpl;
+import com.tencent.polaris.plugins.router.nearby.NearbyRouterConfig;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -38,15 +45,23 @@ public class RouterBootstrapAutoConfigurationTest {
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(
 					PolarisContextAutoConfiguration.class,
+					PolarisNearByRouterProperties.class,
 					RpcEnhancementAutoConfiguration.class,
 					RouterBootstrapAutoConfiguration.class))
 			.withPropertyValues("spring.cloud.polaris.enabled=true")
+			.withPropertyValues("spring.cloud.polaris.router.nearby-router.matchLevel=campus")
 			.withPropertyValues("spring.cloud.polaris.circuitbreaker.enabled=true");
 
 	@Test
 	public void testDefaultInitialization() {
 		this.contextRunner.run(context -> {
 			assertThat(context).hasSingleBean(RouterConfigModifier.class);
+			RouterConfigModifier routerConfigModifier = (RouterConfigModifier) context.getBean("routerConfigModifier");
+			Configuration configuration = ConfigAPIFactory.defaultConfig();
+			routerConfigModifier.modify((ConfigurationImpl) configuration);
+			NearbyRouterConfig nearbyRouterConfig = configuration.getConsumer().getServiceRouter().getPluginConfig(
+					ServiceRouterConfig.DEFAULT_ROUTER_NEARBY, NearbyRouterConfig.class);
+			Assertions.assertEquals("campus", nearbyRouterConfig.getMatchLevel().name());
 		});
 	}
 }
