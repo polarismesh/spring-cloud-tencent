@@ -12,3 +12,4 @@
 - [fix:fix nearby router properties loading bug.](https://github.com/Tencent/spring-cloud-tencent/pull/1381)
 - [fix: fix grammar issues for lane router example & optimize the gateway dependency](https://github.com/Tencent/spring-cloud-tencent/pull/1382)
 - [refactor:let the configuration SDK context stand alone.](https://github.com/Tencent/spring-cloud-tencent/pull/1383)
+- [fix: fix lossless deregister failed when no healthcheck configured](https://github.com/Tencent/spring-cloud-tencent/pull/1385)
