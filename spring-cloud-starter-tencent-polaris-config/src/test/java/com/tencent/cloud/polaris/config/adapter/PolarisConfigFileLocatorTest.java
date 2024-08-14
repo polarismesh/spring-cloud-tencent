@@ -29,6 +29,7 @@ import com.tencent.cloud.polaris.config.config.PolarisConfigProperties;
 import com.tencent.cloud.polaris.context.config.PolarisContextProperties;
 import com.tencent.polaris.configuration.api.core.ConfigFileService;
 import com.tencent.polaris.configuration.api.core.ConfigKVFile;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -57,14 +58,17 @@ public class PolarisConfigFileLocatorTest {
 	@Mock
 	private ConfigFileService configFileService;
 	@Mock
-	private PolarisPropertySourceManager polarisPropertySourceManager;
-	@Mock
 	private Environment environment;
+
+	@BeforeEach
+	public void setUp() {
+		PolarisPropertySourceManager.clearPropertySources();
+	}
 
 	@Test
 	public void testLoadApplicationPropertiesFile() {
 		PolarisConfigFileLocator locator = new PolarisConfigFileLocator(polarisConfigProperties, polarisContextProperties,
-				configFileService, polarisPropertySourceManager, environment);
+				configFileService, environment);
 
 		when(polarisContextProperties.getNamespace()).thenReturn(testNamespace);
 		when(polarisContextProperties.getService()).thenReturn(testServiceName);
@@ -99,7 +103,7 @@ public class PolarisConfigFileLocatorTest {
 	@Test
 	public void testActiveProfileFilesPriorityBiggerThanDefault() {
 		PolarisConfigFileLocator locator = new PolarisConfigFileLocator(polarisConfigProperties, polarisContextProperties,
-				configFileService, polarisPropertySourceManager, environment);
+				configFileService, environment);
 
 		when(polarisContextProperties.getNamespace()).thenReturn(testNamespace);
 		when(polarisContextProperties.getService()).thenReturn(testServiceName);
@@ -146,7 +150,7 @@ public class PolarisConfigFileLocatorTest {
 	@Test
 	public void testGetCustomFiles() {
 		PolarisConfigFileLocator locator = new PolarisConfigFileLocator(polarisConfigProperties, polarisContextProperties,
-				configFileService, polarisPropertySourceManager, environment);
+				configFileService, environment);
 
 		when(polarisContextProperties.getNamespace()).thenReturn(testNamespace);
 		when(polarisContextProperties.getService()).thenReturn(testServiceName);

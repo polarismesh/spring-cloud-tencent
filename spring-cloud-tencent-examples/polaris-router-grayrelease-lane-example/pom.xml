@@ -21,11 +21,4 @@
 	<packaging>pom</packaging>
 	<name>Spring Cloud Tencent Polaris Router Lane Example</name>
 	<description>Example of Spring Cloud Tencent Polaris Router Lane</description>
-
-	<dependencies>
-		<dependency>
-			<groupId>org.springframework.cloud</groupId>
-			<artifactId>spring-cloud-starter-bootstrap</artifactId>
-		</dependency>
-	</dependencies>
 </project>

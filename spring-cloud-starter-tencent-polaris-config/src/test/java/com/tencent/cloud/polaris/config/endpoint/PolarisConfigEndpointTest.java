@@ -26,13 +26,13 @@ import com.tencent.cloud.polaris.config.adapter.MockedConfigKVFile;
 import com.tencent.cloud.polaris.config.adapter.PolarisPropertySource;
 import com.tencent.cloud.polaris.config.adapter.PolarisPropertySourceManager;
 import com.tencent.cloud.polaris.config.config.PolarisConfigProperties;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.when;
 
 /**
  * Test for polaris config endpoint.
@@ -48,8 +48,11 @@ public class PolarisConfigEndpointTest {
 
 	@Mock
 	private PolarisConfigProperties polarisConfigProperties;
-	@Mock
-	private PolarisPropertySourceManager polarisPropertySourceManager;
+
+	@BeforeEach
+	public void setUp() {
+		PolarisPropertySourceManager.clearPropertySources();
+	}
 
 	@Test
 	public void testPolarisConfigEndpoint() {
@@ -60,9 +63,9 @@ public class PolarisConfigEndpointTest {
 		MockedConfigKVFile file = new MockedConfigKVFile(content);
 		PolarisPropertySource polarisPropertySource = new PolarisPropertySource(testNamespace, testServiceName, testFileName,
 				file, content);
-		when(polarisPropertySourceManager.getAllPropertySources()).thenReturn(Lists.newArrayList(polarisPropertySource));
+		PolarisPropertySourceManager.addPropertySource(polarisPropertySource);
 
-		PolarisConfigEndpoint endpoint = new PolarisConfigEndpoint(polarisConfigProperties, polarisPropertySourceManager);
+		PolarisConfigEndpoint endpoint = new PolarisConfigEndpoint(polarisConfigProperties);
 		Map<String, Object> info = endpoint.polarisConfig();
 		assertThat(polarisConfigProperties).isEqualTo(info.get("PolarisConfigProperties"));
 		assertThat(Lists.newArrayList(polarisPropertySource)).isEqualTo(info.get("PolarisPropertySource"));

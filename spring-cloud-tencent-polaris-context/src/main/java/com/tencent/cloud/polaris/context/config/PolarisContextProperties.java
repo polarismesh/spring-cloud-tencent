@@ -76,6 +76,7 @@ public class PolarisContextProperties {
 	/**
 	 * polaris service name.
 	 */
+	@Value("${spring.cloud.polaris.service:${spring.application.name:}}")
 	private String service;
 
 	public Configuration configuration(List<PolarisConfigModifier> modifierList, Supplier<String> ipAddressSupplier, Supplier<Integer> portSupplier) {
