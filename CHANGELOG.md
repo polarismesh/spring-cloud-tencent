@@ -10,3 +10,4 @@
 - [feat: add lane router examples](https://github.com/Tencent/spring-cloud-tencent/pull/1379)
 - [fix: fix the lossless provider override in multiple registries scenario](https://github.com/Tencent/spring-cloud-tencent/pull/1380)
 - [fix:fix nearby router properties loading bug.](https://github.com/Tencent/spring-cloud-tencent/pull/1381)
+- [fix: fix grammar issues for lane router example & optimize the gateway dependency](https://github.com/Tencent/spring-cloud-tencent/pull/1382)
