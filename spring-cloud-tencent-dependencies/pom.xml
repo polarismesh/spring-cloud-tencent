@@ -83,8 +83,9 @@
 		<io.swagger.version>1.5.24</io.swagger.version>
 		<mocktio.version>4.9.0</mocktio.version>
 		<byte-buddy.version>1.12.19</byte-buddy.version>
-		<jackson.version>2.12.7</jackson.version>
+		<jackson.version>2.15.3</jackson.version>
 		<protobuf-java.version>3.21.7</protobuf-java.version>
+		<okio.version>3.0.0</okio.version>
 		<system-stubs-jupiter.version>2.0.2</system-stubs-jupiter.version>
 
 		<!-- Maven Plugin Versions -->
