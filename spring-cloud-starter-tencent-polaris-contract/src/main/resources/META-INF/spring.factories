@@ -1,6 +1,7 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
   com.tencent.cloud.polaris.contract.config.PolarisSwaggerAutoConfiguration,\
   com.tencent.cloud.polaris.contract.config.PolarisContractProperties,\
+  com.tencent.cloud.polaris.contract.config.PolarisContractPropertiesAutoConfiguration,\
   com.tencent.cloud.polaris.contract.tsf.TsfContractPropertiesAutoConfiguration,\
   com.tencent.cloud.polaris.contract.tsf.TsfSwaggerAutoConfiguration
 org.springframework.cloud.bootstrap.BootstrapConfiguration=\
