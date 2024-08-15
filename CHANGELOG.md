@@ -15,3 +15,4 @@
 - [fix: fix lossless deregister failed when no healthcheck configured](https://github.com/Tencent/spring-cloud-tencent/pull/1385)
 - [feat:add zero protection.](https://github.com/Tencent/spring-cloud-tencent/pull/1386)
 - [fix:fix no registry when lossless is disabled.](https://github.com/Tencent/spring-cloud-tencent/pull/1388)
+- [fix:fix the ratelimit bug](https://github.com/Tencent/spring-cloud-tencent/pull/1389)
