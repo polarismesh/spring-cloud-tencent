@@ -28,7 +28,7 @@ import org.springframework.context.annotation.Import;
  * @author Shedfree Wu
  */
 @Configuration(proxyBeanMethods = false)
-@ConditionalOnProperty(value = "spring.cloud.polaris.enabled", matchIfMissing = true)
+@ConditionalOnProperty("spring.cloud.polaris.enabled")
 @Import(LosslessPropertiesAutoConfiguration.class)
 public class LosslessPropertiesBootstrapConfiguration {
 
