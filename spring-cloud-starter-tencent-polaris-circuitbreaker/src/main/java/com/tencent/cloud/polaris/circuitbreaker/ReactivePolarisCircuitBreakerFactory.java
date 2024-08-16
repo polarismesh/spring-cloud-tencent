@@ -56,8 +56,7 @@ public class ReactivePolarisCircuitBreakerFactory extends
 
 	@Override
 	public ReactiveCircuitBreaker create(String id) {
-		PolarisCircuitBreakerConfigBuilder.PolarisCircuitBreakerConfiguration conf = getConfigurations()
-				.computeIfAbsent(id, defaultConfiguration);
+		PolarisCircuitBreakerConfigBuilder.PolarisCircuitBreakerConfiguration conf = defaultConfiguration.apply(id);
 		return new ReactivePolarisCircuitBreaker(conf, consumerAPI, circuitBreakAPI);
 	}
 

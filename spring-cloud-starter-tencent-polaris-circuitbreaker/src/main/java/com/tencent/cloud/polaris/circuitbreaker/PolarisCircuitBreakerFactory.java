@@ -57,8 +57,7 @@ public class PolarisCircuitBreakerFactory
 
 	@Override
 	public CircuitBreaker create(String id) {
-		PolarisCircuitBreakerConfigBuilder.PolarisCircuitBreakerConfiguration conf = getConfigurations()
-				.computeIfAbsent(id, defaultConfiguration);
+		PolarisCircuitBreakerConfigBuilder.PolarisCircuitBreakerConfiguration conf = defaultConfiguration.apply(id);
 		return new PolarisCircuitBreaker(conf, consumerAPI, circuitBreakAPI);
 	}
 
