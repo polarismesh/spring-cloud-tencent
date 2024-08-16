@@ -17,6 +17,8 @@
 
 package com.tencent.cloud.polaris.circuitbreaker;
 
+import java.util.Collections;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -26,6 +28,7 @@ import com.tencent.cloud.polaris.circuitbreaker.common.PolarisCircuitBreakerConf
 import com.tencent.cloud.polaris.circuitbreaker.config.PolarisCircuitBreakerProperties;
 import com.tencent.cloud.polaris.circuitbreaker.util.PolarisCircuitBreakerUtils;
 import com.tencent.polaris.api.core.ConsumerAPI;
+import com.tencent.polaris.api.utils.ThreadPoolUtils;
 import com.tencent.polaris.circuitbreak.api.CircuitBreakAPI;
 import com.tencent.polaris.client.util.NamedThreadFactory;
 
@@ -91,6 +94,6 @@ public class ReactivePolarisCircuitBreakerFactory extends
 
 	@Override
 	public void destroy() {
-		PolarisCircuitBreakerUtils.closeExecutor(cleanupService);
+		ThreadPoolUtils.waitAndStopThreadPools(new ExecutorService[]{cleanupService});
 	}
 }
