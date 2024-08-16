@@ -23,3 +23,4 @@
 - fix:fix restTemplateCustomizer bean conflict causing service to fail to start properly.
 - fix:fix NullPointerException when properties contain kv with null value.
 - [fix: memory not released while using wildcard api call with circuitbreaker](https://github.com/Tencent/spring-cloud-tencent/pull/1361)
+- [fix: wildcard api explosion in gateway and rest template](https://github.com/Tencent/spring-cloud-tencent/pull/1390)
