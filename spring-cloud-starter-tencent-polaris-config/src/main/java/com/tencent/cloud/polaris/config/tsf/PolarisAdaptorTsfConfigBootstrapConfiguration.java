@@ -18,7 +18,7 @@
 package com.tencent.cloud.polaris.config.tsf;
 
 import com.tencent.cloud.polaris.config.ConditionalOnPolarisConfigEnabled;
-import com.tencent.cloud.polaris.context.tsf.ConditionalOnTsfEnabled;
+import com.tencent.cloud.common.tsf.ConditionalOnTsfEnabled;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Configuration;
