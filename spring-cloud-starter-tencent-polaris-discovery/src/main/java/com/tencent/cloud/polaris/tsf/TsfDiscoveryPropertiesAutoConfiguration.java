@@ -21,7 +21,7 @@ import com.tencent.cloud.common.util.inet.PolarisInetUtils;
 import com.tencent.cloud.plugin.lossless.config.LosslessProperties;
 import com.tencent.cloud.polaris.PolarisDiscoveryProperties;
 import com.tencent.cloud.polaris.context.config.PolarisContextProperties;
-import com.tencent.cloud.polaris.context.tsf.ConditionalOnTsfEnabled;
+import com.tencent.cloud.common.tsf.ConditionalOnTsfEnabled;
 import com.tencent.cloud.polaris.context.tsf.config.TsfCoreProperties;
 import com.tencent.cloud.polaris.context.tsf.consul.TsfConsulProperties;
 import com.tencent.cloud.polaris.tsf.lossless.TsfLosslessConfigModifier;
