@@ -18,6 +18,8 @@
 package com.tencent.cloud.polaris.circuitbreaker.util;
 
 import java.util.Objects;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.polaris.circuitbreaker.common.PolarisCircuitBreakerConfigBuilder;
@@ -55,12 +57,12 @@ public final class PolarisCircuitBreakerUtils {
 		Assert.hasText(id, "A CircuitBreaker must have an id. Id could be : namespace#service#method or service#method or service");
 		String[] polarisCircuitBreakerMetaData = id.split("#");
 		if (polarisCircuitBreakerMetaData.length == 2) {
-			return new String[]{MetadataContext.LOCAL_NAMESPACE, polarisCircuitBreakerMetaData[0], polarisCircuitBreakerMetaData[1]};
+			return new String[] {MetadataContext.LOCAL_NAMESPACE, polarisCircuitBreakerMetaData[0], polarisCircuitBreakerMetaData[1]};
 		}
 		if (polarisCircuitBreakerMetaData.length == 3) {
-			return new String[]{polarisCircuitBreakerMetaData[0], polarisCircuitBreakerMetaData[1], polarisCircuitBreakerMetaData[2]};
+			return new String[] {polarisCircuitBreakerMetaData[0], polarisCircuitBreakerMetaData[1], polarisCircuitBreakerMetaData[2]};
 		}
-		return new String[]{MetadataContext.LOCAL_NAMESPACE, id, ""};
+		return new String[] {MetadataContext.LOCAL_NAMESPACE, id, ""};
 	}
 
 	public static void reportStatus(ConsumerAPI consumerAPI,
@@ -84,4 +86,29 @@ public final class PolarisCircuitBreakerUtils {
 		}
 	}
 
+	/**
+	 * wait and close executorService, copied from java19.
+	 * @param executorService thread pool executor
+	 */
+	public static void closeExecutor(ExecutorService executorService) {
+		boolean terminated = executorService.isTerminated();
+		if (!terminated) {
+			executorService.shutdown();
+			boolean interrupted = false;
+			while (!terminated) {
+				try {
+					terminated = executorService.awaitTermination(30L, TimeUnit.SECONDS);
+				}
+				catch (InterruptedException e) {
+					if (!interrupted) {
+						executorService.shutdownNow();
+						interrupted = true;
+					}
+				}
+			}
+			if (interrupted) {
+				Thread.currentThread().interrupt();
+			}
+		}
+	}
 }

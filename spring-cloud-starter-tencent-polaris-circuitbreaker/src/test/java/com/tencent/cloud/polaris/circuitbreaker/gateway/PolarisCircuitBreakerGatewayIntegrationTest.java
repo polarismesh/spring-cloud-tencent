@@ -32,6 +32,7 @@ import java.util.stream.Collectors;
 
 import com.google.protobuf.util.JsonFormat;
 import com.tencent.cloud.polaris.circuitbreaker.PolarisCircuitBreakerFactory;
+import com.tencent.cloud.polaris.circuitbreaker.config.PolarisCircuitBreakerProperties;
 import com.tencent.cloud.polaris.circuitbreaker.reporter.ExceptionCircuitBreakerReporter;
 import com.tencent.cloud.polaris.circuitbreaker.reporter.SuccessCircuitBreakerReporter;
 import com.tencent.cloud.rpc.enhancement.config.RpcEnhancementReporterProperties;
@@ -216,8 +217,9 @@ public class PolarisCircuitBreakerGatewayIntegrationTest {
 
 		@Bean
 		@ConditionalOnMissingBean(CircuitBreakerFactory.class)
-		public CircuitBreakerFactory polarisCircuitBreakerFactory(CircuitBreakAPI circuitBreakAPI, ConsumerAPI consumerAPI) {
-			PolarisCircuitBreakerFactory factory = new PolarisCircuitBreakerFactory(circuitBreakAPI, consumerAPI);
+		public CircuitBreakerFactory polarisCircuitBreakerFactory(CircuitBreakAPI circuitBreakAPI, ConsumerAPI consumerAPI,
+				PolarisCircuitBreakerProperties polarisCircuitBreakerProperties) {
+			PolarisCircuitBreakerFactory factory = new PolarisCircuitBreakerFactory(circuitBreakAPI, consumerAPI, polarisCircuitBreakerProperties);
 			customizers.forEach(customizer -> customizer.customize(factory));
 			return factory;
 		}

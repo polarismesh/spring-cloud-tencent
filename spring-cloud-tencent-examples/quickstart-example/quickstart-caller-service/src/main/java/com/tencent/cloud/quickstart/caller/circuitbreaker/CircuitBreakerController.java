@@ -117,6 +117,26 @@ public class CircuitBreakerController {
 	}
 
 	/**
+	 * RestTemplate wildcard circuit breaker with fallback from Polaris.
+	 * @return circuit breaker information of callee
+	 */
+	@GetMapping("/rest/fallbackFromPolaris/wildcard/{uid}")
+	public ResponseEntity<String> circuitBreakRestTemplateFallbackFromPolarisWildcard(@PathVariable String uid) {
+		String path = String.format("/quickstart/callee/circuitBreak/wildcard/%s", uid);
+		return restTemplateFallbackFromPolaris.getForEntity(path, String.class);
+	}
+
+	/**
+	 * RestTemplate wildcard circuit breaker with fallback from code.
+	 * @return circuit breaker information of callee
+	 */
+	@GetMapping("/rest/fallbackFromCode/wildcard/{uid}")
+	public ResponseEntity<String> circuitBreakRestTemplateFallbackFromCodeWildcard(@PathVariable String uid) {
+		String path = String.format("/quickstart/callee/circuitBreak/wildcard/%s", uid);
+		return restTemplateFallbackFromCode.getForEntity(path, String.class);
+	}
+
+	/**
 	 * RestTemplate circuit breaker with fallback from Polaris.
 	 * @return circuit breaker information of callee
 	 */

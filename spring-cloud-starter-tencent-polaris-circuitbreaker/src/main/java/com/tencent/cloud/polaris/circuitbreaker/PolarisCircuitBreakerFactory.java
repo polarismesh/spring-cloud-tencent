@@ -17,13 +17,19 @@
 
 package com.tencent.cloud.polaris.circuitbreaker;
 
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 
 import com.tencent.cloud.polaris.circuitbreaker.common.PolarisCircuitBreakerConfigBuilder;
+import com.tencent.cloud.polaris.circuitbreaker.config.PolarisCircuitBreakerProperties;
 import com.tencent.cloud.polaris.circuitbreaker.util.PolarisCircuitBreakerUtils;
 import com.tencent.polaris.api.core.ConsumerAPI;
 import com.tencent.polaris.circuitbreak.api.CircuitBreakAPI;
+import com.tencent.polaris.client.util.NamedThreadFactory;
 
+import org.springframework.beans.factory.DisposableBean;
 import org.springframework.cloud.client.circuitbreaker.CircuitBreaker;
 import org.springframework.cloud.client.circuitbreaker.CircuitBreakerFactory;
 
@@ -33,7 +39,7 @@ import org.springframework.cloud.client.circuitbreaker.CircuitBreakerFactory;
  * @author seanyu 2023-02-27
  */
 public class PolarisCircuitBreakerFactory
-		extends CircuitBreakerFactory<PolarisCircuitBreakerConfigBuilder.PolarisCircuitBreakerConfiguration, PolarisCircuitBreakerConfigBuilder> {
+		extends CircuitBreakerFactory<PolarisCircuitBreakerConfigBuilder.PolarisCircuitBreakerConfiguration, PolarisCircuitBreakerConfigBuilder> implements DisposableBean {
 
 	private Function<String, PolarisCircuitBreakerConfigBuilder.PolarisCircuitBreakerConfiguration> defaultConfiguration =
 			id -> {
@@ -50,9 +56,19 @@ public class PolarisCircuitBreakerFactory
 
 	private final ConsumerAPI consumerAPI;
 
-	public PolarisCircuitBreakerFactory(CircuitBreakAPI circuitBreakAPI, ConsumerAPI consumerAPI) {
+	private final ScheduledExecutorService cleanupService = Executors.newSingleThreadScheduledExecutor(
+			new NamedThreadFactory("sct-circuitbreaker-cleanup", true));
+
+	public PolarisCircuitBreakerFactory(CircuitBreakAPI circuitBreakAPI, ConsumerAPI consumerAPI,
+			PolarisCircuitBreakerProperties polarisCircuitBreakerProperties) {
 		this.circuitBreakAPI = circuitBreakAPI;
 		this.consumerAPI = consumerAPI;
+		cleanupService.scheduleWithFixedDelay(
+				() -> {
+					getConfigurations().clear();
+				},
+				polarisCircuitBreakerProperties.getConfigurationCleanUpInterval(),
+				polarisCircuitBreakerProperties.getConfigurationCleanUpInterval(), TimeUnit.MILLISECONDS);
 	}
 
 	@Override
@@ -71,6 +87,11 @@ public class PolarisCircuitBreakerFactory
 	@Override
 	public void configureDefault(Function<String, PolarisCircuitBreakerConfigBuilder.PolarisCircuitBreakerConfiguration> defaultConfiguration) {
 		this.defaultConfiguration = defaultConfiguration;
+	}
+
+	@Override
+	public void destroy() {
+		PolarisCircuitBreakerUtils.closeExecutor(cleanupService);
 	}
 
 }
