@@ -17,3 +17,4 @@
 - [fix:fix no registry when lossless is disabled.](https://github.com/Tencent/spring-cloud-tencent/pull/1388)
 - [fix:fix the ratelimit bug](https://github.com/Tencent/spring-cloud-tencent/pull/1389)
 - [feat:add Tencent Cloud TSF support.](https://github.com/Tencent/spring-cloud-tencent/pull/1391)
+- [feat:support consul config.](https://github.com/Tencent/spring-cloud-tencent/pull/1394)

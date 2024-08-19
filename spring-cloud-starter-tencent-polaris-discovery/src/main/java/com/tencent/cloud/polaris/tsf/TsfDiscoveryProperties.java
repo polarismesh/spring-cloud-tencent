@@ -43,9 +43,6 @@ public class TsfDiscoveryProperties {
 
 	private InetUtils.HostInfo hostInfo;
 
-	@Value("${tsf_token:${consul.token:${CONSUL_TOKEN:${spring.cloud.consul.token:${SPRING_CLOUD_CONSUL_TOKEN:}}}}}")
-	private String aclToken;
-
 	/**
 	 * Tags to use when registering service.
 	 */
@@ -220,28 +217,6 @@ public class TsfDiscoveryProperties {
 	/**
 	 * tsf service consul registration tags.
 	 *
-	 * applicationId 应用Id
-	 */
-	@Value("${tsf_application_id:}")
-	private String tsfApplicationId;
-
-	/**
-	 * tsf service consul registration tags.
-	 *
-	 * groupId 部署组Id
-	 */
-	@Value("${tsf_group_id:}")
-	private String tsfGroupId;
-
-	/**
-	 * 仅本地测试时使用.
-	 */
-	@Value("${tsf_namespace_id:}")
-	private String tsfNamespaceId;
-
-	/**
-	 * tsf service consul registration tags.
-	 *
 	 * progVersion 包版本
 	 */
 	@Value("${tsf_prog_version:}")
@@ -319,14 +294,6 @@ public class TsfDiscoveryProperties {
 
 	private void setHostInfo(InetUtils.HostInfo hostInfo) {
 		this.hostInfo = hostInfo;
-	}
-
-	public String getAclToken() {
-		return aclToken;
-	}
-
-	public void setAclToken(String aclToken) {
-		this.aclToken = aclToken;
 	}
 
 	public List<String> getTags() {
@@ -586,30 +553,6 @@ public class TsfDiscoveryProperties {
 		this.healthCheckTlsSkipVerify = healthCheckTlsSkipVerify;
 	}
 
-	public String getTsfApplicationId() {
-		return tsfApplicationId;
-	}
-
-	public void setTsfApplicationId(final String tsfApplicationId) {
-		this.tsfApplicationId = tsfApplicationId;
-	}
-
-	public String getTsfGroupId() {
-		return tsfGroupId;
-	}
-
-	public void setTsfGroupId(final String tsfGroupId) {
-		this.tsfGroupId = tsfGroupId;
-	}
-
-	public String getTsfNamespaceId() {
-		return tsfNamespaceId;
-	}
-
-	public void setTsfNamespaceId(String tsfNamespaceId) {
-		this.tsfNamespaceId = tsfNamespaceId;
-	}
-
 	public String getTsfProgVersion() {
 		return tsfProgVersion;
 	}
@@ -686,7 +629,6 @@ public class TsfDiscoveryProperties {
 	public String toString() {
 		return "ConsulDiscoveryProperties{" +
 				"hostInfo=" + hostInfo +
-				", aclToken='" + aclToken + '\'' +
 				", tags=" + tags +
 				", enabled=" + enabled +
 				", managementTags=" + managementTags +
