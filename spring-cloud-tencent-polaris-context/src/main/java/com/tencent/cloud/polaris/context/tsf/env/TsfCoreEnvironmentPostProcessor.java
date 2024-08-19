@@ -59,9 +59,8 @@ public final class TsfCoreEnvironmentPostProcessor implements EnvironmentPostPro
 		String tsfAppId = environment.getProperty("tsf_app_id");
 		if (StringUtils.isNotBlank(tsfAppId)) {
 			Map<String, Object> defaultProperties = new HashMap<>();
-			// enable polaris as default
+			//enable polaris as default
 			defaultProperties.put("spring.cloud.polaris.enabled", "true");
-
 			// tsf_application_id
 			String tsfApplicationId = environment.getProperty("tsf_application_id");
 			if (StringUtils.isBlank(tsfApplicationId)) {
@@ -78,6 +77,9 @@ public final class TsfCoreEnvironmentPostProcessor implements EnvironmentPostPro
 			String tsfNamespaceId = environment.getProperty("tsf_namespace_id");
 			if (StringUtils.isBlank(tsfNamespaceId)) {
 				LOGGER.error("tsf_namespace_id is empty");
+			}
+			else {
+				defaultProperties.put("spring.cloud.polaris.namespace", tsfNamespaceId);
 			}
 
 			// tsf_consul_ip
@@ -104,22 +106,30 @@ public final class TsfCoreEnvironmentPostProcessor implements EnvironmentPostPro
 				defaultProperties.put("spring.cloud.polaris.config.enabled", "true");
 			}
 			else {
+				defaultProperties.put("spring.cloud.polaris.contract.report.enabled", "false");
 				defaultProperties.put("spring.cloud.polaris.config.enabled", "true");
+				defaultProperties.put("spring.cloud.polaris.config.internal-enabled", "false");
 				defaultProperties.put("spring.cloud.polaris.config.data-source", "consul");
 				defaultProperties.put("spring.cloud.polaris.config.address", "http://" + tsfConsulIp + ":" + tsfConsulPort);
 				defaultProperties.put("spring.cloud.polaris.config.port", tsfConsulPort);
 				defaultProperties.put("spring.cloud.polaris.config.token", tsfConsulToken);
 				defaultProperties.put("spring.cloud.polaris.config.groups[0].namespace", "config");
 				defaultProperties.put("spring.cloud.polaris.config.groups[0].name", "application");
-				defaultProperties.put("spring.cloud.polaris.config.groups[0].files[0]", tsfNamespaceId + "/");
-				defaultProperties.put("spring.cloud.polaris.config.groups[0].files[1]", tsfApplicationId + "/" + tsfGroupId + "/");
+				defaultProperties.put("spring.cloud.polaris.config.groups[0].files[0]", tsfApplicationId + "/" + tsfGroupId + "/");
+				defaultProperties.put("spring.cloud.polaris.config.groups[0].files[1]", tsfNamespaceId + "/");
 			}
 
 			// tse_polaris_ip
 			defaultProperties.put("spring.cloud.polaris.address", "grpc://" + environment.getProperty("tse_polaris_ip", "") + ":8091");
 
-			// tse_polaris_ip
+			// tsf_sctt_extensions_port
 			defaultProperties.put("spring.cloud.polaris.stat.port", environment.getProperty("tsf_sctt_extensions_port", "11134"));
+
+			// rule based router fail over type
+			defaultProperties.put("spring.cloud.polaris.router.rule-router.fail-over", "none");
+
+			// namespace affinity router
+			defaultProperties.put("spring.cloud.polaris.router.namespace-router.enabled", "true");
 
 			MapPropertySource propertySource = new MapPropertySource("tsf-polaris-properties", defaultProperties);
 			environment.getPropertySources().addFirst(propertySource);
