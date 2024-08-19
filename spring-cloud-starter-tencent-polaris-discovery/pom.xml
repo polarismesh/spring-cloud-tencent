@@ -19,18 +19,17 @@
 			<groupId>com.tencent.cloud</groupId>
 			<artifactId>spring-cloud-tencent-rpc-enhancement</artifactId>
 		</dependency>
+
+		<dependency>
+			<groupId>com.tencent.cloud</groupId>
+			<artifactId>spring-cloud-tencent-lossless-plugin</artifactId>
+		</dependency>
 		<!-- Spring Cloud Tencent dependencies end -->
 
 		<!-- Polaris dependencies start -->
 		<dependency>
 			<groupId>com.tencent.polaris</groupId>
 			<artifactId>polaris-test-common</artifactId>
-			<scope>test</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>com.tencent.polaris</groupId>
-			<artifactId>connector-consul</artifactId>
 			<scope>test</scope>
 		</dependency>
 
@@ -81,6 +80,11 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-actuator-autoconfigure</artifactId>
 			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>joda-time</groupId>
+			<artifactId>joda-time</artifactId>
 		</dependency>
 
 		<dependency>

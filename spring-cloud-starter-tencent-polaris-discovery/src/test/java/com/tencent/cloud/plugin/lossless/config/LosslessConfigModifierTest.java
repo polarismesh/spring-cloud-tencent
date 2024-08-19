@@ -15,9 +15,8 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package com.tencent.cloud.plugin.lossless;
+package com.tencent.cloud.plugin.lossless.config;
 
-import com.tencent.cloud.plugin.lossless.config.LosslessConfigModifier;
 import com.tencent.cloud.polaris.context.PolarisSDKContextManager;
 import com.tencent.polaris.api.config.provider.LosslessConfig;
 import org.junit.jupiter.api.BeforeEach;

@@ -73,6 +73,7 @@ public class LosslessRegistryAspectTest {
 					PolarisDiscoveryClientConfiguration.class,
 					PolarisDiscoveryAutoConfiguration.class))
 			.withPropertyValues("spring.cloud.nacos.discovery.enabled=false")
+			.withPropertyValues("spring.cloud.polaris.lossless.enabled=true")
 			.withPropertyValues("spring.cloud.polaris.lossless.delayRegisterInterval=5000")
 			.withPropertyValues("spring.cloud.polaris.lossless.healthCheckPath=")
 			.withPropertyValues("spring.cloud.polaris.lossless.port=" + LOSSLESS_PORT_1)
@@ -93,6 +94,7 @@ public class LosslessRegistryAspectTest {
 					PolarisDiscoveryClientConfiguration.class,
 					PolarisDiscoveryAutoConfiguration.class))
 			.withPropertyValues("spring.cloud.nacos.discovery.enabled=false")
+			.withPropertyValues("spring.cloud.polaris.lossless.enabled=true")
 			.withPropertyValues("spring.cloud.polaris.lossless.healthCheckInterval=1000")
 			.withPropertyValues("spring.cloud.polaris.lossless.healthCheckPath=/test")
 			.withPropertyValues("spring.cloud.polaris.lossless.port=28082")
@@ -138,8 +140,8 @@ public class LosslessRegistryAspectTest {
 			assertThatCode(() -> {
 				assertThat(OkHttpUtil.checkUrl(HOST, LOSSLESS_PORT_1, "/online", Collections.EMPTY_MAP)).isFalse();
 			}).doesNotThrowAnyException();
-			// delay register after 5s
-			Thread.sleep(5000);
+			// delay register after 10s
+			Thread.sleep(10000);
 			PolarisServiceRegistry registry = context.getBean(PolarisServiceRegistry.class);
 			PolarisRegistration registration = context.getBean(PolarisRegistration.class);
 
