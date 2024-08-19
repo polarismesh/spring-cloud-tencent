@@ -17,13 +17,11 @@
 
 package com.tencent.cloud.polaris.context.tsf.consul;
 
-import com.tencent.cloud.polaris.context.config.PolarisContextAutoConfiguration;
-
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
 @Configuration(proxyBeanMethods = false)
-@Import({PolarisContextAutoConfiguration.class, TsfConsulAutoConfiguration.class})
+@Import({TsfConsulAutoConfiguration.class})
 public class TsfConsulBootstrapConfiguration {
 
 }
