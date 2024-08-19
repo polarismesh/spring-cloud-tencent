@@ -59,7 +59,7 @@ public final class TsfCoreEnvironmentPostProcessor implements EnvironmentPostPro
 		String tsfAppId = environment.getProperty("tsf_app_id");
 		if (StringUtils.isNotBlank(tsfAppId)) {
 			Map<String, Object> defaultProperties = new HashMap<>();
-
+			defaultProperties.put("spring.cloud.polaris.enabled", "true");
 			// tsf_application_id
 			String tsfApplicationId = environment.getProperty("tsf_application_id");
 			if (StringUtils.isBlank(tsfApplicationId)) {
