@@ -57,7 +57,7 @@ public class PolarisLoadBalancerClientConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	@ConditionalOnProperty(value = "spring.cloud.polaris.loadbalancer.strategy", havingValue = "roundRobin", matchIfMissing = true)
+	@ConditionalOnProperty(value = "spring.cloud.polaris.loadbalancer.strategy", havingValue = "roundRobin")
 	public ReactorLoadBalancer<ServiceInstance> roundRobinLoadBalancer(Environment environment,
 			LoadBalancerClientFactory loadBalancerClientFactory) {
 		String name = environment.getProperty(LoadBalancerClientFactory.PROPERTY_NAME);
@@ -97,7 +97,7 @@ public class PolarisLoadBalancerClientConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	@ConditionalOnProperty(value = "spring.cloud.polaris.loadbalancer.strategy", havingValue = "polarisWeightedRoundRobin")
+	@ConditionalOnProperty(value = "spring.cloud.polaris.loadbalancer.strategy", havingValue = "polarisWeightedRoundRobin", matchIfMissing = true)
 	public ReactorLoadBalancer<ServiceInstance> polarisWeightedRoundRobinLoadBalancer(Environment environment,
 			LoadBalancerClientFactory loadBalancerClientFactory, PolarisSDKContextManager polarisSDKContextManager) {
 		String name = environment.getProperty(LoadBalancerClientFactory.PROPERTY_NAME);
