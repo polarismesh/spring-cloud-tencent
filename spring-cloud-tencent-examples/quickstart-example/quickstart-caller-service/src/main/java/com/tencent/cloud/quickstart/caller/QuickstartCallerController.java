@@ -17,9 +17,12 @@
 
 package com.tencent.cloud.quickstart.caller;
 
+import java.util.Collections;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import com.tencent.cloud.common.metadata.MetadataContext;
+import com.tencent.cloud.common.metadata.MetadataContextHolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import reactor.core.publisher.Mono;
@@ -63,6 +66,8 @@ public class QuickstartCallerController {
 	 */
 	@GetMapping("/feign")
 	public String feign(@RequestParam int value1, @RequestParam int value2) {
+		MetadataContext metadataContext = MetadataContextHolder.get();
+		metadataContext.setTransitiveMetadata(Collections.singletonMap("feign-trace", String.format("%d+%d", value1, value2)));
 		return quickstartCalleeService.sum(value1, value2);
 	}
 

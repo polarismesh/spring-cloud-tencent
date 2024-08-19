@@ -17,10 +17,15 @@
 
 package com.tencent.cloud.tsf.demo.consumer.controller;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import com.tencent.cloud.tsf.demo.consumer.proxy.ProviderDemoService;
 import com.tencent.cloud.tsf.demo.consumer.proxy.ProviderService;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.tsf.core.context.TsfContext;
+import org.springframework.tsf.core.entity.Tag;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -38,16 +43,31 @@ public class ConsumerController {
 
 	@RequestMapping(value = "/echo-rest/{str}", method = RequestMethod.GET)
 	public String restProvider(@PathVariable String str) {
+		TsfContext.putTag("operation", "rest");
+		Map<String, String> mTags = new HashMap<>();
+		mTags.put("rest-trace-key1", "value1");
+		mTags.put("rest-trace-key2", "value2");
+		TsfContext.putTags(mTags, Tag.ControlFlag.TRANSITIVE);
 		return restTemplate.getForObject("http://provider-demo/echo/" + str, String.class);
 	}
 
 	@RequestMapping(value = "/echo-feign/{str}", method = RequestMethod.GET)
 	public String feignProvider(@PathVariable String str) {
+		TsfContext.putTag("operation", "feign");
+		Map<String, String> mTags = new HashMap<>();
+		mTags.put("feign-trace-key1", "value1");
+		mTags.put("feign-trace-key2", "value2");
+		TsfContext.putTags(mTags, Tag.ControlFlag.TRANSITIVE);
 		return providerDemoService.echo(str);
 	}
 
 	@RequestMapping(value = "/echo-feign-url/{str}", method = RequestMethod.GET)
 	public String feignUrlProvider(@PathVariable String str) {
+		TsfContext.putTag("operation", "feignUrl");
+		Map<String, String> mTags = new HashMap<>();
+		mTags.put("feignUrl-trace-key1", "value1");
+		mTags.put("feignUrl-trace-key2", "value2");
+		TsfContext.putTags(mTags, Tag.ControlFlag.TRANSITIVE);
 		return providerService.echo(str);
 	}
 }

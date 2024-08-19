@@ -181,5 +181,10 @@ public class OrderConstant {
 		 * Order of service contract configuration modifier.
 		 */
 		public static Integer SERVICE_CONTRACT_ORDER = Integer.MAX_VALUE - 9;
+
+		/**
+		 * Order of trace configuration modifier.
+		 */
+		public static Integer TRACE_ORDER = 2;
 	}
 }
