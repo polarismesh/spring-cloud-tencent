@@ -105,7 +105,10 @@ public class RouterLabelRestTemplateInterceptorTest {
 		public HttpMethod getMethod() {
 			return HttpMethod.POST;
 		}
-
+		@Override
+		public String getMethodValue(){
+			return HttpMethod.POST.toString();
+		}
 		@Override
 		public URI getURI() {
 			return uri;
