@@ -15,7 +15,7 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package com.tencent.cloud.polaris.tsf.consts;
+package com.tencent.cloud.common.constant;
 
 /**
  * 预热所需枚举.

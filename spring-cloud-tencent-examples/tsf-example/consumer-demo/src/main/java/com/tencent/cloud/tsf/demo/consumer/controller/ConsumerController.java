@@ -22,6 +22,7 @@ import java.util.Map;
 
 import com.tencent.cloud.tsf.demo.consumer.proxy.ProviderDemoService;
 import com.tencent.cloud.tsf.demo.consumer.proxy.ProviderService;
+import com.tencent.polaris.api.utils.StringUtils;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.tsf.core.context.TsfContext;
@@ -29,6 +30,7 @@ import org.springframework.tsf.core.entity.Tag;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
@@ -42,7 +44,12 @@ public class ConsumerController {
 	private ProviderDemoService providerDemoService;
 
 	@RequestMapping(value = "/echo-rest/{str}", method = RequestMethod.GET)
-	public String restProvider(@PathVariable String str) {
+	public String restProvider(@PathVariable String str,
+			@RequestParam(required = false) String tagName,
+			@RequestParam(required = false) String tagValue) {
+		if (StringUtils.isNotBlank(tagName)) {
+			TsfContext.putTag(tagName, tagValue);
+		}
 		TsfContext.putTag("operation", "rest");
 		Map<String, String> mTags = new HashMap<>();
 		mTags.put("rest-trace-key1", "value1");
@@ -52,7 +59,12 @@ public class ConsumerController {
 	}
 
 	@RequestMapping(value = "/echo-feign/{str}", method = RequestMethod.GET)
-	public String feignProvider(@PathVariable String str) {
+	public String feignProvider(@PathVariable String str,
+			@RequestParam(required = false) String tagName,
+			@RequestParam(required = false) String tagValue) {
+		if (StringUtils.isNotBlank(tagName)) {
+			TsfContext.putTag(tagName, tagValue);
+		}
 		TsfContext.putTag("operation", "feign");
 		Map<String, String> mTags = new HashMap<>();
 		mTags.put("feign-trace-key1", "value1");
@@ -62,7 +74,12 @@ public class ConsumerController {
 	}
 
 	@RequestMapping(value = "/echo-feign-url/{str}", method = RequestMethod.GET)
-	public String feignUrlProvider(@PathVariable String str) {
+	public String feignUrlProvider(@PathVariable String str,
+			@RequestParam(required = false) String tagName,
+			@RequestParam(required = false) String tagValue) {
+		if (StringUtils.isNotBlank(tagName)) {
+			TsfContext.putTag(tagName, tagValue);
+		}
 		TsfContext.putTag("operation", "feignUrl");
 		Map<String, String> mTags = new HashMap<>();
 		mTags.put("feignUrl-trace-key1", "value1");

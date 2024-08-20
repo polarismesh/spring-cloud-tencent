@@ -37,6 +37,7 @@ import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.server.ServerWebExchange;
 
+import static com.tencent.cloud.common.constant.MetadataConstant.HeaderName.APPLICATION_METADATA;
 import static com.tencent.cloud.common.constant.MetadataConstant.HeaderName.CUSTOM_DISPOSABLE_METADATA;
 import static com.tencent.cloud.common.constant.MetadataConstant.HeaderName.CUSTOM_METADATA;
 
@@ -69,6 +70,7 @@ public class EncodeTransferMedataScgEnhancedPlugin implements EnhancedPlugin {
 
 		Map<String, String> customMetadata = metadataContext.getCustomMetadata();
 		Map<String, String> disposableMetadata = metadataContext.getDisposableMetadata();
+		Map<String, String> applicationMetadata = metadataContext.getApplicationMetadata();
 
 		MessageMetadataContainer calleeMessageMetadataContainer = metadataContext.getMetadataContainer(MetadataType.MESSAGE, false);
 		Map<String, String> calleeTransitiveHeaders = calleeMessageMetadataContainer.getTransitiveHeaders();
@@ -77,6 +79,7 @@ public class EncodeTransferMedataScgEnhancedPlugin implements EnhancedPlugin {
 
 		this.buildMetadataHeader(builder, customMetadata, CUSTOM_METADATA);
 		this.buildMetadataHeader(builder, disposableMetadata, CUSTOM_DISPOSABLE_METADATA);
+		this.buildMetadataHeader(builder, applicationMetadata, APPLICATION_METADATA);
 		TransHeadersTransfer.transfer(exchange.getRequest());
 
 		context.setOriginRequest(exchange.mutate().request(builder.build()).build());

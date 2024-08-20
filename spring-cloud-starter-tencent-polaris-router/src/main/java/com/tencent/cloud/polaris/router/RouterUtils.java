@@ -19,7 +19,9 @@ package com.tencent.cloud.polaris.router;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -64,12 +66,14 @@ public final class RouterUtils {
 						.collect(Collectors.toList()))).subscribe(instance -> instanceList.add((Instance) instance));
 
 		String serviceName = "";
+		Map<String, String> serviceMetadata = new HashMap<>();
 		if (!CollectionUtils.isEmpty(instanceList)) {
 			serviceName = instanceList.get(0).getService();
+			serviceMetadata = instanceList.get(0).getServiceMetadata();
 		}
 
 		ServiceKey serviceKey = new ServiceKey(MetadataContext.LOCAL_NAMESPACE, serviceName);
 
-		return new DefaultServiceInstances(serviceKey, instanceList);
+		return new DefaultServiceInstances(serviceKey, instanceList, serviceMetadata);
 	}
 }

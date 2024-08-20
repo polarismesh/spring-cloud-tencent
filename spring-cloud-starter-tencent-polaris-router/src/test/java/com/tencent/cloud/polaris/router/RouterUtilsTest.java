@@ -28,6 +28,7 @@ import com.tencent.cloud.rpc.enhancement.transformer.PolarisInstanceTransformer;
 import com.tencent.polaris.api.pojo.DefaultInstance;
 import com.tencent.polaris.api.pojo.Instance;
 import com.tencent.polaris.api.pojo.ServiceInstances;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.MockedStatic;
@@ -50,6 +51,11 @@ import static org.mockito.Mockito.mockStatic;
 public class RouterUtilsTest {
 
 	private static final String testNamespaceAndService = "testNamespaceAndService";
+
+	@BeforeAll
+	static void beforeAll() {
+		MetadataContext.LOCAL_NAMESPACE = testNamespaceAndService;
+	}
 
 	@Test
 	public void testTransferEmptyInstances() {

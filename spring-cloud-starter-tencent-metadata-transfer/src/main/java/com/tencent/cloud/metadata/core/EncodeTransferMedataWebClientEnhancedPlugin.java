@@ -35,6 +35,7 @@ import com.tencent.polaris.metadata.core.MetadataType;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.reactive.function.client.ClientRequest;
 
+import static com.tencent.cloud.common.constant.MetadataConstant.HeaderName.APPLICATION_METADATA;
 import static com.tencent.cloud.common.constant.MetadataConstant.HeaderName.CUSTOM_DISPOSABLE_METADATA;
 import static com.tencent.cloud.common.constant.MetadataConstant.HeaderName.CUSTOM_METADATA;
 
@@ -59,6 +60,7 @@ public class EncodeTransferMedataWebClientEnhancedPlugin implements EnhancedPlug
 		MetadataContext metadataContext = MetadataContextHolder.get();
 		Map<String, String> customMetadata = metadataContext.getCustomMetadata();
 		Map<String, String> disposableMetadata = metadataContext.getDisposableMetadata();
+		Map<String, String> applicationMetadata = metadataContext.getApplicationMetadata();
 		Map<String, String> transHeaders = metadataContext.getTransHeadersKV();
 		MessageMetadataContainer calleeMessageMetadataContainer = metadataContext.getMetadataContainer(MetadataType.MESSAGE, false);
 		Map<String, String> calleeTransitiveHeaders = calleeMessageMetadataContainer.getTransitiveHeaders();
@@ -70,6 +72,7 @@ public class EncodeTransferMedataWebClientEnhancedPlugin implements EnhancedPlug
 
 		this.buildMetadataHeader(requestBuilder, customMetadata, CUSTOM_METADATA);
 		this.buildMetadataHeader(requestBuilder, disposableMetadata, CUSTOM_DISPOSABLE_METADATA);
+		this.buildMetadataHeader(requestBuilder, applicationMetadata, APPLICATION_METADATA);
 		this.buildTransmittedHeader(requestBuilder, transHeaders);
 
 		context.setOriginRequest(requestBuilder.build());

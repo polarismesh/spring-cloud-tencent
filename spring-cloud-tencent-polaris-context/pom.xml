@@ -175,6 +175,16 @@
 
 		<dependency>
 			<groupId>com.tencent.polaris</groupId>
+			<artifactId>polaris-circuitbreaker-factory</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>com.tencent.polaris</groupId>
+			<artifactId>polaris-ratelimit-factory</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>com.tencent.polaris</groupId>
 			<artifactId>loadbalancer-random</artifactId>
 		</dependency>
 

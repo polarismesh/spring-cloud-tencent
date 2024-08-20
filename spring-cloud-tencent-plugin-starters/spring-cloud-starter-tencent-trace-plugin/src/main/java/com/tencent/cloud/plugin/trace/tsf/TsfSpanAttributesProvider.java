@@ -21,11 +21,11 @@ package com.tencent.cloud.plugin.trace.tsf;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.tencent.cloud.common.tsf.TsfConstant;
 import com.tencent.cloud.plugin.trace.SpanAttributesProvider;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginContext;
 import com.tencent.polaris.api.utils.CollectionUtils;
 import com.tencent.polaris.api.utils.StringUtils;
+import com.tencent.polaris.metadata.core.constant.TsfMetadataConstants;
 
 import org.springframework.cloud.client.ServiceInstance;
 
@@ -39,11 +39,11 @@ public class TsfSpanAttributesProvider implements SpanAttributesProvider {
 		}
 		ServiceInstance targetServiceInstance = context.getTargetServiceInstance();
 		if (null != targetServiceInstance && CollectionUtils.isNotEmpty(targetServiceInstance.getMetadata())) {
-			String nsId = targetServiceInstance.getMetadata().get(TsfConstant.TSF_NAMESPACE_ID);
+			String nsId = targetServiceInstance.getMetadata().get(TsfMetadataConstants.TSF_NAMESPACE_ID);
 			attributes.put("remote.namespace-id", StringUtils.defaultString(nsId));
-			String groupId = targetServiceInstance.getMetadata().get(TsfConstant.TSF_GROUP_ID);
+			String groupId = targetServiceInstance.getMetadata().get(TsfMetadataConstants.TSF_GROUP_ID);
 			attributes.put("remote.group-id", StringUtils.defaultString(groupId));
-			String applicationId = targetServiceInstance.getMetadata().get(TsfConstant.TSF_APPLICATION_ID);
+			String applicationId = targetServiceInstance.getMetadata().get(TsfMetadataConstants.TSF_APPLICATION_ID);
 			attributes.put("remote.application-id", StringUtils.defaultString(applicationId));
 		}
 		return attributes;

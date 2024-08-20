@@ -181,7 +181,7 @@ public class PolarisRegistrationTest {
 		Map<String, String> metadata = polarisRegistration1.getMetadata();
 		assertThat(metadata).isNotNull();
 		assertThat(metadata).isNotEmpty();
-		assertThat(metadata.size()).isEqualTo(4);
+		assertThat(metadata.size()).isEqualTo(2);
 		assertThat(metadata.get("key1")).isEqualTo("value1");
 	}
 
@@ -211,7 +211,7 @@ public class PolarisRegistrationTest {
 		Map<String, String> metadata = polarisRegistration1.getMetadata();
 		assertThat(metadata).isNotNull();
 		assertThat(metadata).isNotEmpty();
-		assertThat(metadata.size()).isEqualTo(4);
+		assertThat(metadata.size()).isEqualTo(2);
 		assertThat(metadata.get("nacos.cluster")).isEqualTo(clusterName);
 	}
 }

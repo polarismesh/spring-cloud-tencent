@@ -49,7 +49,7 @@ public class PolarisRuleBasedRouterPropertiesTest {
 	@Test
 	public void testToString() {
 		assertThat(properties.toString())
-				.isEqualTo("PolarisNearByRouterProperties{enabled=true}");
+				.isEqualTo("PolarisRuleBasedRouterProperties{enabled=true, failOver=all}");
 	}
 
 }
