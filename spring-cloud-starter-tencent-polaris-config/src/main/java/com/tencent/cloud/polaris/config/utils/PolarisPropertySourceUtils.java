@@ -14,35 +14,21 @@
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
-package com.tencent.cloud.polaris.config.tsf.cache;
 
-import java.util.HashSet;
-import java.util.Set;
-
+package com.tencent.cloud.polaris.config.utils;
 
 /**
- * @author juanyinyang
- * @Date 2023年8月8日 下午4:56:18
+ * Utils for PolarisPropertySource.
+ *
+ * @author Haotian Zhang
  */
-public final class PolarisPropertyCache {
+public final class PolarisPropertySourceUtils {
 
-	private static final PolarisPropertyCache instance = new PolarisPropertyCache();
-
-	private final Set<String> cache = new HashSet<>();
-
-	private PolarisPropertyCache() {
+	private PolarisPropertySourceUtils() {
 
 	}
 
-	public static PolarisPropertyCache getInstance() {
-		return instance;
-	}
-
-	public Set<String> getCache() {
-		return cache;
-	}
-
-	public void clear() {
-		cache.clear();
+	public static String generateName(String namespace, String group, String fileName) {
+		return namespace + "-" + group + "-" + fileName;
 	}
 }

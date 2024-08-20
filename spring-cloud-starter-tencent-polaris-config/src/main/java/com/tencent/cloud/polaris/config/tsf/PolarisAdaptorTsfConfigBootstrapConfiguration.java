@@ -22,7 +22,6 @@ import com.tencent.cloud.polaris.config.ConditionalOnPolarisConfigEnabled;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 
 /**
  * @author juanyinyang
@@ -32,7 +31,6 @@ import org.springframework.context.annotation.Import;
 @ConditionalOnProperty("spring.cloud.polaris.enabled")
 @ConditionalOnTsfEnabled
 @ConditionalOnPolarisConfigEnabled
-@Import(PolarisAdaptorTsfConfigAutoConfiguration.class)
 public class PolarisAdaptorTsfConfigBootstrapConfiguration {
 
 
