@@ -17,7 +17,6 @@
  */
 
 package com.tencent.cloud.metadata.provider;
-
 import javax.servlet.http.HttpServletRequest;
 
 import com.tencent.cloud.common.util.UrlUtils;

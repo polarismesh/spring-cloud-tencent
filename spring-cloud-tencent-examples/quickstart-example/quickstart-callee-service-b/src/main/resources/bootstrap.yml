@@ -34,7 +34,7 @@ spring:
       metadata:
         content:
           label1: value2
-          region: huanan
+#          region: huanan
 management:
   endpoints:
     web:

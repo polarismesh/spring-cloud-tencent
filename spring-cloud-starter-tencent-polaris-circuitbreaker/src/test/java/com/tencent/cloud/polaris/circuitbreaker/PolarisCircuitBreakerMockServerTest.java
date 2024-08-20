@@ -106,8 +106,8 @@ public class PolarisCircuitBreakerMockServerTest {
 	public void testCircuitBreaker() {
 		Configuration configuration = TestUtils.configWithEnvAddress();
 		CircuitBreakAPI circuitBreakAPI = CircuitBreakAPIFactory.createCircuitBreakAPIByConfig(configuration);
-
 		ConsumerAPI consumerAPI = DiscoveryAPIFactory.createConsumerAPIByConfig(configuration);
+
 		PolarisCircuitBreakerFactory polarisCircuitBreakerFactory = new PolarisCircuitBreakerFactory(circuitBreakAPI, consumerAPI);
 		CircuitBreaker cb = polarisCircuitBreakerFactory.create(SERVICE_CIRCUIT_BREAKER);
 
