@@ -30,4 +30,6 @@
 - [fix:fix contract reporting bug when using TSF.](https://github.com/Tencent/spring-cloud-tencent/pull/1375)
 - [update: update contract autoconfiguration class](https://github.com/Tencent/spring-cloud-tencent/pull/1387)
 - [fix: fix TSF context bootstrap configuration](https://github.com/Tencent/spring-cloud-tencent/pull/1393)
+- [update: update SCT version](https://github.com/Tencent/spring-cloud-tencent/pull/1399)
+- [fix: fix config autoconfiguration](https://github.com/Tencent/spring-cloud-tencent/pull/1405)
 
