@@ -64,7 +64,7 @@ public class ReactivePolarisCircuitBreakerTest {
 					LoadBalancerAutoConfiguration.class,
 					ReactivePolarisCircuitBreakerAutoConfiguration.class))
 			.withPropertyValues("spring.cloud.polaris.circuitbreaker.enabled=true")
-			.withPropertyValues("spring.cloud.polaris.circuitbreaker.configuration-expire-interval=5000");
+			.withPropertyValues("spring.cloud.polaris.circuitbreaker.configuration-cleanup-interval=5000");
 
 	private static MockedStatic<ApplicationContextAwareUtils> mockedApplicationContextAwareUtils;
 

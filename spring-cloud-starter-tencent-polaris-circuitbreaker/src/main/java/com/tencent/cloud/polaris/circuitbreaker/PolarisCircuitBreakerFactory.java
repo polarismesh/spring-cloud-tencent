@@ -69,8 +69,8 @@ public class PolarisCircuitBreakerFactory
 				() -> {
 					getConfigurations().clear();
 				},
-				polarisCircuitBreakerProperties.getConfigurationCleanUpInterval(),
-				polarisCircuitBreakerProperties.getConfigurationCleanUpInterval(), TimeUnit.MILLISECONDS);
+				polarisCircuitBreakerProperties.getConfigurationCleanupInterval(),
+				polarisCircuitBreakerProperties.getConfigurationCleanupInterval(), TimeUnit.MILLISECONDS);
 	}
 
 	@Override

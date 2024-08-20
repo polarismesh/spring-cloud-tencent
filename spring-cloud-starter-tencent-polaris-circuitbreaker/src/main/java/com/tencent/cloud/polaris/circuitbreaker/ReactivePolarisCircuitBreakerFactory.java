@@ -17,7 +17,6 @@
 
 package com.tencent.cloud.polaris.circuitbreaker;
 
-import java.util.Collections;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -69,8 +68,8 @@ public class ReactivePolarisCircuitBreakerFactory extends
 				() -> {
 					getConfigurations().clear();
 				},
-				polarisCircuitBreakerProperties.getConfigurationCleanUpInterval(),
-				polarisCircuitBreakerProperties.getConfigurationCleanUpInterval(), TimeUnit.MILLISECONDS);
+				polarisCircuitBreakerProperties.getConfigurationCleanupInterval(),
+				polarisCircuitBreakerProperties.getConfigurationCleanupInterval(), TimeUnit.MILLISECONDS);
 	}
 
 	@Override

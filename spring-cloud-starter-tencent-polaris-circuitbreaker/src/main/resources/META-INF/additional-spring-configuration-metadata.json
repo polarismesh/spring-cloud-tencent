@@ -7,7 +7,7 @@
       "description": "If polaris circuitbreaker enabled."
     },
     {
-      "name": "spring.cloud.polaris.circuitbreaker.configuration-expire-interval",
+      "name": "spring.cloud.polaris.circuitbreaker.configuration-cleanup-interval",
       "type": "java.lang.Long",
       "defaultValue": "300000",
       "description": "Interval to clean up PolarisCircuitBreakerConfiguration, unit millisecond."

@@ -36,8 +36,8 @@ public class PolarisCircuitBreakerProperties {
 	/**
 	 * Interval to clean up PolarisCircuitBreakerConfiguration, unit millisecond.
 	 */
-	@Value("${spring.cloud.polaris.circuitbreaker.configuration-expire-interval:#{300000}}")
-	private long configurationCleanUpInterval = 300000;
+	@Value("${spring.cloud.polaris.circuitbreaker.configuration-cleanup-interval:#{300000}}")
+	private long configurationCleanupInterval = 300000;
 
 	public boolean isEnabled() {
 		return enabled;
@@ -47,11 +47,11 @@ public class PolarisCircuitBreakerProperties {
 		this.enabled = enabled;
 	}
 
-	public long getConfigurationCleanUpInterval() {
-		return configurationCleanUpInterval;
+	public long getConfigurationCleanupInterval() {
+		return configurationCleanupInterval;
 	}
 
-	public void setConfigurationCleanUpInterval(long configurationCleanUpInterval) {
-		this.configurationCleanUpInterval = configurationCleanUpInterval;
+	public void setConfigurationCleanupInterval(long configurationCleanupInterval) {
+		this.configurationCleanupInterval = configurationCleanupInterval;
 	}
 }
