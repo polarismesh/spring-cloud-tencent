@@ -31,3 +31,4 @@
 - [feat:support TSF router.](https://github.com/Tencent/spring-cloud-tencent/pull/1420)
 - [feat:upgrade nearby router and add namespace nearby router.](https://github.com/Tencent/spring-cloud-tencent/pull/1421)
 - [fix:fix contract reporting bug when using TSF.](https://github.com/Tencent/spring-cloud-tencent/pull/1422)
+- [fix: fix TSF context bootstrap configuration](https://github.com/Tencent/spring-cloud-tencent/pull/1424)
