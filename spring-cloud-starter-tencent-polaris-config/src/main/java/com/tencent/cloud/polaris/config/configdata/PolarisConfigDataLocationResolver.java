@@ -89,9 +89,16 @@ public class PolarisConfigDataLocationResolver implements
 		if (!location.hasPrefix(PREFIX)) {
 			return false;
 		}
-		return context.getBinder()
+
+		boolean contextEnabled = context.getBinder()
+				.bind("spring.cloud.polaris.enabled", Boolean.class)
+				.orElse(true);
+
+		boolean configEnabled = context.getBinder()
 				.bind("spring.cloud.polaris.config.enabled", Boolean.class)
 				.orElse(true);
+
+		return contextEnabled && configEnabled;
 	}
 
 	@Override
@@ -138,9 +145,24 @@ public class PolarisConfigDataLocationResolver implements
 			polarisContextProperties = new PolarisContextProperties();
 		}
 
-		// prepare and init earlier Polaris SDKContext to pull config files from remote.
-		prepareAndInitEarlierPolarisSdkContext(resolverContext, polarisConfigProperties, polarisCryptoConfigProperties, polarisContextProperties);
+		if (!polarisContextProperties.getEnabled() || !polarisConfigProperties.isEnabled()) {
+			return Collections.emptyList();
+		}
 
+		// prepare and init earlier Polaris SDKContext to pull config files from remote.
+		try {
+			prepareAndInitEarlierPolarisSdkContext(resolverContext, polarisConfigProperties, polarisCryptoConfigProperties, polarisContextProperties);
+		}
+		catch (Throwable throwable) {
+			if (location.isOptional()) {
+				log.warn("create earlier polaris SDK context failed.", throwable);
+				return new ArrayList<>();
+			}
+			else {
+				log.error("create earlier polaris SDK context failed.", throwable);
+				throw throwable;
+			}
+		}
 		bootstrapContext.registerIfAbsent(PolarisConfigProperties.class,
 				BootstrapRegistry.InstanceSupplier.of(polarisConfigProperties));
 

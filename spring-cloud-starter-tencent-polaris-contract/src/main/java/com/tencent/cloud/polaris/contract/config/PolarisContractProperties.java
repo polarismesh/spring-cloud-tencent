@@ -57,6 +57,8 @@ public class PolarisContractProperties implements ContractProperties {
 	@Value("${spring.cloud.polaris.contract.report.enabled:true}")
 	private boolean reportEnabled = true;
 
+	private String name;
+
 	public PolarisContractProperties(@Nullable ExtendedContractProperties extendContractProperties) {
 		this.extendContractProperties = extendContractProperties;
 	}
@@ -71,6 +73,9 @@ public class PolarisContractProperties implements ContractProperties {
 
 	@Override
 	public void setEnabled(boolean enabled) {
+		if (Objects.nonNull(extendContractProperties)) {
+			extendContractProperties.setEnabled(enabled);
+		}
 		this.enabled = enabled;
 	}
 
@@ -84,6 +89,9 @@ public class PolarisContractProperties implements ContractProperties {
 
 	@Override
 	public void setBasePackage(String basePackage) {
+		if (Objects.nonNull(extendContractProperties)) {
+			extendContractProperties.setBasePackage(basePackage);
+		}
 		this.basePackage = basePackage;
 	}
 
@@ -97,6 +105,9 @@ public class PolarisContractProperties implements ContractProperties {
 
 	@Override
 	public void setExcludePath(String excludePath) {
+		if (Objects.nonNull(extendContractProperties)) {
+			extendContractProperties.setExcludePath(excludePath);
+		}
 		this.excludePath = excludePath;
 	}
 
@@ -110,6 +121,9 @@ public class PolarisContractProperties implements ContractProperties {
 
 	@Override
 	public void setGroup(String group) {
+		if (Objects.nonNull(extendContractProperties)) {
+			extendContractProperties.setGroup(group);
+		}
 		this.group = group;
 	}
 
@@ -123,6 +137,9 @@ public class PolarisContractProperties implements ContractProperties {
 
 	@Override
 	public void setBasePath(String basePath) {
+		if (Objects.nonNull(extendContractProperties)) {
+			extendContractProperties.setBasePath(basePath);
+		}
 		this.basePath = basePath;
 	}
 
@@ -136,16 +153,40 @@ public class PolarisContractProperties implements ContractProperties {
 
 	@Override
 	public void setExposure(boolean exposure) {
+		if (Objects.nonNull(extendContractProperties)) {
+			extendContractProperties.setExposure(exposure);
+		}
 		this.exposure = exposure;
 	}
 
 	@Override
 	public boolean isReportEnabled() {
+		if (Objects.nonNull(extendContractProperties)) {
+			return extendContractProperties.isReportEnabled();
+		}
 		return reportEnabled;
 	}
 
 	@Override
 	public void setReportEnabled(boolean reportEnabled) {
+		if (Objects.nonNull(extendContractProperties)) {
+			extendContractProperties.setReportEnabled(reportEnabled);
+		}
 		this.reportEnabled = reportEnabled;
+	}
+
+	public String getName() {
+		if (Objects.nonNull(extendContractProperties)) {
+			return extendContractProperties.getName();
+		}
+		return name;
+	}
+
+	@Override
+	public void setName(String name) {
+		if (Objects.nonNull(extendContractProperties)) {
+			extendContractProperties.setName(name);
+		}
+		this.name = name;
 	}
 }

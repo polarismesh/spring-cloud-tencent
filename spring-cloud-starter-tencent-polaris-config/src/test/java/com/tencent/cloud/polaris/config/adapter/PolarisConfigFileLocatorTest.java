@@ -89,6 +89,7 @@ public class PolarisConfigFileLocatorTest {
 		when(configFileService.getConfigYamlFile(testNamespace, testServiceName, "bootstrap.yml")).thenReturn(emptyConfigFile);
 		when(configFileService.getConfigYamlFile(testNamespace, testServiceName, "bootstrap.yaml")).thenReturn(emptyConfigFile);
 
+		when(polarisConfigProperties.isEnabled()).thenReturn(true);
 		when(polarisConfigProperties.getGroups()).thenReturn(null);
 		when(environment.getActiveProfiles()).thenReturn(new String[] {});
 
@@ -136,6 +137,7 @@ public class PolarisConfigFileLocatorTest {
 		when(configFileService.getConfigYamlFile(testNamespace, testServiceName, "bootstrap-dev.yml")).thenReturn(emptyConfigFile);
 		when(configFileService.getConfigYamlFile(testNamespace, testServiceName, "bootstrap-dev.yaml")).thenReturn(emptyConfigFile);
 
+		when(polarisConfigProperties.isEnabled()).thenReturn(true);
 		when(polarisConfigProperties.getGroups()).thenReturn(null);
 		when(environment.getActiveProfiles()).thenReturn(new String[] {"dev"});
 
@@ -173,6 +175,7 @@ public class PolarisConfigFileLocatorTest {
 		configFileGroup.setFiles(Lists.newArrayList(customFile1, customFile2));
 		customFiles.add(configFileGroup);
 
+		when(polarisConfigProperties.isEnabled()).thenReturn(true);
 		when(polarisConfigProperties.getGroups()).thenReturn(customFiles);
 		when(environment.getActiveProfiles()).thenReturn(new String[] {});
 

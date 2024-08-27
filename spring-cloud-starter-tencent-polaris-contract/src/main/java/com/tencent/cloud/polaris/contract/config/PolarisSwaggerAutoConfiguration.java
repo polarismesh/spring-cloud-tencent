@@ -30,6 +30,7 @@ import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.info.License;
 import org.springdoc.core.configuration.SpringDocConfiguration;
 import org.springdoc.core.models.GroupedOpenApi;
+import org.springdoc.core.providers.ObjectMapperProvider;
 import org.springdoc.webflux.api.MultipleOpenApiWebFluxResource;
 import org.springdoc.webmvc.api.MultipleOpenApiWebMvcResource;
 
@@ -85,8 +86,8 @@ public class PolarisSwaggerAutoConfiguration {
 	public OpenAPI polarisOpenAPI() {
 		return new OpenAPI()
 				.info(new Info()
-						.title("Polaris Swagger API")
-						.description("This is to show polaris api description.")
+						.title("Polaris Contract")
+						.description("This is to show polaris contract description.")
 						.license(new License().name("BSD-3-Clause").url("https://opensource.org/licenses/BSD-3-Clause"))
 						.version("1.0.0"));
 	}
@@ -98,9 +99,9 @@ public class PolarisSwaggerAutoConfiguration {
 			@Nullable MultipleOpenApiWebMvcResource multipleOpenApiWebMvcResource,
 			@Nullable MultipleOpenApiWebFluxResource multipleOpenApiWebFluxResource,
 			PolarisContractProperties polarisContractProperties, PolarisSDKContextManager polarisSDKContextManager,
-			PolarisDiscoveryProperties polarisDiscoveryProperties) {
+			PolarisDiscoveryProperties polarisDiscoveryProperties, ObjectMapperProvider springdocObjectMapperProvider) {
 		return new PolarisContractReporter(multipleOpenApiWebMvcResource, multipleOpenApiWebFluxResource,
-				polarisContractProperties, polarisSDKContextManager.getProviderAPI(), polarisDiscoveryProperties);
+				polarisContractProperties, polarisSDKContextManager.getProviderAPI(), polarisDiscoveryProperties, springdocObjectMapperProvider);
 	}
 
 	@Bean

@@ -117,6 +117,7 @@ public class PolarisServiceRegistry implements ServiceRegistry<PolarisRegistrati
 		instanceRegisterRequest.setCampus(staticMetadataManager.getCampus());
 		instanceRegisterRequest.setTtl(polarisDiscoveryProperties.getHeartbeatInterval());
 		instanceRegisterRequest.setMetadata(registration.getMetadata());
+		instanceRegisterRequest.setExtendedMetadata(registration.getExtendedMetadata());
 		instanceRegisterRequest.setProtocol(polarisDiscoveryProperties.getProtocol());
 		instanceRegisterRequest.setVersion(polarisDiscoveryProperties.getVersion());
 		instanceRegisterRequest.setInstanceId(polarisDiscoveryProperties.getInstanceId());

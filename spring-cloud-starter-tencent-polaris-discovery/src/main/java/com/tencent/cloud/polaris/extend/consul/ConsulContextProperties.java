@@ -55,6 +55,9 @@ public class ConsulContextProperties {
 	@Value("${spring.cloud.consul.discovery.prefer-ip-address:#{'false'}}")
 	private boolean preferIpAddress;
 
+	@Value("${consul.token:${CONSUL_TOKEN:${spring.cloud.consul.token:${SPRING_CLOUD_CONSUL_TOKEN:${spring.cloud.consul.discovery.acl-token:}}}}}")
+	private String aclToken;
+
 	public String getHost() {
 		return host;
 	}
@@ -83,12 +86,12 @@ public class ConsulContextProperties {
 		return register;
 	}
 
-	public boolean isDiscoveryEnabled() {
-		return discoveryEnabled;
-	}
-
 	public void setRegister(boolean register) {
 		this.register = register;
+	}
+
+	public boolean isDiscoveryEnabled() {
+		return discoveryEnabled;
 	}
 
 	public void setDiscoveryEnabled(boolean discoveryEnabled) {
@@ -125,5 +128,13 @@ public class ConsulContextProperties {
 
 	public void setPreferIpAddress(boolean preferIpAddress) {
 		this.preferIpAddress = preferIpAddress;
+	}
+
+	public String getAclToken() {
+		return aclToken;
+	}
+
+	public void setAclToken(String aclToken) {
+		this.aclToken = aclToken;
 	}
 }

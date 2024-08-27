@@ -63,6 +63,11 @@ public class ConfigurationModifier implements PolarisConfigurationConfigModifier
 
 	@Override
 	public void modify(ConfigurationImpl configuration) {
+		configuration.getGlobal().getAPI().setReportEnable(false);
+
+		if (!polarisContextProperties.getEnabled() || !polarisConfigProperties.isEnabled()) {
+			return;
+		}
 		if (StringUtils.equalsIgnoreCase(polarisConfigProperties.getDataSource(), DATA_SOURCE_POLARIS)) {
 			initByPolarisDataSource(configuration);
 		}
