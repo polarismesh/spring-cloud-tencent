@@ -137,7 +137,7 @@ public class MetadataContext extends com.tencent.polaris.metadata.core.manager.M
 		return values;
 	}
 
-	private void putMetadataAsMap(MetadataType metadataType, TransitiveType transitiveType, boolean downstream, Map<String, String> values) {
+	public void putMetadataAsMap(MetadataType metadataType, TransitiveType transitiveType, boolean downstream, Map<String, String> values) {
 		MetadataContainer metadataContainer = getMetadataContainer(metadataType, downstream);
 		for (Map.Entry<String, String> entry : values.entrySet()) {
 			metadataContainer.putMetadataStringValue(entry.getKey(), entry.getValue(), transitiveType);
@@ -258,7 +258,7 @@ public class MetadataContext extends com.tencent.polaris.metadata.core.manager.M
 		case FRAGMENT_RAW_TRANSHEADERS:
 			return getMapMetadataAsMap(MetadataType.CUSTOM, FRAGMENT_RAW_TRANSHEADERS, TransitiveType.NONE, false);
 		case FRAGMENT_RAW_TRANSHEADERS_KV:
-			return getMapMetadataAsMap(MetadataType.CUSTOM, FRAGMENT_RAW_TRANSHEADERS_KV, TransitiveType.PASS_THROUGH, false);
+			return getMapMetadataAsMap(MetadataType.CUSTOM, FRAGMENT_RAW_TRANSHEADERS_KV, TransitiveType.NONE, false);
 		default:
 			return getMapMetadataAsMap(MetadataType.CUSTOM, fragment, TransitiveType.NONE, false);
 		}
@@ -293,7 +293,7 @@ public class MetadataContext extends com.tencent.polaris.metadata.core.manager.M
 			putMapMetadataAsMap(MetadataType.CUSTOM, FRAGMENT_RAW_TRANSHEADERS, TransitiveType.NONE, false, context);
 			break;
 		case FRAGMENT_RAW_TRANSHEADERS_KV:
-			putMapMetadataAsMap(MetadataType.CUSTOM, FRAGMENT_RAW_TRANSHEADERS_KV, TransitiveType.PASS_THROUGH, false, context);
+			putMapMetadataAsMap(MetadataType.CUSTOM, FRAGMENT_RAW_TRANSHEADERS_KV, TransitiveType.NONE, false, context);
 			break;
 		default:
 			putMapMetadataAsMap(MetadataType.CUSTOM, fragment, TransitiveType.NONE, false, context);
