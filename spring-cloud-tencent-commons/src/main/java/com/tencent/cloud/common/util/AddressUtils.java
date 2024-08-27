@@ -19,18 +19,21 @@
 package com.tencent.cloud.common.util;
 
 import java.io.IOException;
+import java.net.Inet6Address;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.net.NetworkInterface;
 import java.net.Socket;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Enumeration;
 import java.util.List;
 
+import com.tencent.polaris.api.utils.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.springframework.util.StringUtils;
 
 /**
  * the utils of parse address.
@@ -43,11 +46,17 @@ public final class AddressUtils {
 
 	private static final String ADDRESS_SEPARATOR = ",";
 
+	private final static Boolean hasIpv6Address;
+
+	static {
+		hasIpv6Address = hasIpv6Address();
+	}
+
 	private AddressUtils() {
 	}
 
 	public static List<String> parseAddressList(String addressInfo) {
-		if (!StringUtils.hasText(addressInfo)) {
+		if (StringUtils.isBlank(addressInfo)) {
 			return Collections.emptyList();
 		}
 		List<String> addressList = new ArrayList<>();
@@ -76,5 +85,74 @@ public final class AddressUtils {
 			}
 		}
 		return true;
+	}
+
+	public static String getIpCompatible(String ip) {
+		if (StringUtils.isEmpty(ip)) {
+			return ip;
+		}
+		if (ip.contains(":") && !ip.startsWith("[") && !ip.endsWith("]")) {
+			return "[" + ip + "]";
+		}
+		return ip;
+	}
+
+	public static boolean preferIpv6() {
+		if (Boolean.FALSE.equals(hasIpv6Address)) {
+			LOGGER.debug("AddressUtils.preferIpv6 hasIpv6Address = false");
+			return false;
+		}
+		if ("true".equalsIgnoreCase(System.getenv("tsf_prefer_ipv6"))) {
+			LOGGER.debug("AddressUtils.preferIpv6 System.getenv = true");
+			return true;
+		}
+		if ("true".equalsIgnoreCase(System.getProperty("tsf_prefer_ipv6"))) {
+			LOGGER.debug("AddressUtils.preferIpv6 System.getProperty = true");
+			return true;
+		}
+		if ("true".equalsIgnoreCase(BeanFactoryUtils.resolve("${tsf_prefer_ipv6}"))) {
+			LOGGER.debug("AddressUtils.preferIpv6 BeanFactoryUtils.resolve = true");
+			return true;
+		}
+		LOGGER.debug("AddressUtils.preferIpv6 result = false");
+		return false;
+	}
+
+	/**
+	 * Determine whether environment has an ipv6 address.
+	 */
+	private static boolean hasIpv6Address() {
+		InetAddress result = null;
+		try {
+			int lowest = Integer.MAX_VALUE;
+			for (Enumeration<NetworkInterface> nics = NetworkInterface
+					.getNetworkInterfaces(); nics.hasMoreElements(); ) {
+				NetworkInterface ifc = nics.nextElement();
+				if (ifc.isUp()) {
+					LOGGER.trace("Testing interface: " + ifc.getDisplayName());
+					if (ifc.getIndex() < lowest || result == null) {
+						lowest = ifc.getIndex();
+					}
+					else if (result != null) {
+						continue;
+					}
+
+					for (Enumeration<InetAddress> addrs = ifc
+							.getInetAddresses(); addrs.hasMoreElements(); ) {
+						InetAddress address = addrs.nextElement();
+						if (address instanceof Inet6Address
+								&& !address.isLinkLocalAddress()
+								&& !address.isLoopbackAddress()) {
+							LOGGER.trace("Found non-loopback interface: " + ifc.getDisplayName());
+							return true;
+						}
+					}
+				}
+			}
+		}
+		catch (IOException ex) {
+			LOGGER.error("Cannot get first non-loopback address", ex);
+		}
+		return false;
 	}
 }

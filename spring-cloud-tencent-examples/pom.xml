@@ -20,10 +20,10 @@
 		<module>metadata-transfer-example</module>
 		<module>polaris-router-grayrelease-example</module>
 		<module>polaris-router-featureenv-example</module>
-		<module>polaris-config-data-example</module>
 		<module>quickstart-example</module>
 		<module>lossless-example</module>
 		<module>polaris-router-grayrelease-lane-example</module>
+		<module>tsf-example</module>
 	</modules>
 
 	<properties>
