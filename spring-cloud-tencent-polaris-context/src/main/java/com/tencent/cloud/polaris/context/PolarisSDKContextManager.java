@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Objects;
 
 import com.tencent.cloud.polaris.context.config.PolarisContextProperties;
+import com.tencent.polaris.api.config.Configuration;
 import com.tencent.polaris.api.control.Destroyable;
 import com.tencent.polaris.api.core.ConsumerAPI;
 import com.tencent.polaris.api.core.LosslessAPI;
@@ -229,9 +230,10 @@ public class PolarisSDKContextManager {
 					}
 				}
 				// init SDKContext
-				serviceSdkContext = SDKContext.initContextByConfig(properties.configuration(serviceModifierList,
+				Configuration configuration = properties.configuration(serviceModifierList,
 						() -> environment.getProperty("spring.cloud.client.ip-address"),
-						() -> environment.getProperty("spring.cloud.polaris.local-port", Integer.class, 0)));
+						() -> environment.getProperty("spring.cloud.polaris.local-port", Integer.class, 0));
+				serviceSdkContext = SDKContext.initContextByConfig(configuration);
 				serviceSdkContext.init();
 
 				// init ProviderAPI
@@ -269,7 +271,7 @@ public class PolarisSDKContextManager {
 						}
 					}
 				}));
-				LOG.info("create Polaris SDK context successfully. properties: {}, ", properties);
+				LOG.info("create Polaris SDK context successfully. properties: {}, configuration: {}", properties, configuration);
 			}
 			catch (Throwable throwable) {
 				LOG.error("create Polaris SDK context failed. properties: {}, ", properties, throwable);
@@ -289,14 +291,15 @@ public class PolarisSDKContextManager {
 		if (null == configSDKContext && CollectionUtils.isNotEmpty(configModifierList)) {
 			try {
 				// init config SDKContext
-				configSDKContext = SDKContext.initContextByConfig(properties.configuration(configModifierList,
+				Configuration configuration = properties.configuration(configModifierList,
 						() -> environment.getProperty("spring.cloud.client.ip-address"),
-						() -> environment.getProperty("spring.cloud.polaris.local-port", Integer.class, 0)));
+						() -> environment.getProperty("spring.cloud.polaris.local-port", Integer.class, 0));
+				configSDKContext = SDKContext.initContextByConfig(configuration);
 				configSDKContext.init();
 
 				// add shutdown hook
 				Runtime.getRuntime().addShutdownHook(new Thread(PolarisSDKContextManager::innerConfigDestroy));
-				LOG.info("create Polaris config SDK context successfully. properties: {}, ", properties);
+				LOG.info("create Polaris config SDK context successfully. properties: {}, configuration: {}", properties, configuration);
 			}
 			catch (Throwable throwable) {
 				LOG.error("create Polaris config SDK context failed. properties: {}, ", properties, throwable);
