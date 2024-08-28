@@ -30,6 +30,7 @@ import java.util.stream.Collectors;
 
 import com.google.protobuf.util.JsonFormat;
 import com.tencent.cloud.common.util.ApplicationContextAwareUtils;
+import com.tencent.cloud.polaris.circuitbreaker.config.PolarisCircuitBreakerProperties;
 import com.tencent.cloud.polaris.context.PolarisSDKContextManager;
 import com.tencent.polaris.api.config.Configuration;
 import com.tencent.polaris.api.core.ConsumerAPI;
@@ -106,9 +107,10 @@ public class PolarisCircuitBreakerMockServerTest {
 	public void testCircuitBreaker() {
 		Configuration configuration = TestUtils.configWithEnvAddress();
 		CircuitBreakAPI circuitBreakAPI = CircuitBreakAPIFactory.createCircuitBreakAPIByConfig(configuration);
-		ConsumerAPI consumerAPI = DiscoveryAPIFactory.createConsumerAPIByConfig(configuration);
 
-		PolarisCircuitBreakerFactory polarisCircuitBreakerFactory = new PolarisCircuitBreakerFactory(circuitBreakAPI, consumerAPI);
+		ConsumerAPI consumerAPI = DiscoveryAPIFactory.createConsumerAPIByConfig(configuration);
+		PolarisCircuitBreakerProperties polarisCircuitBreakerProperties = new PolarisCircuitBreakerProperties();
+		PolarisCircuitBreakerFactory polarisCircuitBreakerFactory = new PolarisCircuitBreakerFactory(circuitBreakAPI, consumerAPI, polarisCircuitBreakerProperties);
 		CircuitBreaker cb = polarisCircuitBreakerFactory.create(SERVICE_CIRCUIT_BREAKER);
 
 		// trigger fallback for 5 times
@@ -129,7 +131,7 @@ public class PolarisCircuitBreakerMockServerTest {
 		assertThat(resList).isEqualTo(Arrays.asList("invoke success", "fallback", "fallback", "fallback", "fallback"));
 
 		// always fallback
-		ReactivePolarisCircuitBreakerFactory reactivePolarisCircuitBreakerFactory = new ReactivePolarisCircuitBreakerFactory(circuitBreakAPI, consumerAPI);
+		ReactivePolarisCircuitBreakerFactory reactivePolarisCircuitBreakerFactory = new ReactivePolarisCircuitBreakerFactory(circuitBreakAPI, consumerAPI, polarisCircuitBreakerProperties);
 		ReactiveCircuitBreaker rcb = reactivePolarisCircuitBreakerFactory.create(SERVICE_CIRCUIT_BREAKER);
 
 		assertThat(Mono.just("foobar").transform(it -> rcb.run(it, t -> Mono.just("fallback")))

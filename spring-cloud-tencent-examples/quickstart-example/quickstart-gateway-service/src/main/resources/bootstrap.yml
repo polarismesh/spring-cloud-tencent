@@ -18,6 +18,8 @@ spring:
       address: grpc://119.91.66.223:8091
       namespace: default
       enabled: true
+      circuitbreaker:
+        enabled: true
       contract:
         exposure: true
         report:
