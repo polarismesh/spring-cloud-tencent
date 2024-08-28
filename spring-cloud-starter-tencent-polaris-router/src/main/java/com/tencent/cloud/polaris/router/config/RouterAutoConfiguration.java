@@ -22,11 +22,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import com.tencent.cloud.common.metadata.StaticMetadataManager;
-import com.tencent.cloud.polaris.context.ServiceRuleManager;
-import com.tencent.cloud.polaris.context.config.PolarisContextProperties;
-import com.tencent.cloud.polaris.router.RouterRuleLabelResolver;
-import com.tencent.cloud.polaris.router.beanprocessor.ReactiveLoadBalancerClientFilterBeanPostProcessor;
 import com.tencent.cloud.polaris.router.config.properties.PolarisMetadataRouterProperties;
 import com.tencent.cloud.polaris.router.config.properties.PolarisNearByRouterProperties;
 import com.tencent.cloud.polaris.router.config.properties.PolarisRuleBasedRouterProperties;
@@ -34,7 +29,7 @@ import com.tencent.cloud.polaris.router.interceptor.MetadataRouterRequestInterce
 import com.tencent.cloud.polaris.router.interceptor.NearbyRouterRequestInterceptor;
 import com.tencent.cloud.polaris.router.interceptor.RuleBasedRouterRequestInterceptor;
 import com.tencent.cloud.polaris.router.resttemplate.RouterLabelRestTemplateInterceptor;
-import com.tencent.cloud.polaris.router.spi.SpringWebRouterLabelResolver;
+import com.tencent.cloud.polaris.router.scg.RouterLabelGlobalFilter;
 import com.tencent.cloud.rpc.enhancement.resttemplate.EnhancedRestTemplateInterceptor;
 
 import org.springframework.beans.factory.SmartInitializingSingleton;
@@ -44,11 +39,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.cloud.loadbalancer.annotation.LoadBalancerClients;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.annotation.Order;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.web.client.RestTemplate;
-
-import static org.springframework.core.Ordered.HIGHEST_PRECEDENCE;
 
 /**
  * configuration for router module singleton beans.
@@ -59,18 +51,6 @@ import static org.springframework.core.Ordered.HIGHEST_PRECEDENCE;
 @ConditionalOnPolarisRouterEnabled
 @LoadBalancerClients(defaultConfiguration = LoadBalancerConfiguration.class)
 public class RouterAutoConfiguration {
-
-	@Bean
-	@Order(HIGHEST_PRECEDENCE)
-	@ConditionalOnClass(name = "org.springframework.cloud.gateway.filter.ReactiveLoadBalancerClientFilter")
-	public ReactiveLoadBalancerClientFilterBeanPostProcessor loadBalancerClientFilterBeanPostProcessor() {
-		return new ReactiveLoadBalancerClientFilterBeanPostProcessor();
-	}
-
-	@Bean
-	public RouterRuleLabelResolver routerRuleLabelResolver(ServiceRuleManager serviceRuleManager) {
-		return new RouterRuleLabelResolver(serviceRuleManager);
-	}
 
 	@Bean
 	@ConditionalOnProperty(value = "spring.cloud.polaris.router.metadata-router.enabled", matchIfMissing = true)
@@ -90,6 +70,21 @@ public class RouterAutoConfiguration {
 		return new RuleBasedRouterRequestInterceptor(polarisRuleBasedRouterProperties);
 	}
 
+
+	/**
+	 * Create when gateway application is SCG.
+	 */
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnClass(name = "org.springframework.cloud.gateway.filter.GlobalFilter")
+	protected static class RouterLabelScgFilterConfig {
+
+		@Bean
+		public RouterLabelGlobalFilter routerLabelGlobalFilter() {
+			return new RouterLabelGlobalFilter();
+		}
+
+	}
+
 	/**
 	 * Create when RestTemplate exists.
 	 * @author liuye 2022-09-14
@@ -103,13 +98,8 @@ public class RouterAutoConfiguration {
 		private List<RestTemplate> restTemplates = Collections.emptyList();
 
 		@Bean
-		public RouterLabelRestTemplateInterceptor routerLabelRestTemplateInterceptor(
-				List<SpringWebRouterLabelResolver> routerLabelResolvers,
-				StaticMetadataManager staticMetadataManager,
-				RouterRuleLabelResolver routerRuleLabelResolver,
-				PolarisContextProperties polarisContextProperties) {
-			return new RouterLabelRestTemplateInterceptor(routerLabelResolvers, staticMetadataManager,
-					routerRuleLabelResolver, polarisContextProperties);
+		public RouterLabelRestTemplateInterceptor routerLabelRestTemplateInterceptor() {
+			return new RouterLabelRestTemplateInterceptor();
 		}
 
 		@Bean

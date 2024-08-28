@@ -16,65 +16,54 @@
  *
  */
 
-package com.tencent.cloud.polaris.router.feign;
+package com.tencent.cloud.polaris.router.scg;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import com.tencent.cloud.common.constant.OrderConstant;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
 import com.tencent.polaris.metadata.core.MessageMetadataContainer;
 import com.tencent.polaris.metadata.core.MetadataContainer;
 import com.tencent.polaris.metadata.core.MetadataType;
 import feign.Request;
-import feign.RequestTemplate;
-import io.netty.handler.codec.http.HttpHeaderNames;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import reactor.core.publisher.Mono;
 
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.cloud.gateway.filter.GatewayFilterChain;
+import org.springframework.http.HttpCookie;
+import org.springframework.mock.http.server.reactive.MockServerHttpRequest;
+import org.springframework.mock.web.server.MockServerWebExchange;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.web.server.ServerWebExchange;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.cloud.gateway.filter.ReactiveLoadBalancerClientFilter.LOAD_BALANCER_CLIENT_FILTER_ORDER;
 
 /**
- * test for {@link RouterLabelFeignInterceptor}.
+ * Test for ${@link RouterLabelGlobalFilter}.
  *
- * @author lepdou 2022-05-26
+ * @author Haotian Zhang
  */
 @ExtendWith(SpringExtension.class)
-@SpringBootTest(classes = RouterLabelFeignInterceptorTest.TestApplication.class,
-		properties = {"spring.cloud.polaris.namespace=test", "spring.application.name=test", "spring.cloud.gateway.enabled=false"})
-public class RouterLabelFeignInterceptorTest {
+@SpringBootTest(classes = RouterLabelGlobalFilterTest.TestApplication.class,
+		properties = {"spring.cloud.polaris.namespace=test", "spring.application.name=test", "spring.main.web-application-type=reactive"})
+public class RouterLabelGlobalFilterTest {
 
 	@Test
 	public void testRouterLabel() {
-		RouterLabelFeignInterceptor routerLabelFeignInterceptor = new RouterLabelFeignInterceptor();
+		RouterLabelGlobalFilter routerLabelGlobalFilter = new RouterLabelGlobalFilter();
 
-		assertThat(routerLabelFeignInterceptor.getOrder()).isEqualTo(OrderConstant.Client.Feign.ROUTER_LABEL_INTERCEPTOR_ORDER);
+		assertThat(routerLabelGlobalFilter.getOrder())
+				.isEqualTo(LOAD_BALANCER_CLIENT_FILTER_ORDER - 1);
 
-		// mock request template
-		RequestTemplate requestTemplate = mock(RequestTemplate.class);
-		String headerUidKey = "uid";
-		String headerUidValue = "1000";
-		Map<String, List<String>> headerMap = new HashMap<>();
-		headerMap.put(headerUidKey, Collections.singletonList(headerUidValue));
-		headerMap.put(HttpHeaderNames.COOKIE.toString(), Collections.singletonList("k1=v1"));
-		doReturn(headerMap).when(requestTemplate).headers();
-		doReturn(Request.HttpMethod.POST.toString()).when(requestTemplate).method();
-		Request request = mock(Request.class);
-		doReturn(request).when(requestTemplate).request();
-		doReturn("http://callee/test/path").when(request).url();
-		Map<String, List<String>> queryMap = new HashMap<>();
-		queryMap.put("q1", Collections.singletonList("a1"));
-		doReturn(queryMap).when(requestTemplate).queries();
+		MockServerHttpRequest request = MockServerHttpRequest.post("/test/path")
+				.header("uid", "1000")
+				.cookie(new HttpCookie("k1", "v1"))
+				.queryParam("q1", "a1")
+				.build();
+		MockServerWebExchange mockWebExchange = new MockServerWebExchange.Builder(request).build();
 
-		routerLabelFeignInterceptor.apply(requestTemplate);
+		routerLabelGlobalFilter.filter(mockWebExchange, new EmptyGatewayFilterChain());
 
 		// get message metadata container
 		MetadataContainer metadataContainer = MetadataContextHolder.get()
@@ -84,11 +73,19 @@ public class RouterLabelFeignInterceptorTest {
 		// path
 		assertThat(metadataContainer.getRawMetadataStringValue(MessageMetadataContainer.LABEL_KEY_PATH)).isEqualTo("/test/path");
 		// header
-		assertThat(metadataContainer.getRawMetadataMapValue(MessageMetadataContainer.LABEL_MAP_KEY_HEADER, headerUidKey)).isEqualTo(headerUidValue);
+		assertThat(metadataContainer.getRawMetadataMapValue(MessageMetadataContainer.LABEL_MAP_KEY_HEADER, "uid")).isEqualTo("1000");
 		// cookie
 		assertThat(metadataContainer.getRawMetadataMapValue(MessageMetadataContainer.LABEL_MAP_KEY_COOKIE, "k1")).isEqualTo("v1");
 		// query
 		assertThat(metadataContainer.getRawMetadataMapValue(MessageMetadataContainer.LABEL_MAP_KEY_QUERY, "q1")).isEqualTo("a1");
+	}
+
+	static class EmptyGatewayFilterChain implements GatewayFilterChain {
+
+		@Override
+		public Mono<Void> filter(ServerWebExchange exchange) {
+			return Mono.empty();
+		}
 	}
 
 	@SpringBootApplication

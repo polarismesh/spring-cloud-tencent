@@ -18,10 +18,8 @@
 
 package com.tencent.cloud.polaris.router;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -77,25 +75,6 @@ public class PolarisRouterContext {
 			return StringUtils.EMPTY;
 		}
 		return routerLabels.get(labelKey);
-	}
-
-	public Set<String> getLabelAsSet(String labelKey) {
-		Map<String, String> routerLabels = labels.get(RouterConstant.ROUTER_LABELS);
-		if (CollectionUtils.isEmpty(routerLabels)) {
-			return Collections.emptySet();
-		}
-
-		for (Map.Entry<String, String> entry : routerLabels.entrySet()) {
-			if (StringUtils.equalsIgnoreCase(labelKey, entry.getKey())) {
-				String keysStr = entry.getValue();
-				if (StringUtils.isNotBlank(keysStr)) {
-					String[] keysArr = StringUtils.split(keysStr, ",");
-					return new HashSet<>(Arrays.asList(keysArr));
-				}
-			}
-		}
-
-		return Collections.emptySet();
 	}
 
 	public void putLabels(String labelType, Map<String, String> subLabels) {

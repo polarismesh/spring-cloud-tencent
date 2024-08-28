@@ -25,6 +25,12 @@
       "description": "the switch for rule based router."
     },
     {
+      "name": "spring.cloud.polaris.router.rule-router.failOver",
+      "type": "java.lang.String",
+      "defaultValue": "all",
+      "description": "the fail over type for rule based router."
+    },
+    {
       "name": "spring.cloud.polaris.router.enabled",
       "type": "java.lang.Boolean",
       "defaultValue": true,

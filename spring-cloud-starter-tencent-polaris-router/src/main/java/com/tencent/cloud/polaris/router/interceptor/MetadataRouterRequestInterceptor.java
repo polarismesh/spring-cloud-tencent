@@ -18,19 +18,15 @@
 
 package com.tencent.cloud.polaris.router.interceptor;
 
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-
-import com.tencent.cloud.common.constant.RouterConstant;
+import com.tencent.cloud.common.metadata.MetadataContextHolder;
 import com.tencent.cloud.polaris.router.PolarisRouterContext;
 import com.tencent.cloud.polaris.router.config.properties.PolarisMetadataRouterProperties;
 import com.tencent.cloud.polaris.router.spi.RouterRequestInterceptor;
-import com.tencent.polaris.api.pojo.RouteArgument;
+import com.tencent.polaris.metadata.core.MetadataContainer;
+import com.tencent.polaris.metadata.core.MetadataType;
+import com.tencent.polaris.metadata.core.TransitiveType;
 import com.tencent.polaris.plugins.router.metadata.MetadataRouter;
 import com.tencent.polaris.router.api.rpc.ProcessRoutersRequest;
-
-import org.springframework.util.CollectionUtils;
 
 /**
  * Router request interceptor for metadata router.
@@ -51,18 +47,10 @@ public class MetadataRouterRequestInterceptor implements RouterRequestIntercepto
 			return;
 		}
 
-		// 1. get metadata router label keys
-		Set<String> metadataRouterKeys = routerContext.getLabelAsSet(LABEL_KEY_METADATA_ROUTER_KEYS);
-		// 2. get metadata router labels
-		Map<String, String> metadataRouterLabels = routerContext.getLabels(RouterConstant.ROUTER_LABELS,
-				metadataRouterKeys);
-		// 3. set metadata router labels to request
-		Set<RouteArgument> routeArguments = new HashSet<>();
-		if (!CollectionUtils.isEmpty(metadataRouterKeys)) {
-			for (Map.Entry<String, String> entry : metadataRouterLabels.entrySet()) {
-				routeArguments.add(RouteArgument.fromLabel(entry.getKey(), entry.getValue()));
-			}
-		}
-		request.putRouterArgument(MetadataRouter.ROUTER_TYPE_METADATA, routeArguments);
+		// set metadata router label keys
+		MetadataContainer metadataContainer = MetadataContextHolder.get()
+				.getMetadataContainer(MetadataType.CUSTOM, false);
+		String metadataRouteKeys = metadataContainer.getRawMetadataStringValue(LABEL_KEY_METADATA_ROUTER_KEYS);
+		metadataContainer.putMetadataMapValue(MetadataRouter.ROUTER_TYPE_METADATA, MetadataRouter.KEY_METADATA_KEYS, metadataRouteKeys, TransitiveType.NONE);
 	}
 }

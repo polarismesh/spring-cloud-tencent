@@ -44,6 +44,9 @@ import com.tencent.polaris.api.rpc.InstanceRegisterResponse;
 import com.tencent.polaris.api.rpc.InstancesResponse;
 import com.tencent.polaris.client.util.NamedThreadFactory;
 import com.tencent.polaris.factory.config.provider.ServiceConfigImpl;
+import com.tencent.polaris.metadata.core.TransitiveType;
+import com.tencent.polaris.metadata.core.constant.MetadataConstants;
+import com.tencent.polaris.metadata.core.manager.CalleeMetadataContainerGroup;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -121,6 +124,14 @@ public class PolarisServiceRegistry implements ServiceRegistry<PolarisRegistrati
 		instanceRegisterRequest.setProtocol(polarisDiscoveryProperties.getProtocol());
 		instanceRegisterRequest.setVersion(polarisDiscoveryProperties.getVersion());
 		instanceRegisterRequest.setInstanceId(polarisDiscoveryProperties.getInstanceId());
+		CalleeMetadataContainerGroup.getStaticApplicationMetadataContainer()
+				.putMetadataStringValue(MetadataConstants.LOCAL_NAMESPACE, polarisDiscoveryProperties.getNamespace(), TransitiveType.DISPOSABLE);
+		CalleeMetadataContainerGroup.getStaticApplicationMetadataContainer()
+				.putMetadataStringValue(MetadataConstants.LOCAL_SERVICE, serviceId, TransitiveType.DISPOSABLE);
+		CalleeMetadataContainerGroup.getStaticApplicationMetadataContainer()
+				.putMetadataStringValue(MetadataConstants.LOCAL_IP, registration.getHost(), TransitiveType.DISPOSABLE);
+		CalleeMetadataContainerGroup.getStaticApplicationMetadataContainer()
+				.putMetadataStringValue(MetadataConstants.LOCAL_PORT, String.valueOf(registration.getPort()), TransitiveType.DISPOSABLE);
 		try {
 			ProviderAPI providerClient = polarisSDKContextManager.getProviderAPI();
 			InstanceRegisterResponse instanceRegisterResponse;

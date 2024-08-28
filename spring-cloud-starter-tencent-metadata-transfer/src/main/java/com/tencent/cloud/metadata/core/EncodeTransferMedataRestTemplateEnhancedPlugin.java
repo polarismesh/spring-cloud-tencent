@@ -35,6 +35,7 @@ import com.tencent.polaris.metadata.core.MetadataType;
 import org.springframework.http.HttpRequest;
 import org.springframework.util.CollectionUtils;
 
+import static com.tencent.cloud.common.constant.MetadataConstant.HeaderName.APPLICATION_METADATA;
 import static com.tencent.cloud.common.constant.MetadataConstant.HeaderName.CUSTOM_DISPOSABLE_METADATA;
 import static com.tencent.cloud.common.constant.MetadataConstant.HeaderName.CUSTOM_METADATA;
 
@@ -60,6 +61,7 @@ public class EncodeTransferMedataRestTemplateEnhancedPlugin implements EnhancedP
 		MetadataContext metadataContext = MetadataContextHolder.get();
 		Map<String, String> customMetadata = metadataContext.getCustomMetadata();
 		Map<String, String> disposableMetadata = metadataContext.getDisposableMetadata();
+		Map<String, String> applicationMetadata = metadataContext.getApplicationMetadata();
 		Map<String, String> transHeaders = metadataContext.getTransHeadersKV();
 		MessageMetadataContainer calleeMessageMetadataContainer = metadataContext.getMetadataContainer(MetadataType.MESSAGE, false);
 		Map<String, String> calleeTransitiveHeaders = calleeMessageMetadataContainer.getTransitiveHeaders();
@@ -71,6 +73,9 @@ public class EncodeTransferMedataRestTemplateEnhancedPlugin implements EnhancedP
 
 		// build custom metadata request header
 		this.buildMetadataHeader(httpRequest, customMetadata, CUSTOM_METADATA);
+
+		// build application metadata request header
+		this.buildMetadataHeader(httpRequest, applicationMetadata, APPLICATION_METADATA);
 
 		// set headers that need to be transmitted from the upstream
 		this.buildTransmittedHeader(httpRequest, transHeaders);

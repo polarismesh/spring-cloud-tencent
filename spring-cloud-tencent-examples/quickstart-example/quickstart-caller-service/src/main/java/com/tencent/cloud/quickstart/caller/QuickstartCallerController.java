@@ -18,18 +18,24 @@
 package com.tencent.cloud.quickstart.caller;
 
 import java.util.Collections;
+import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
+import com.tencent.polaris.api.utils.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import reactor.core.publisher.Mono;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -76,8 +82,25 @@ public class QuickstartCallerController {
 	 * @return information of callee
 	 */
 	@GetMapping("/rest")
-	public String rest() {
-		return restTemplate.getForObject("http://QuickstartCalleeService/quickstart/callee/info", String.class);
+	public ResponseEntity<String> rest(@RequestHeader Map<String, String> headerMap) {
+		String url = "http://QuickstartCalleeService/quickstart/callee/info";
+
+		HttpHeaders headers = new HttpHeaders();
+		for (Map.Entry<String, String> entry : headerMap.entrySet()) {
+			if (StringUtils.isNotBlank(entry.getKey()) && StringUtils.isNotBlank(entry.getValue())
+					&& !entry.getKey().contains("sct-")
+					&& !entry.getKey().contains("SCT-")
+					&& !entry.getKey().contains("polaris-")
+					&& !entry.getKey().contains("POLARIS-")) {
+				headers.add(entry.getKey(), entry.getValue());
+			}
+		}
+
+		// 创建 HttpEntity 实例并传入 HttpHeaders
+		HttpEntity<String> entity = new HttpEntity<>(headers);
+
+		// 使用 exchange 方法发送 GET 请求，并获取响应
+		return restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
 	}
 
 	/**
