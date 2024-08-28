@@ -109,6 +109,7 @@ public class PolarisConfigDataLoaderTest {
 			when(polarisContextProperties.getService()).thenReturn(testServiceName);
 
 			when(polarisConfigProperties.getGroups()).thenReturn(null);
+			when(polarisConfigProperties.isInternalEnabled()).thenReturn(true);
 			when(profiles.getActive()).thenReturn(Lists.newArrayList());
 
 			PolarisConfigDataLoader polarisConfigDataLoader = new PolarisConfigDataLoader(new DeferredLogs());
@@ -187,6 +188,7 @@ public class PolarisConfigDataLoaderTest {
 			when(polarisContextProperties.getService()).thenReturn(testServiceName);
 
 			when(polarisConfigProperties.getGroups()).thenReturn(null);
+			when(polarisConfigProperties.isInternalEnabled()).thenReturn(true);
 
 			PolarisConfigDataLoader polarisConfigDataLoader = new PolarisConfigDataLoader(new DeferredLogs());
 			if (INTERNAL_CONFIG_FILES_LOADED.get()) {
@@ -208,7 +210,7 @@ public class PolarisConfigDataLoaderTest {
 			List<PropertySource<?>> propertySources = configData.getPropertySources();
 
 			CompositePropertySource compositePropertySource = new CompositePropertySource(polarisConfigPropertySourceName);
-			propertySources.forEach(compositePropertySource::addPropertySource);
+			propertySources.forEach(compositePropertySource::addFirstPropertySource);
 
 			assertThat(compositePropertySource.getProperty("k1")).isEqualTo("v11");
 			assertThat(compositePropertySource.getProperty("k2")).isEqualTo("v2");
@@ -242,6 +244,7 @@ public class PolarisConfigDataLoaderTest {
 			when(polarisConfigDataResource.getGroupName()).thenReturn(customGroup);
 
 			when(polarisConfigProperties.getGroups()).thenReturn(null);
+			when(polarisConfigProperties.isInternalEnabled()).thenReturn(true);
 			when(profiles.getActive()).thenReturn(Lists.newArrayList());
 
 			// file1.properties
