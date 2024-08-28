@@ -25,6 +25,7 @@ import org.springframework.cloud.client.circuitbreaker.CircuitBreakerFactory;
 import org.springframework.cloud.client.circuitbreaker.ReactiveCircuitBreakerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
@@ -82,6 +83,24 @@ public class CircuitBreakerController {
 	@GetMapping("/feign/fallbackFromCode")
 	public String circuitBreakFeignFallbackFromCode() {
 		return circuitBreakerQuickstartCalleeServiceWithFallback.circuitBreak();
+	}
+
+	/**
+	 * Feign circuit breaker with fallback from Polaris.
+	 * @return circuit breaker information of callee
+	 */
+	@GetMapping("/feign/fallbackFromPolaris/wildcard/{uid}")
+	public String circuitBreakFeignFallbackFromPolarisWildcard(@PathVariable String uid) {
+		return circuitBreakerQuickstartCalleeService.circuitBreakWildcard(uid);
+	}
+
+	/**
+	 * Feign circuit breaker with fallback from Polaris.
+	 * @return circuit breaker information of callee
+	 */
+	@GetMapping("/feign/fallbackFromCode/wildcard/{uid}")
+	public String circuitBreakFeignFallbackFromCodeWildcard(@PathVariable String uid) {
+		return circuitBreakerQuickstartCalleeServiceWithFallback.circuitBreakWildcard(uid);
 	}
 
 	/**
