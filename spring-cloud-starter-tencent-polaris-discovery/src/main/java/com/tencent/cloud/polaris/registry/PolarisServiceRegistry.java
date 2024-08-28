@@ -146,8 +146,9 @@ public class PolarisServiceRegistry implements ServiceRegistry<PolarisRegistrati
 				heartbeat(heartbeatRequest);
 			}
 			registration.setInstanceId(instanceRegisterResponse.getInstanceId());
-			LOGGER.info("polaris registry, {} {} {} {}:{} {} register finished", polarisDiscoveryProperties.getNamespace(),
+			LOGGER.info("polaris registry, {} {} {} {}:{} {} {} {} {} register finished", polarisDiscoveryProperties.getNamespace(),
 					registration.getServiceId(), registration.getInstanceId(), registration.getHost(), registration.getPort(),
+					staticMetadataManager.getRegion(), staticMetadataManager.getZone(), staticMetadataManager.getCampus(),
 					staticMetadataManager.getMergedStaticMetadata());
 			if (Objects.nonNull(polarisStatProperties) && polarisStatProperties.isEnabled()) {
 				try {
