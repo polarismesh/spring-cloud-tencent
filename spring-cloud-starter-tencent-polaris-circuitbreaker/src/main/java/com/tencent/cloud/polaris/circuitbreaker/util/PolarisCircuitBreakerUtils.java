@@ -55,12 +55,12 @@ public final class PolarisCircuitBreakerUtils {
 		Assert.hasText(id, "A CircuitBreaker must have an id. Id could be : namespace#service#method or service#method or service");
 		String[] polarisCircuitBreakerMetaData = id.split("#");
 		if (polarisCircuitBreakerMetaData.length == 2) {
-			return new String[]{MetadataContext.LOCAL_NAMESPACE, polarisCircuitBreakerMetaData[0], polarisCircuitBreakerMetaData[1]};
+			return new String[] {MetadataContext.LOCAL_NAMESPACE, polarisCircuitBreakerMetaData[0], polarisCircuitBreakerMetaData[1]};
 		}
 		if (polarisCircuitBreakerMetaData.length == 3) {
-			return new String[]{polarisCircuitBreakerMetaData[0], polarisCircuitBreakerMetaData[1], polarisCircuitBreakerMetaData[2]};
+			return new String[] {polarisCircuitBreakerMetaData[0], polarisCircuitBreakerMetaData[1], polarisCircuitBreakerMetaData[2]};
 		}
-		return new String[]{MetadataContext.LOCAL_NAMESPACE, id, ""};
+		return new String[] {MetadataContext.LOCAL_NAMESPACE, id, ""};
 	}
 
 	public static void reportStatus(ConsumerAPI consumerAPI,

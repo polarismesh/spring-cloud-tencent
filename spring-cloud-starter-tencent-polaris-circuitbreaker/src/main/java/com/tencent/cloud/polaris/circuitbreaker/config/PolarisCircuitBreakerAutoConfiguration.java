@@ -33,6 +33,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.cloud.client.circuitbreaker.CircuitBreakerFactory;
 import org.springframework.cloud.client.circuitbreaker.Customizer;
 import org.springframework.context.ApplicationContext;
@@ -47,6 +48,7 @@ import org.springframework.context.annotation.Configuration;
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnPolarisCircuitBreakerEnabled
+@EnableConfigurationProperties(PolarisCircuitBreakerProperties.class)
 @AutoConfigureAfter(RpcEnhancementAutoConfiguration.class)
 public class PolarisCircuitBreakerAutoConfiguration {
 
@@ -76,9 +78,10 @@ public class PolarisCircuitBreakerAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(CircuitBreakerFactory.class)
-	public CircuitBreakerFactory polarisCircuitBreakerFactory(PolarisSDKContextManager polarisSDKContextManager) {
+	public CircuitBreakerFactory polarisCircuitBreakerFactory(PolarisSDKContextManager polarisSDKContextManager,
+			PolarisCircuitBreakerProperties polarisCircuitBreakerProperties) {
 		PolarisCircuitBreakerFactory factory = new PolarisCircuitBreakerFactory(
-				polarisSDKContextManager.getCircuitBreakAPI(), polarisSDKContextManager.getConsumerAPI());
+				polarisSDKContextManager.getCircuitBreakAPI(), polarisSDKContextManager.getConsumerAPI(), polarisCircuitBreakerProperties);
 		customizers.forEach(customizer -> customizer.customize(factory));
 		return factory;
 	}
