@@ -18,13 +18,19 @@
 package com.tencent.cloud.polaris.circuitbreaker;
 
 
+import java.lang.reflect.Method;
+import java.util.Map;
+
 import com.tencent.cloud.common.util.ApplicationContextAwareUtils;
+import com.tencent.cloud.common.util.ReflectionUtils;
 import com.tencent.cloud.polaris.circuitbreaker.common.PolarisCircuitBreakerConfigBuilder;
 import com.tencent.cloud.polaris.circuitbreaker.config.PolarisCircuitBreakerAutoConfiguration;
 import com.tencent.cloud.polaris.circuitbreaker.config.PolarisCircuitBreakerFeignClientAutoConfiguration;
 import com.tencent.cloud.polaris.context.config.PolarisContextAutoConfiguration;
 import com.tencent.cloud.rpc.enhancement.config.RpcEnhancementAutoConfiguration;
+import com.tencent.polaris.client.util.Utils;
 import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -56,7 +62,8 @@ public class PolarisCircuitBreakerTest {
 					LoadBalancerAutoConfiguration.class,
 					PolarisCircuitBreakerFeignClientAutoConfiguration.class,
 					PolarisCircuitBreakerAutoConfiguration.class))
-			.withPropertyValues("spring.cloud.polaris.circuitbreaker.enabled=true");
+			.withPropertyValues("spring.cloud.polaris.circuitbreaker.enabled=true")
+			.withPropertyValues("spring.cloud.polaris.circuitbreaker.configuration-cleanup-interval=5000");
 
 	private static MockedStatic<ApplicationContextAwareUtils> mockedApplicationContextAwareUtils;
 
@@ -92,6 +99,18 @@ public class PolarisCircuitBreakerTest {
 				throw new RuntimeException("boom");
 			}, t -> "fallback")).isEqualTo("fallback");
 
+			Method getConfigurationsMethod = ReflectionUtils.findMethod(PolarisCircuitBreakerFactory.class,
+					"getConfigurations");
+			Assertions.assertNotNull(getConfigurationsMethod);
+			ReflectionUtils.makeAccessible(getConfigurationsMethod);
+			Map<?, ?> values = (Map<?, ?>) ReflectionUtils.invokeMethod(getConfigurationsMethod, polarisCircuitBreakerFactory);
+			Assertions.assertNotNull(values);
+
+			Assertions.assertEquals(1, values.size());
+
+			Utils.sleepUninterrupted(10 * 1000);
+
+			Assertions.assertEquals(0, values.size());
 		});
 	}
 
