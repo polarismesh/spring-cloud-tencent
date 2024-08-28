@@ -30,4 +30,4 @@
 - [fix:fix contract reporting bug when using TSF.](https://github.com/Tencent/spring-cloud-tencent/pull/1375)
 - [update: update contract autoconfiguration class](https://github.com/Tencent/spring-cloud-tencent/pull/1387)
 - [fix: fix TSF context bootstrap configuration](https://github.com/Tencent/spring-cloud-tencent/pull/1393)
-  [fix: fix PolarisCircuitBreakerConfiguration not clear when gateway invoke by wildcard apis](https://github.com/Tencent/spring-cloud-tencent/pull/1423)
+- [fix: fix PolarisCircuitBreakerConfiguration not clear when gateway invoke by wildcard apis](https://github.com/Tencent/spring-cloud-tencent/pull/1423)
