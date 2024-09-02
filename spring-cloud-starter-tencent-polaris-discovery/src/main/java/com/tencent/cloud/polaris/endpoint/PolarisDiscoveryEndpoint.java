@@ -38,7 +38,7 @@ import org.springframework.cloud.client.discovery.DiscoveryClient;
  *
  * @author shuiqingliu
  */
-@Endpoint(id = "polaris-discovery")
+@Endpoint(id = "polarisdiscovery")
 public class PolarisDiscoveryEndpoint {
 
 	private final PolarisDiscoveryProperties polarisDiscoveryProperties;
