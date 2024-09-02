@@ -33,3 +33,4 @@
 - [fix:fix contract reporting bug when using TSF.](https://github.com/Tencent/spring-cloud-tencent/pull/1422)
 - [fix: fix TSF context bootstrap configuration](https://github.com/Tencent/spring-cloud-tencent/pull/1424)
 - [fix: fix PolarisCircuitBreakerConfiguration not clear when gateway invoke by wildcard apis](https://github.com/Tencent/spring-cloud-tencent/pull/1426)
+- [fix:fix actuator name warning from #1428 .](https://github.com/Tencent/spring-cloud-tencent/pull/1431)
