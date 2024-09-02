@@ -30,7 +30,7 @@ import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
  *
  * @author shuiqingliu
  **/
-@Endpoint(id = "polaris-metadata")
+@Endpoint(id = "polarismetadata")
 public class PolarisMetadataEndpoint {
 
 	private final StaticMetadataManager staticMetadataManager;

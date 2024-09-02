@@ -41,7 +41,7 @@ import org.springframework.util.CollectionUtils;
  *
  * @author shuiqingliu
  **/
-@Endpoint(id = "polaris-ratelimit")
+@Endpoint(id = "polarisratelimit")
 public class PolarisRateLimitRuleEndpoint {
 
 	private static final Logger LOG = LoggerFactory.getLogger(PolarisRateLimitRuleEndpoint.class);

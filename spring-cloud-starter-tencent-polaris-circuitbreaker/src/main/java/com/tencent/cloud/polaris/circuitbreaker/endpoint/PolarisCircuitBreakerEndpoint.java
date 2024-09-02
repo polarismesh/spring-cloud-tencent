@@ -41,7 +41,7 @@ import org.springframework.boot.actuate.endpoint.annotation.Selector;
  *
  * @author wenxuan70
  */
-@Endpoint(id = "polaris-circuit-breaker")
+@Endpoint(id = "polariscircuitbreaker")
 public class PolarisCircuitBreakerEndpoint {
 
 	private static final Logger LOG = LoggerFactory.getLogger(PolarisCircuitBreakerEndpoint.class);
