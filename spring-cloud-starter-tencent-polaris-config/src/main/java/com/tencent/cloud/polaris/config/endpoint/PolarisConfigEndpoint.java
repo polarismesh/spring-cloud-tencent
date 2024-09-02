@@ -33,7 +33,7 @@ import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
  *
  * @author shuiqingliu
  **/
-@Endpoint(id = "polaris-config")
+@Endpoint(id = "polarisconfig")
 public class PolarisConfigEndpoint {
 
 	private final PolarisConfigProperties polarisConfigProperties;
