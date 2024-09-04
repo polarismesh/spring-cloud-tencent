@@ -54,10 +54,12 @@ public class LosslessConfigModifier implements PolarisConfigModifier {
 				if (Objects.nonNull(losslessProperties.getHealthCheckInterval())) {
 					losslessConfig.setHealthCheckInterval(losslessProperties.getHealthCheckInterval());
 				}
-			} else {
+			}
+			else {
 				losslessConfig.setStrategy(LosslessProto.DelayRegister.DelayStrategy.DELAY_BY_TIME);
 			}
-		} else {
+		}
+		else {
 			losslessConfig.setEnable(false);
 		}
 	}

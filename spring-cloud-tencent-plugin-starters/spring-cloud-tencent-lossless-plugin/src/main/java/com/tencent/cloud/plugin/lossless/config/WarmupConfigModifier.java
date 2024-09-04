@@ -49,12 +49,13 @@ public class WarmupConfigModifier implements PolarisConfigModifier {
 			Set<String> chainSet = new TreeSet<>(
 					Optional.ofNullable(weightAdjustConfig.getChain()).orElse(Collections.emptyList()));
 			chainSet.add(WarmupWeightAdjuster.WARMUP_WEIGHT_ADJUSTER_NAME);
-            weightAdjustConfig.setChain(new ArrayList<>(chainSet));
-		} else {
+			weightAdjustConfig.setChain(new ArrayList<>(chainSet));
+		}
+		else {
 			Set<String> chainSet = new TreeSet<>(
 					Optional.ofNullable(weightAdjustConfig.getChain()).orElse(Collections.emptyList()));
-            chainSet.remove(WarmupWeightAdjuster.WARMUP_WEIGHT_ADJUSTER_NAME);
-            weightAdjustConfig.setChain(new ArrayList<>(chainSet));
+			chainSet.remove(WarmupWeightAdjuster.WARMUP_WEIGHT_ADJUSTER_NAME);
+			weightAdjustConfig.setChain(new ArrayList<>(chainSet));
 		}
 	}
 
