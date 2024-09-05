@@ -113,6 +113,10 @@ public class PolarisFeignCircuitBreakerInvocationHandler implements InvocationHa
 		else if ("toString".equals(method.getName())) {
 			return toString();
 		}
+		// disable feign.hystrix
+		if (circuitBreakerNameResolver == null) {
+			return this.dispatch.get(method).invoke(args);
+		}
 
 		String circuitName = circuitBreakerNameResolver.resolveCircuitBreakerName(feignClientName, target, method);
 		CircuitBreaker circuitBreaker = factory.create(circuitName);
