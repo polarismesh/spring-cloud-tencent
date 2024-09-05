@@ -51,6 +51,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cloud.client.circuitbreaker.CircuitBreakerFactory;
 import org.springframework.cloud.client.circuitbreaker.Customizer;
@@ -79,6 +80,7 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 @SpringBootTest(webEnvironment = RANDOM_PORT,
 		classes = PolarisCircuitBreakerFeignIntegrationTest.TestConfig.class,
 		properties = {
+				"feign.hystrix.enabled=true",
 				"spring.cloud.gateway.enabled=false",
 				"feign.circuitbreaker.enabled=true",
 				"spring.cloud.polaris.namespace=" + NAMESPACE_TEST,
@@ -244,6 +246,7 @@ public class PolarisCircuitBreakerFeignIntegrationTest {
 		@Bean
 		@Primary
 		@ConditionalOnBean(CircuitBreakerFactory.class)
+		@ConditionalOnProperty(value = "feign.hystrix.enabled", havingValue = "true")
 		public PolarisFeignCircuitBreakerTargeter polarisFeignCircuitBreakerTargeter(CircuitBreakerFactory circuitBreakerFactory, PolarisCircuitBreakerNameResolver circuitBreakerNameResolver) {
 			return new PolarisFeignCircuitBreakerTargeter(circuitBreakerFactory, circuitBreakerNameResolver);
 		}
