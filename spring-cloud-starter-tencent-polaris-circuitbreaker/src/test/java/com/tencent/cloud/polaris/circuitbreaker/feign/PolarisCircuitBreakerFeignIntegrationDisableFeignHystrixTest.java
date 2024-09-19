@@ -36,7 +36,7 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 @SpringBootTest(webEnvironment = RANDOM_PORT,
 		classes = PolarisCircuitBreakerFeignIntegrationTest.TestConfig.class,
 		properties = {
-		        "feign.hystrix.enabled=false",
+				"feign.hystrix.enabled=false",
 				"spring.cloud.gateway.enabled=false",
 				"feign.circuitbreaker.enabled=true",
 				"spring.cloud.polaris.namespace=" + NAMESPACE_TEST,
@@ -51,6 +51,7 @@ public class PolarisCircuitBreakerFeignIntegrationDisableFeignHystrixTest {
 	public void testFeignClient() {
 		assertThatThrownBy(() -> {
 			echoService.echo("test");
-		}).isInstanceOf(RuntimeException.class).hasMessageContaining("Load balancer does not have available server for client");
+		}).isInstanceOf(RuntimeException.class)
+				.hasMessageContaining("Load balancer does not have available server for client");
 	}
 }
