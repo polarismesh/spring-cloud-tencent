@@ -1,3 +1,2 @@
 org.springframework.cloud.bootstrap.BootstrapConfiguration=\
-  com.tencent.cloud.polaris.DiscoveryPropertiesBootstrapAutoConfiguration,\
-  com.tencent.cloud.polaris.tsf.TsfDiscoveryPropertiesBootstrapConfiguration
+  com.tencent.cloud.polaris.DiscoveryPropertiesBootstrapAutoConfiguration
