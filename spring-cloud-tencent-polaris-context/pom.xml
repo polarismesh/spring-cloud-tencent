@@ -205,6 +205,11 @@
 			<groupId>com.tencent.polaris</groupId>
 			<artifactId>polaris-assembly-factory</artifactId>
 		</dependency>
+
+		<dependency>
+			<groupId>com.tencent.polaris</groupId>
+			<artifactId>event-tsf</artifactId>
+		</dependency>
 		<!-- Polaris dependencies end -->
 
 		<dependency>

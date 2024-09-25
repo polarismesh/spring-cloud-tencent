@@ -15,22 +15,29 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package com.tencent.cloud.polaris.context.tsf.consul;
-
+package com.tencent.cloud.polaris.context.config.extend.consul;
 
 import jakarta.validation.constraints.NotNull;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.validation.annotation.Validated;
 
 /**
+ * Copy from org.springframework.cloud.consul.ConsulProperties.
+ *
  * @author Spencer Gibb
  */
+@ConfigurationProperties(ConsulProperties.PREFIX)
 @Validated
-public class TsfConsulProperties {
+public class ConsulProperties {
 
-	/** Consul agent hostname. Defaults to '127.0.0.1'. */
-	@Value("${tsf_consul_ip:${spring.cloud.consul.host:${SPRING_CLOUD_CONSUL_HOST:localhost}}}")
+	/**
+	 * Prefix for configuration properties.
+	 */
+	public static final String PREFIX = "spring.cloud.consul";
+
+	/** Consul agent hostname. Defaults to 'localhost'. */
 	@NotNull
 	private String host = "localhost";
 
@@ -38,22 +45,16 @@ public class TsfConsulProperties {
 	 * Consul agent scheme (HTTP/HTTPS). If there is no scheme in address - client
 	 * will use HTTP.
 	 */
-	@Value("${spring.cloud.consul.scheme:${SPRING_CLOUD_CONSUL_SCHEME:}}")
 	private String scheme;
 
 	/** Consul agent port. Defaults to '8500'. */
-	@Value("${tsf_consul_port:${spring.cloud.consul.port:${SPRING_CLOUD_CONSUL_PORT:8500}}}")
 	@NotNull
 	private int port = 8500;
 
 	/** Is spring cloud consul enabled. */
-	@Value("${spring.cloud.consul.enabled:${SPRING_CLOUD_CONSUL_ENABLED:true}}")
-	private boolean enabled = true;
+	private boolean enabled = false;
 
-	@Value("${tsf_consul_ttl_read_timeout:5000}")
-	private int ttlReadTimeout = 5000; // default 5s
-
-	@Value("${tsf_token:${consul.token:${CONSUL_TOKEN:${spring.cloud.consul.token:${SPRING_CLOUD_CONSUL_TOKEN:}}}}}")
+	@Value("${consul.token:${CONSUL_TOKEN:${spring.cloud.consul.token:${SPRING_CLOUD_CONSUL_TOKEN:}}}}")
 	private String aclToken;
 
 	public String getHost() {
@@ -88,14 +89,6 @@ public class TsfConsulProperties {
 		this.scheme = scheme;
 	}
 
-	public int getTtlReadTimeout() {
-		return ttlReadTimeout;
-	}
-
-	public void setTtlReadTimeout(int ttlReadTimeout) {
-		this.ttlReadTimeout = ttlReadTimeout;
-	}
-
 	public String getAclToken() {
 		return aclToken;
 	}
@@ -106,12 +99,11 @@ public class TsfConsulProperties {
 
 	@Override
 	public String toString() {
-		return "TsfConsulProperties{" +
+		return "ConsulProperties{" +
 				"host='" + host + '\'' +
 				", scheme='" + scheme + '\'' +
 				", port=" + port +
 				", enabled=" + enabled +
-				", ttlReadTimeout=" + ttlReadTimeout +
 				", aclToken='" + aclToken + '\'' +
 				'}';
 	}

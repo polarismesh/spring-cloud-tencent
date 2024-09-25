@@ -16,7 +16,7 @@
  */
 package com.tencent.cloud.polaris.contract.tsf;
 
-import com.tencent.cloud.common.tsf.ConditionalOnTsfEnabled;
+import com.tencent.cloud.common.tsf.ConditionalOnTsfConsulEnabled;
 import com.tencent.cloud.polaris.contract.config.PolarisContractProperties;
 import io.swagger.v3.oas.models.OpenAPI;
 import org.springdoc.core.providers.ObjectMapperProvider;
@@ -24,18 +24,14 @@ import org.springdoc.webflux.api.MultipleOpenApiWebFluxResource;
 import org.springdoc.webmvc.api.MultipleOpenApiWebMvcResource;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.lang.Nullable;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
-@EnableWebMvc
 @Configuration
-@ConditionalOnTsfEnabled
-@ConditionalOnClass(name = "org.springframework.web.servlet.config.annotation.EnableWebMvc")
+@ConditionalOnTsfConsulEnabled
 @ConditionalOnProperty(value = "tsf.swagger.enabled", havingValue = "true", matchIfMissing = true)
 public class TsfSwaggerAutoConfiguration {
 

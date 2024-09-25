@@ -61,7 +61,7 @@ public class QuickstartCalleeController {
 	@Autowired
 	private DataSourceProperties dataSourceProperties;
 	private boolean ifBadGateway = true;
-	private boolean ifDelay = true;
+	private boolean ifDelay = false;
 
 	/**
 	 * Get sum of two value.
