@@ -32,3 +32,4 @@
 - [fix: fix TSF context bootstrap configuration](https://github.com/Tencent/spring-cloud-tencent/pull/1393)
 - [fix: fix PolarisCircuitBreakerConfiguration not clear when gateway invoke by wildcard apis](https://github.com/Tencent/spring-cloud-tencent/pull/1423)
 - [fix:fix actuator name warning from #1428 .](https://github.com/Tencent/spring-cloud-tencent/pull/1430)
+- [feat:upgrade api circuit breaker.](https://github.com/Tencent/spring-cloud-tencent/pull/1440)

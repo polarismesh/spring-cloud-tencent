@@ -22,13 +22,16 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 import com.tencent.cloud.common.metadata.MetadataContext;
+import com.tencent.polaris.api.utils.CollectionUtils;
+import com.tencent.polaris.api.utils.StringUtils;
+import feign.Request;
 import feign.Target;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.springframework.cloud.openfeign.CircuitBreakerNameResolver;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 import static org.springframework.core.annotation.AnnotatedElementUtils.findMergedAnnotation;
 
@@ -47,7 +50,7 @@ public class PolarisCircuitBreakerNameResolver implements CircuitBreakerNameReso
 		String path = "";
 
 		// Get path in @FeignClient.
-		if (StringUtils.hasText(target.url())) {
+		if (StringUtils.isNotBlank(target.url())) {
 			URI uri = null;
 			try {
 				uri = new URI(target.url());
@@ -60,16 +63,24 @@ public class PolarisCircuitBreakerNameResolver implements CircuitBreakerNameReso
 			}
 		}
 
-		// Get path in @RequestMapping.
+		// Get path and method in @RequestMapping.
 		RequestMapping requestMapping = findMergedAnnotation(method, RequestMapping.class);
+		String httpMethod = Request.HttpMethod.GET.name();
 		if (requestMapping != null) {
 			path += requestMapping.path().length == 0 ?
 					requestMapping.value().length == 0 ? "" : requestMapping.value()[0] :
 					requestMapping.path()[0];
+
+			RequestMethod[] requestMethods = requestMapping.method();
+			if (CollectionUtils.isNotEmpty(requestMethods)) {
+				httpMethod = requestMethods[0].name();
+			}
 		}
-		return "".equals(path) ?
+
+
+		return StringUtils.isBlank(path) ?
 				MetadataContext.LOCAL_NAMESPACE + "#" + serviceName :
-				MetadataContext.LOCAL_NAMESPACE + "#" + serviceName + "#" + path;
+				MetadataContext.LOCAL_NAMESPACE + "#" + serviceName + "#" + path + "#http#" + httpMethod;
 	}
 
 }

@@ -37,21 +37,20 @@ import static com.tencent.polaris.plugins.connector.common.constant.ConsulConsta
 import static com.tencent.polaris.plugins.connector.common.constant.ConsulConstant.MetadataMapKey.PREFER_IP_ADDRESS_KEY;
 import static com.tencent.polaris.plugins.connector.common.constant.ConsulConstant.MetadataMapKey.SERVICE_NAME_KEY;
 import static com.tencent.polaris.test.common.Consts.HOST;
-import static com.tencent.polaris.test.common.Consts.SERVICE_PROVIDER;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Test for {@link ConsulContextProperties}.
+ * Test for {@link ConsulDiscoveryPropertiesTest}.
  *
  * @author Haotian Zhang
  */
 @ExtendWith(SpringExtension.class)
-@SpringBootTest(classes = ConsulContextPropertiesTest.TestApplication.class)
+@SpringBootTest(classes = ConsulDiscoveryPropertiesTest.TestApplication.class)
 @ActiveProfiles("test")
-public class ConsulContextPropertiesTest {
+public class ConsulDiscoveryPropertiesTest {
 
 	@Autowired
-	private ConsulContextProperties consulContextProperties;
+	private ConsulDiscoveryProperties consulDiscoveryProperties;
 
 	@Autowired
 	private PolarisSDKContextManager polarisSDKContextManager;
@@ -63,12 +62,9 @@ public class ConsulContextPropertiesTest {
 
 	@Test
 	public void testDefaultInitialization() {
-		assertThat(consulContextProperties).isNotNull();
-		assertThat(consulContextProperties.isEnabled()).isTrue();
-		assertThat(consulContextProperties.getHost()).isEqualTo("127.0.0.1");
-		assertThat(consulContextProperties.getPort()).isEqualTo(8500);
-		assertThat(consulContextProperties.isRegister()).isTrue();
-		assertThat(consulContextProperties.isDiscoveryEnabled()).isTrue();
+		assertThat(consulDiscoveryProperties).isNotNull();
+		assertThat(consulDiscoveryProperties.isRegister()).isTrue();
+		assertThat(consulDiscoveryProperties.isEnabled()).isTrue();
 	}
 
 	@Test
@@ -84,7 +80,7 @@ public class ConsulContextPropertiesTest {
 			}
 		}
 		assertThat(metadata).isNotNull();
-		assertThat(metadata.get(SERVICE_NAME_KEY)).isEqualTo(SERVICE_PROVIDER);
+		assertThat(metadata.get(SERVICE_NAME_KEY)).isEqualTo("java-provider-test");
 		assertThat(metadata.get(INSTANCE_ID_KEY)).isEqualTo("ins-test");
 		assertThat(metadata.get(PREFER_IP_ADDRESS_KEY)).isEqualTo("true");
 		assertThat(metadata.get(IP_ADDRESS_KEY)).isEqualTo(HOST);

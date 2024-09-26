@@ -15,26 +15,18 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package com.tencent.cloud.polaris.tsf;
+package com.tencent.cloud.polaris.context.config.extend.tsf;
 
-import com.tencent.cloud.common.constant.OrderConstant;
-import com.tencent.cloud.polaris.context.PolarisConfigModifier;
-import com.tencent.polaris.factory.config.ConfigurationImpl;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 
 /**
- * Modifier for TSF discovery zero protection.
+ * TSF context bootstrap configuration.
  *
  * @author Haotian Zhang
  */
-public class TsfZeroProtectionConfigModifier implements PolarisConfigModifier {
-	@Override
-	public void modify(ConfigurationImpl configuration) {
-		configuration.getConsumer().getZeroProtection().setEnable(true);
-		configuration.getConsumer().getZeroProtection().setNeedTestConnectivity(true);
-	}
+@Configuration(proxyBeanMethods = false)
+@Import(TsfContextAutoConfiguration.class)
+public class TsfContextBootstrapConfiguration {
 
-	@Override
-	public int getOrder() {
-		return OrderConstant.Modifier.DISCOVERY_ORDER + 1;
-	}
 }

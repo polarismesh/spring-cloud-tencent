@@ -52,7 +52,8 @@ public class PolarisCircuitBreaker implements CircuitBreaker {
 	public PolarisCircuitBreaker(PolarisCircuitBreakerConfigBuilder.PolarisCircuitBreakerConfiguration conf,
 			ConsumerAPI consumerAPI,
 			CircuitBreakAPI circuitBreakAPI) {
-		FunctionalDecoratorRequest makeDecoratorRequest = new FunctionalDecoratorRequest(new ServiceKey(conf.getNamespace(), conf.getService()), conf.getMethod());
+		FunctionalDecoratorRequest makeDecoratorRequest = new FunctionalDecoratorRequest(
+				new ServiceKey(conf.getNamespace(), conf.getService()), conf.getProtocol(), conf.getMethod(), conf.getPath());
 		makeDecoratorRequest.setSourceService(new ServiceKey(conf.getSourceNamespace(), conf.getSourceService()));
 		makeDecoratorRequest.setResultToErrorCode(new PolarisResultToErrorCode());
 		this.consumerAPI = consumerAPI;
