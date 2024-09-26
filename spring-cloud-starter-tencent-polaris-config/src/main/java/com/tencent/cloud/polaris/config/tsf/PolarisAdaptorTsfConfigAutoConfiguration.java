@@ -17,15 +17,10 @@
 
 package com.tencent.cloud.polaris.config.tsf;
 
-import com.tencent.cloud.common.tsf.ConditionalOnTsfEnabled;
+import com.tencent.cloud.common.tsf.ConditionalOnTsfConsulEnabled;
 import com.tencent.cloud.polaris.config.ConditionalOnPolarisConfigEnabled;
-import com.tencent.cloud.polaris.config.config.PolarisConfigProperties;
 import com.tencent.cloud.polaris.config.tsf.controller.PolarisAdaptorTsfConfigController;
-import com.tencent.cloud.polaris.context.tsf.config.TsfCoreProperties;
-import com.tencent.cloud.polaris.context.tsf.consul.TsfConsulProperties;
 import com.tencent.tsf.consul.config.watch.TsfConsulConfigRefreshEventListener;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -37,16 +32,9 @@ import org.springframework.context.annotation.Configuration;
  * @Date Jul 23, 2023 3:52:48 PM
  */
 @Configuration(proxyBeanMethods = false)
-@ConditionalOnTsfEnabled
+@ConditionalOnTsfConsulEnabled
 @ConditionalOnPolarisConfigEnabled
 public class PolarisAdaptorTsfConfigAutoConfiguration {
-
-	private static final Logger LOGGER = LoggerFactory.getLogger(PolarisAdaptorTsfConfigAutoConfiguration.class);
-
-	{
-		System.setProperty("spring.cloud.polaris.config.refresh-type", "refresh_context");
-		LOGGER.info("PolarisAdaptorTsfConfigAutoConfiguration init set spring.cloud.polaris.config.refresh-type to refresh_context");
-	}
 
 	@Bean
 	@ConditionalOnMissingBean
@@ -66,11 +54,5 @@ public class PolarisAdaptorTsfConfigAutoConfiguration {
 	@ConditionalOnProperty(name = "tsf.config.instance.released-config.lookup.enabled", matchIfMissing = true)
 	public PolarisAdaptorTsfConfigController polarisAdaptorTsfConfigController() {
 		return new PolarisAdaptorTsfConfigController();
-	}
-
-	@Bean
-	@ConditionalOnMissingBean
-	public TsfConfigurationModifier tsfConfigModifier(TsfCoreProperties tsfCoreProperties, TsfConsulProperties tsfConsulProperties, PolarisConfigProperties polarisConfigProperties) {
-		return new TsfConfigurationModifier(tsfCoreProperties, tsfConsulProperties, polarisConfigProperties);
 	}
 }

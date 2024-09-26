@@ -19,7 +19,7 @@ package com.tencent.cloud.polaris;
 
 import com.tencent.cloud.polaris.context.config.PolarisContextAutoConfiguration;
 import com.tencent.cloud.polaris.discovery.PolarisDiscoveryHandler;
-import com.tencent.cloud.polaris.extend.consul.ConsulContextProperties;
+import com.tencent.cloud.polaris.extend.consul.ConsulDiscoveryProperties;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -43,7 +43,7 @@ public class DiscoveryPropertiesAutoConfigurationTest {
 		applicationContextRunner.run(context -> {
 			assertThat(context).hasSingleBean(DiscoveryPropertiesAutoConfiguration.class);
 			assertThat(context).hasSingleBean(PolarisDiscoveryProperties.class);
-			assertThat(context).hasSingleBean(ConsulContextProperties.class);
+			assertThat(context).doesNotHaveBean(ConsulDiscoveryProperties.class);
 			assertThat(context).hasSingleBean(PolarisDiscoveryHandler.class);
 			assertThat(context).hasSingleBean(DiscoveryConfigModifier.class);
 		});

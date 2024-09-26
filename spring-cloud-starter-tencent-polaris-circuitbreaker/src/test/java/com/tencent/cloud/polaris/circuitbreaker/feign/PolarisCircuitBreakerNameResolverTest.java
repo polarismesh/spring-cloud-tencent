@@ -93,7 +93,7 @@ public class PolarisCircuitBreakerNameResolverTest {
 		Method method = ReflectionUtils.findMethod(PolarisCircuitBreakerNameResolverTest.class, "mockRequestMapping2");
 		PolarisCircuitBreakerNameResolver resolver = new PolarisCircuitBreakerNameResolver();
 		String polarisCircuitBreakerName = resolver.resolveCircuitBreakerName("test", target, method);
-		assertThat(polarisCircuitBreakerName).isEqualTo("Test#test-svc#/");
+		assertThat(polarisCircuitBreakerName).isEqualTo("Test#test-svc#/#http#GET");
 	}
 
 	@Test
@@ -103,7 +103,7 @@ public class PolarisCircuitBreakerNameResolverTest {
 		Method method = ReflectionUtils.findMethod(PolarisCircuitBreakerNameResolverTest.class, "mockRequestMapping3");
 		PolarisCircuitBreakerNameResolver resolver = new PolarisCircuitBreakerNameResolver();
 		String polarisCircuitBreakerName = resolver.resolveCircuitBreakerName("test", target, method);
-		assertThat(polarisCircuitBreakerName).isEqualTo("Test#test-svc#/");
+		assertThat(polarisCircuitBreakerName).isEqualTo("Test#test-svc#/#http#GET");
 	}
 
 
