@@ -71,9 +71,11 @@ public class PolarisCircuitBreakerUtilsTests {
 
 	@Test
 	public void testResolveCircuitBreakerId() {
-		assertThat(PolarisCircuitBreakerUtils.resolveCircuitBreakerId("test_svc")).isEqualTo(new String[]{NAMESPACE_TEST, "test_svc", ""});
-		assertThat(PolarisCircuitBreakerUtils.resolveCircuitBreakerId("test_svc#test_path")).isEqualTo(new String[]{NAMESPACE_TEST, "test_svc", "test_path"});
-		assertThat(PolarisCircuitBreakerUtils.resolveCircuitBreakerId("test_ns#test_svc#test_path")).isEqualTo(new String[]{"test_ns", "test_svc", "test_path"});
+		assertThat(PolarisCircuitBreakerUtils.resolveCircuitBreakerId("test_svc")).isEqualTo(new String[] {NAMESPACE_TEST, "test_svc", "", "http", ""});
+		assertThat(PolarisCircuitBreakerUtils.resolveCircuitBreakerId("test_svc#test_path")).isEqualTo(new String[] {NAMESPACE_TEST, "test_svc", "test_path", "http", ""});
+		assertThat(PolarisCircuitBreakerUtils.resolveCircuitBreakerId("test_ns#test_svc#test_path")).isEqualTo(new String[] {"test_ns", "test_svc", "test_path", "http", ""});
+		assertThat(PolarisCircuitBreakerUtils.resolveCircuitBreakerId("test_ns#test_svc#test_path")).isEqualTo(new String[] {"test_ns", "test_svc", "test_path", "http", ""});
+		assertThat(PolarisCircuitBreakerUtils.resolveCircuitBreakerId("test_ns#test_svc#test_path#tcp#POST")).isEqualTo(new String[] {"test_ns", "test_svc", "test_path", "tcp", "POST"});
 	}
 
 }

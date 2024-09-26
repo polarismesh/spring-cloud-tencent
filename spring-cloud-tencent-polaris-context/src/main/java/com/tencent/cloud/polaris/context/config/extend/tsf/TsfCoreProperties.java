@@ -15,10 +15,13 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package com.tencent.cloud.polaris.context.tsf.config;
+package com.tencent.cloud.polaris.context.config.extend.tsf;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+
+import org.apache.commons.lang.StringUtils;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -31,14 +34,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties("tsf")
 public class TsfCoreProperties {
 
-	@Value("${tse_polaris_ip:}")
-	private String tsePolarisIp = "";
-
-	@Value("${tsf_consul_enable:false}")
-	private boolean tsfConsulEnable = false;
-
-	@Value("${tse_polaris_enable:false}")
-	private boolean tsePolarisEnable = false;
+	@Value("${tsf_app_id:}")
+	private String appId;
 
 	/**
 	 * Unique service instance id.
@@ -75,6 +72,9 @@ public class TsfCoreProperties {
 	 */
 	@Value("${tsf_namespace_id:}")
 	private String tsfNamespaceId;
+
+	@Value("${spring.application.name:}")
+	private String serviceName;
 
 	/**
 	 * tsf service consul registration tags.
@@ -123,28 +123,18 @@ public class TsfCoreProperties {
 	@Value("${tsf.discovery.scheme:http}")
 	private String scheme = "http";
 
-	public String getTsePolarisIp() {
-		return tsePolarisIp;
+	@Value("${tsf_event_master_ip:}")
+	private String eventMasterIp;
+
+	@Value("${tsf_event_master_port:15200}")
+	private Integer eventMasterPort;
+
+	public String getAppId() {
+		return appId;
 	}
 
-	public void setTsePolarisIp(String tsePolarisIp) {
-		this.tsePolarisIp = tsePolarisIp;
-	}
-
-	public boolean isTsfConsulEnable() {
-		return tsfConsulEnable;
-	}
-
-	public void setTsfConsulEnable(boolean tsfConsulEnable) {
-		this.tsfConsulEnable = tsfConsulEnable;
-	}
-
-	public boolean isTsePolarisEnable() {
-		return tsePolarisEnable;
-	}
-
-	public void setTsePolarisEnable(boolean tsePolarisEnable) {
-		this.tsePolarisEnable = tsePolarisEnable;
+	public void setAppId(String appId) {
+		this.appId = appId;
 	}
 
 	public String getInstanceId() {
@@ -187,11 +177,19 @@ public class TsfCoreProperties {
 		this.tsfNamespaceId = tsfNamespaceId;
 	}
 
+	public String getServiceName() {
+		return serviceName;
+	}
+
+	public void setServiceName(String serviceName) {
+		this.serviceName = serviceName;
+	}
+
 	public String getTsfRegion() {
 		return tsfRegion;
 	}
 
-	public void setTsfRegion(final String tsfRegion) {
+	public void setTsfRegion(String tsfRegion) {
 		this.tsfRegion = tsfRegion;
 	}
 
@@ -199,7 +197,7 @@ public class TsfCoreProperties {
 		return tsfZone;
 	}
 
-	public void setTsfZone(final String tsfZone) {
+	public void setTsfZone(String tsfZone) {
 		this.tsfZone = tsfZone;
 	}
 
@@ -209,6 +207,19 @@ public class TsfCoreProperties {
 
 	public void setTags(List<String> tags) {
 		this.tags = tags;
+	}
+
+	public List<String> getTsfTags() {
+		List<String> tags = new LinkedList<>(getTags());
+		if (StringUtils.isNotBlank(getInstanceZone())) {
+			tags.add(getDefaultZoneMetadataName() + "=" + getInstanceZone());
+		}
+		if (StringUtils.isNotBlank(getInstanceGroup())) {
+			tags.add("group=" + getInstanceGroup());
+		}
+		//store the secure flag in the tags so that clients will be able to figure out whether to use http or https automatically
+		tags.add("secure=" + getScheme().equalsIgnoreCase("https"));
+		return tags;
 	}
 
 	public String getInstanceZone() {
@@ -243,17 +254,32 @@ public class TsfCoreProperties {
 		this.scheme = scheme;
 	}
 
+	public String getEventMasterIp() {
+		return eventMasterIp;
+	}
+
+	public void setEventMasterIp(String eventMasterIp) {
+		this.eventMasterIp = eventMasterIp;
+	}
+
+	public Integer getEventMasterPort() {
+		return eventMasterPort;
+	}
+
+	public void setEventMasterPort(Integer eventMasterPort) {
+		this.eventMasterPort = eventMasterPort;
+	}
+
 	@Override
 	public String toString() {
 		return "TsfCoreProperties{" +
-				"tsePolarisIp='" + tsePolarisIp + '\'' +
-				", tsfConsulEnable=" + tsfConsulEnable +
-				", tsePolarisEnable=" + tsePolarisEnable +
+				"appId='" + appId + '\'' +
 				", instanceId='" + instanceId + '\'' +
 				", tsfApplicationId='" + tsfApplicationId + '\'' +
 				", tsfGroupId='" + tsfGroupId + '\'' +
 				", tsfProgVersion='" + tsfProgVersion + '\'' +
 				", tsfNamespaceId='" + tsfNamespaceId + '\'' +
+				", serviceName='" + serviceName + '\'' +
 				", tsfRegion='" + tsfRegion + '\'' +
 				", tsfZone='" + tsfZone + '\'' +
 				", tags=" + tags +
@@ -261,6 +287,8 @@ public class TsfCoreProperties {
 				", instanceGroup='" + instanceGroup + '\'' +
 				", defaultZoneMetadataName='" + defaultZoneMetadataName + '\'' +
 				", scheme='" + scheme + '\'' +
+				", eventMasterIp='" + eventMasterIp + '\'' +
+				", eventMasterPort=" + eventMasterPort +
 				'}';
 	}
 }

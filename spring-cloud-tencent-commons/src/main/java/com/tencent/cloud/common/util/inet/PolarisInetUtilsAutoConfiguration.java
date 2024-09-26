@@ -17,12 +17,12 @@
 
 package com.tencent.cloud.common.util.inet;
 
-import com.tencent.cloud.common.tsf.ConditionalOnTsfEnabled;
-
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.cloud.commons.util.InetUtilsProperties;
+import org.springframework.cloud.commons.util.UtilAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 
 
 /**
@@ -31,7 +31,7 @@ import org.springframework.context.annotation.Configuration;
  * @author Haotian Zhang
  */
 @Configuration(proxyBeanMethods = false)
-@ConditionalOnTsfEnabled
+@Import(UtilAutoConfiguration.class)
 public class PolarisInetUtilsAutoConfiguration {
 
 	@Bean
