@@ -23,7 +23,7 @@ import java.util.Map;
 import com.tencent.cloud.common.metadata.StaticMetadataManager;
 import com.tencent.cloud.polaris.PolarisDiscoveryProperties;
 import com.tencent.cloud.polaris.context.config.PolarisContextProperties;
-import com.tencent.cloud.polaris.extend.consul.ConsulContextProperties;
+import com.tencent.cloud.polaris.extend.consul.ConsulDiscoveryProperties;
 import com.tencent.cloud.polaris.extend.nacos.NacosContextProperties;
 import com.tencent.polaris.api.config.Configuration;
 import com.tencent.polaris.api.config.global.APIConfig;
@@ -76,9 +76,8 @@ public class PolarisRegistrationTest {
 		PolarisContextProperties polarisContextProperties = mock(PolarisContextProperties.class);
 		doReturn(testLocalPort).when(polarisContextProperties).getLocalPort();
 
-		// mock ConsulContextProperties
-		ConsulContextProperties consulContextProperties = mock(ConsulContextProperties.class);
-		doReturn(true).when(consulContextProperties).isEnabled();
+		// mock ConsulDiscoveryProperties
+		ConsulDiscoveryProperties consulContextProperties = mock(ConsulDiscoveryProperties.class);
 		doReturn(true).when(consulContextProperties).isRegister();
 
 		// mock NacosContextProperties

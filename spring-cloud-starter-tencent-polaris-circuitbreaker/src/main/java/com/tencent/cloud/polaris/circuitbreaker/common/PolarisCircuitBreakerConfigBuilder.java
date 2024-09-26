@@ -32,15 +32,21 @@ public class PolarisCircuitBreakerConfigBuilder implements ConfigBuilder<Polaris
 
 	private String service;
 
+	private String protocol;
+
 	private String method;
+
+	private String path;
 
 	public PolarisCircuitBreakerConfigBuilder() {
 
 	}
 
-	public PolarisCircuitBreakerConfigBuilder(String namespace, String service, String method) {
+	public PolarisCircuitBreakerConfigBuilder(String namespace, String service, String path, String protocol, String method) {
 		this.namespace = namespace;
 		this.service = service;
+		this.path = path;
+		this.protocol = protocol;
 		this.method = method;
 	}
 
@@ -54,8 +60,18 @@ public class PolarisCircuitBreakerConfigBuilder implements ConfigBuilder<Polaris
 		return this;
 	}
 
+	public PolarisCircuitBreakerConfigBuilder protocol(String protocol) {
+		this.protocol = protocol;
+		return this;
+	}
+
 	public PolarisCircuitBreakerConfigBuilder method(String method) {
 		this.method = method;
+		return this;
+	}
+
+	public PolarisCircuitBreakerConfigBuilder path(String path) {
+		this.path = path;
 		return this;
 	}
 
@@ -64,7 +80,9 @@ public class PolarisCircuitBreakerConfigBuilder implements ConfigBuilder<Polaris
 		PolarisCircuitBreakerConfiguration conf = new PolarisCircuitBreakerConfiguration();
 		conf.setNamespace(namespace);
 		conf.setService(service);
+		conf.setProtocol(protocol);
 		conf.setMethod(method);
+		conf.setPath(path);
 		return conf;
 	}
 
@@ -78,7 +96,11 @@ public class PolarisCircuitBreakerConfigBuilder implements ConfigBuilder<Polaris
 
 		private String service;
 
+		private String protocol;
+
 		private String method;
+
+		private String path;
 
 		public String getNamespace() {
 			return namespace;
@@ -96,12 +118,28 @@ public class PolarisCircuitBreakerConfigBuilder implements ConfigBuilder<Polaris
 			this.service = service;
 		}
 
+		public String getProtocol() {
+			return protocol;
+		}
+
+		public void setProtocol(String protocol) {
+			this.protocol = protocol;
+		}
+
 		public String getMethod() {
 			return method;
 		}
 
 		public void setMethod(String method) {
 			this.method = method;
+		}
+
+		public String getPath() {
+			return path;
+		}
+
+		public void setPath(String path) {
+			this.path = path;
 		}
 
 		public String getSourceNamespace() {

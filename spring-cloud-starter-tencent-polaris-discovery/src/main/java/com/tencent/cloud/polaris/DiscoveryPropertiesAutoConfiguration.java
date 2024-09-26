@@ -17,18 +17,25 @@
  */
 package com.tencent.cloud.polaris;
 
+import com.tencent.cloud.common.util.inet.PolarisInetUtils;
 import com.tencent.cloud.polaris.context.ConditionalOnPolarisEnabled;
 import com.tencent.cloud.polaris.context.PolarisSDKContextManager;
+import com.tencent.cloud.polaris.context.config.extend.consul.ConsulProperties;
+import com.tencent.cloud.polaris.context.config.extend.tsf.TsfCoreProperties;
 import com.tencent.cloud.polaris.discovery.PolarisDiscoveryHandler;
-import com.tencent.cloud.polaris.extend.consul.ConsulConfigModifier;
-import com.tencent.cloud.polaris.extend.consul.ConsulContextProperties;
+import com.tencent.cloud.polaris.extend.consul.ConsulDiscoveryConfigModifier;
+import com.tencent.cloud.polaris.extend.consul.ConsulDiscoveryProperties;
+import com.tencent.cloud.polaris.extend.consul.ConsulHeartbeatProperties;
 import com.tencent.cloud.polaris.extend.nacos.NacosConfigModifier;
 import com.tencent.cloud.polaris.extend.nacos.NacosContextProperties;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.lang.Nullable;
 
 /**
  * Common configuration of discovery.
@@ -43,12 +50,6 @@ public class DiscoveryPropertiesAutoConfiguration {
 	@ConditionalOnMissingBean
 	public PolarisDiscoveryProperties polarisDiscoveryProperties() {
 		return new PolarisDiscoveryProperties();
-	}
-
-	@Bean
-	@ConditionalOnMissingBean
-	public ConsulContextProperties consulContextProperties() {
-		return new ConsulContextProperties();
 	}
 
 	@Bean
@@ -72,12 +73,6 @@ public class DiscoveryPropertiesAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public ConsulConfigModifier consulConfigModifier(@Autowired(required = false) ConsulContextProperties consulContextProperties) {
-		return new ConsulConfigModifier(consulContextProperties);
-	}
-
-	@Bean
-	@ConditionalOnMissingBean
 	public PolarisDiscoveryConfigModifier polarisDiscoveryConfigModifier(PolarisDiscoveryProperties polarisDiscoveryProperties) {
 		return new PolarisDiscoveryConfigModifier(polarisDiscoveryProperties);
 	}
@@ -86,5 +81,35 @@ public class DiscoveryPropertiesAutoConfiguration {
 	@ConditionalOnMissingBean
 	public NacosConfigModifier nacosConfigModifier(@Autowired(required = false) NacosContextProperties nacosContextProperties) {
 		return new NacosConfigModifier(nacosContextProperties);
+	}
+
+	/**
+	 * Create when consul is enabled.
+	 */
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnProperty(value = "spring.cloud.consul.enabled", havingValue = "true")
+	protected static class ConsulDiscoveryConfiguration {
+
+		@Bean
+		@ConditionalOnMissingBean
+		public ConsulDiscoveryProperties consulDiscoveryProperties(PolarisInetUtils polarisInetUtils) {
+			return new ConsulDiscoveryProperties(polarisInetUtils);
+		}
+
+		@Bean
+		@ConditionalOnMissingBean
+		public ConsulHeartbeatProperties consulHeartbeatProperties() {
+			return new ConsulHeartbeatProperties();
+		}
+
+		@Bean
+		@ConditionalOnMissingBean
+		public ConsulDiscoveryConfigModifier consulDiscoveryConfigModifier(
+				PolarisDiscoveryProperties polarisDiscoveryProperties, ConsulProperties consulProperties,
+				ConsulDiscoveryProperties consulContextProperties, ConsulHeartbeatProperties consulHeartbeatProperties,
+				@Nullable TsfCoreProperties tsfCoreProperties, ApplicationContext applicationContext) {
+			return new ConsulDiscoveryConfigModifier(polarisDiscoveryProperties, consulProperties, consulContextProperties,
+					consulHeartbeatProperties, tsfCoreProperties, applicationContext);
+		}
 	}
 }

@@ -142,6 +142,7 @@ public class PolarisServiceRegistry implements ServiceRegistry<PolarisRegistrati
 				instanceRegisterResponse = providerClient.register(instanceRegisterRequest);
 				InstanceHeartbeatRequest heartbeatRequest = new InstanceHeartbeatRequest();
 				BeanUtils.copyProperties(instanceRegisterRequest, heartbeatRequest);
+				heartbeatRequest.setInstanceID(instanceRegisterResponse.getInstanceId());
 				// Start the heartbeat thread after the registration is successful.
 				heartbeat(heartbeatRequest);
 			}

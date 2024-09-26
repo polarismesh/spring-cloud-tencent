@@ -26,7 +26,7 @@ import java.util.Objects;
 import com.tencent.cloud.common.metadata.StaticMetadataManager;
 import com.tencent.cloud.polaris.PolarisDiscoveryProperties;
 import com.tencent.cloud.polaris.context.config.PolarisContextProperties;
-import com.tencent.cloud.polaris.extend.consul.ConsulContextProperties;
+import com.tencent.cloud.polaris.extend.consul.ConsulDiscoveryProperties;
 import com.tencent.cloud.polaris.extend.nacos.NacosContextProperties;
 import com.tencent.polaris.client.api.SDKContext;
 import org.apache.commons.lang.StringUtils;
@@ -72,7 +72,7 @@ public class PolarisRegistration implements Registration {
 	public PolarisRegistration(
 			PolarisDiscoveryProperties polarisDiscoveryProperties,
 			@Nullable PolarisContextProperties polarisContextProperties,
-			@Nullable ConsulContextProperties consulContextProperties,
+			@Nullable ConsulDiscoveryProperties consulDiscoveryProperties,
 			SDKContext context, StaticMetadataManager staticMetadataManager,
 			@Nullable NacosContextProperties nacosContextProperties,
 			@Nullable ServletWebServerApplicationContext servletWebServerApplicationContext,
@@ -133,8 +133,8 @@ public class PolarisRegistration implements Registration {
 		if (null != polarisDiscoveryProperties) {
 			registerEnabled = polarisDiscoveryProperties.isRegisterEnabled();
 		}
-		if (null != consulContextProperties && consulContextProperties.isEnabled()) {
-			registerEnabled |= consulContextProperties.isRegister();
+		if (null != consulDiscoveryProperties) {
+			registerEnabled |= consulDiscoveryProperties.isRegister();
 		}
 		if (null != nacosContextProperties && nacosContextProperties.isEnabled()) {
 			registerEnabled |= nacosContextProperties.isRegisterEnabled();
@@ -143,7 +143,7 @@ public class PolarisRegistration implements Registration {
 
 	public static PolarisRegistration registration(PolarisDiscoveryProperties polarisDiscoveryProperties,
 			@Nullable PolarisContextProperties polarisContextProperties,
-			@Nullable ConsulContextProperties consulContextProperties,
+			@Nullable ConsulDiscoveryProperties consulContextProperties,
 			SDKContext context, StaticMetadataManager staticMetadataManager,
 			@Nullable NacosContextProperties nacosContextProperties,
 			@Nullable ServletWebServerApplicationContext servletWebServerApplicationContext,
