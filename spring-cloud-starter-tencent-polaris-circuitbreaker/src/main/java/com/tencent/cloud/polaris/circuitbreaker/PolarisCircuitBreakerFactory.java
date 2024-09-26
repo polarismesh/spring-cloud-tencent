@@ -43,23 +43,24 @@ import org.springframework.cloud.client.circuitbreaker.CircuitBreakerFactory;
 public class PolarisCircuitBreakerFactory
 		extends CircuitBreakerFactory<PolarisCircuitBreakerConfigBuilder.PolarisCircuitBreakerConfiguration, PolarisCircuitBreakerConfigBuilder> implements DisposableBean {
 
-	private Function<String, PolarisCircuitBreakerConfigBuilder.PolarisCircuitBreakerConfiguration> defaultConfiguration =
-			id -> {
-				String[] metadata = PolarisCircuitBreakerUtils.resolveCircuitBreakerId(id);
-				return new PolarisCircuitBreakerConfigBuilder()
-						.namespace(metadata[0])
-						.service(metadata[1])
-						.method(metadata[2])
-						.build();
-			};
-
-
 	private final CircuitBreakAPI circuitBreakAPI;
 
 	private final ConsumerAPI consumerAPI;
 
 	private final ScheduledExecutorService cleanupService = Executors.newSingleThreadScheduledExecutor(
 			new NamedThreadFactory("sct-circuitbreaker-cleanup", true));
+
+	private Function<String, PolarisCircuitBreakerConfigBuilder.PolarisCircuitBreakerConfiguration> defaultConfiguration =
+			id -> {
+				String[] metadata = PolarisCircuitBreakerUtils.resolveCircuitBreakerId(id);
+				return new PolarisCircuitBreakerConfigBuilder()
+						.namespace(metadata[0])
+						.service(metadata[1])
+						.path(metadata[2])
+						.protocol(metadata[3])
+						.method(metadata[4])
+						.build();
+			};
 
 	public PolarisCircuitBreakerFactory(CircuitBreakAPI circuitBreakAPI, ConsumerAPI consumerAPI,
 			PolarisCircuitBreakerProperties polarisCircuitBreakerProperties) {
@@ -83,7 +84,7 @@ public class PolarisCircuitBreakerFactory
 	@Override
 	protected PolarisCircuitBreakerConfigBuilder configBuilder(String id) {
 		String[] metadata = PolarisCircuitBreakerUtils.resolveCircuitBreakerId(id);
-		return new PolarisCircuitBreakerConfigBuilder(metadata[0], metadata[1], metadata[2]);
+		return new PolarisCircuitBreakerConfigBuilder(metadata[0], metadata[1], metadata[2], metadata[3], metadata[4]);
 	}
 
 	@Override
@@ -93,7 +94,7 @@ public class PolarisCircuitBreakerFactory
 
 	@Override
 	public void destroy() {
-		ThreadPoolUtils.waitAndStopThreadPools(new ExecutorService[]{cleanupService});
+		ThreadPoolUtils.waitAndStopThreadPools(new ExecutorService[] {cleanupService});
 	}
 
 }

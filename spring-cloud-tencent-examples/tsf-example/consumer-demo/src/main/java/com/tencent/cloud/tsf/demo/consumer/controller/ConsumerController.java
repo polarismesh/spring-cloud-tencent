@@ -23,6 +23,7 @@ import java.util.Map;
 import com.tencent.cloud.tsf.demo.consumer.proxy.ProviderDemoService;
 import com.tencent.cloud.tsf.demo.consumer.proxy.ProviderService;
 import com.tencent.polaris.api.utils.StringUtils;
+import com.tencent.polaris.circuitbreak.client.exception.CallAbortedException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.tsf.core.context.TsfContext;
@@ -55,7 +56,13 @@ public class ConsumerController {
 		mTags.put("rest-trace-key1", "value1");
 		mTags.put("rest-trace-key2", "value2");
 		TsfContext.putTags(mTags, Tag.ControlFlag.TRANSITIVE);
-		return restTemplate.getForObject("http://provider-demo/echo/" + str, String.class);
+		try {
+			return restTemplate.getForObject("http://provider-demo/echo/" + str, String.class);
+		}
+		catch (CallAbortedException callAbortedException) {
+			return callAbortedException.getMessage();
+		}
+
 	}
 
 	@RequestMapping(value = "/echo-feign/{str}", method = RequestMethod.GET)
@@ -70,7 +77,12 @@ public class ConsumerController {
 		mTags.put("feign-trace-key1", "value1");
 		mTags.put("feign-trace-key2", "value2");
 		TsfContext.putTags(mTags, Tag.ControlFlag.TRANSITIVE);
-		return providerDemoService.echo(str);
+		try {
+			return providerDemoService.echo(str);
+		}
+		catch (CallAbortedException callAbortedException) {
+			return callAbortedException.getMessage();
+		}
 	}
 
 	@RequestMapping(value = "/echo-feign-url/{str}", method = RequestMethod.GET)

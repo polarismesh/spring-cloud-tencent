@@ -17,6 +17,8 @@
 
 package com.tencent.cloud.tsf.demo.consumer;
 
+import com.tencent.cloud.polaris.circuitbreaker.resttemplate.PolarisCircuitBreaker;
+
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.loadbalancer.LoadBalanced;
@@ -35,6 +37,7 @@ public class ConsumerApplication {
 
 	@LoadBalanced
 	@Bean
+	@PolarisCircuitBreaker
 	public RestTemplate restTemplate() {
 		return new RestTemplate();
 	}

@@ -205,13 +205,10 @@
 			<groupId>com.tencent.polaris</groupId>
 			<artifactId>polaris-assembly-factory</artifactId>
 		</dependency>
+
 		<dependency>
 			<groupId>com.tencent.polaris</groupId>
-			<artifactId>polaris-circuitbreaker-factory</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.tencent.polaris</groupId>
-			<artifactId>polaris-ratelimit-factory</artifactId>
+			<artifactId>event-tsf</artifactId>
 		</dependency>
 		<!-- Polaris dependencies end -->
 
@@ -225,7 +222,6 @@
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
-
 	</dependencies>
 
 </project>

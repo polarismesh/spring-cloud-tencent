@@ -18,12 +18,12 @@
 package com.tencent.cloud.polaris.tsf.registry;
 import javax.servlet.ServletContext;
 
-import com.tencent.cloud.common.tsf.ConditionalOnTsfEnabled;
+import com.tencent.cloud.common.tsf.ConditionalOnTsfConsulEnabled;
 import com.tencent.cloud.polaris.context.PolarisSDKContextManager;
-import com.tencent.cloud.polaris.context.tsf.config.TsfCoreProperties;
+import com.tencent.cloud.polaris.context.config.extend.tsf.TsfCoreProperties;
+import com.tencent.cloud.polaris.extend.consul.ConsulDiscoveryProperties;
+import com.tencent.cloud.polaris.extend.consul.ConsulHeartbeatProperties;
 import com.tencent.cloud.polaris.registry.PolarisServiceRegistryAutoConfiguration;
-import com.tencent.cloud.polaris.tsf.TsfDiscoveryProperties;
-import com.tencent.cloud.polaris.tsf.TsfHeartbeatProperties;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
@@ -41,17 +41,18 @@ import org.springframework.context.annotation.Configuration;
  * @author Haotian Zhang
  */
 @Configuration(proxyBeanMethods = false)
-@ConditionalOnTsfEnabled
+@ConditionalOnTsfConsulEnabled
 @AutoConfigureBefore(PolarisServiceRegistryAutoConfiguration.class)
 public class TsfDiscoveryRegistryAutoConfiguration {
+
 	@Bean
 	@ConditionalOnMissingBean
 	public TsfPortPolarisRegistrationCustomizer tsfPortPolarisRegistrationCustomizer(
 			AutoServiceRegistrationProperties autoServiceRegistrationProperties,
-			ApplicationContext context, TsfDiscoveryProperties tsfDiscoveryProperties, TsfCoreProperties tsfCoreProperties,
-			TsfHeartbeatProperties tsfHeartbeatProperties, PolarisSDKContextManager polarisSDKContextManager) {
+			ApplicationContext context, ConsulDiscoveryProperties consulDiscoveryProperties, TsfCoreProperties tsfCoreProperties,
+			ConsulHeartbeatProperties consulHeartbeatProperties, PolarisSDKContextManager polarisSDKContextManager) {
 		return new TsfPortPolarisRegistrationCustomizer(autoServiceRegistrationProperties, context,
-				tsfDiscoveryProperties, tsfCoreProperties, tsfHeartbeatProperties, polarisSDKContextManager.getSDKContext());
+				consulDiscoveryProperties, tsfCoreProperties, consulHeartbeatProperties, polarisSDKContextManager.getSDKContext());
 	}
 
 	@Bean
