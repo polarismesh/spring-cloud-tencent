@@ -87,16 +87,6 @@ public final class AddressUtils {
 		return true;
 	}
 
-	public static String getIpCompatible(String ip) {
-		if (StringUtils.isEmpty(ip)) {
-			return ip;
-		}
-		if (ip.contains(":") && !ip.startsWith("[") && !ip.endsWith("]")) {
-			return "[" + ip + "]";
-		}
-		return ip;
-	}
-
 	public static boolean preferIpv6() {
 		if (Boolean.FALSE.equals(hasIpv6Address)) {
 			LOGGER.debug("AddressUtils.preferIpv6 hasIpv6Address = false");

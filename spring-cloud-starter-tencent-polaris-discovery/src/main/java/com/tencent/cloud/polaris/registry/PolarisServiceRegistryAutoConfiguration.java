@@ -25,7 +25,7 @@ import com.tencent.cloud.polaris.context.PolarisSDKContextManager;
 import com.tencent.cloud.polaris.context.config.PolarisContextProperties;
 import com.tencent.cloud.polaris.discovery.PolarisDiscoveryAutoConfiguration;
 import com.tencent.cloud.polaris.discovery.PolarisDiscoveryHandler;
-import com.tencent.cloud.polaris.extend.consul.ConsulContextProperties;
+import com.tencent.cloud.polaris.extend.consul.ConsulDiscoveryProperties;
 import com.tencent.cloud.polaris.extend.nacos.NacosContextProperties;
 import com.tencent.cloud.rpc.enhancement.stat.config.PolarisStatProperties;
 
@@ -68,7 +68,7 @@ public class PolarisServiceRegistryAutoConfiguration {
 	public PolarisRegistration polarisRegistration(
 			PolarisDiscoveryProperties polarisDiscoveryProperties,
 			PolarisContextProperties polarisContextProperties,
-			@Autowired(required = false) ConsulContextProperties consulContextProperties,
+			@Autowired(required = false) ConsulDiscoveryProperties consulContextProperties,
 			PolarisSDKContextManager polarisSDKContextManager, StaticMetadataManager staticMetadataManager,
 			NacosContextProperties nacosContextProperties,
 			@Autowired(required = false) ServletWebServerApplicationContext servletWebServerApplicationContext,

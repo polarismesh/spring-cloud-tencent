@@ -15,29 +15,30 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package com.tencent.cloud.polaris.context.tsf.metadata;
+package com.tencent.cloud.polaris.context.config.extend.tsf;
 
-import com.tencent.cloud.common.spi.InstanceMetadataProvider;
-import com.tencent.cloud.common.tsf.ConditionalOnTsfEnabled;
+import com.tencent.cloud.common.tsf.ConditionalOnTsfConsulEnabled;
 import com.tencent.cloud.polaris.context.config.PolarisContextAutoConfiguration;
-import com.tencent.cloud.polaris.context.tsf.config.TsfCoreProperties;
+import com.tencent.cloud.polaris.context.config.extend.consul.ConsulProperties;
 
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * Auto configuration for instanceMetadataProvider for TSF.
+ * TSF context auto configuration.
  *
- * @author Hoatian Zhang
+ * @author Haotian Zhang
  */
 @Configuration(proxyBeanMethods = false)
 @AutoConfigureAfter(PolarisContextAutoConfiguration.class)
-@ConditionalOnTsfEnabled
-public class TsfInstanceMetadataAutoConfiguration {
+@ConditionalOnTsfConsulEnabled
+public class TsfContextAutoConfiguration {
 
 	@Bean
-	public InstanceMetadataProvider tsfInstanceMetadataProvider(TsfCoreProperties tsfCoreProperties) {
-		return new TsfInstanceMetadataProvider(tsfCoreProperties);
+	@ConditionalOnMissingBean
+	public TsfContextConfigModifier tsfConfigModifier(TsfCoreProperties tsfCoreProperties, ConsulProperties consulProperties) {
+		return new TsfContextConfigModifier(tsfCoreProperties, consulProperties);
 	}
 }

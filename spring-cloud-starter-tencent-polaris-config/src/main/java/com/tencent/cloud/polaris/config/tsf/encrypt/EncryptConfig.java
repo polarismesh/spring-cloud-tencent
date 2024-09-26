@@ -37,7 +37,7 @@ public final class EncryptConfig {
 	/**
 	 * 加解密提供器类名.
 	 */
-	private static String providerClass = "com.tencent.cloud.tsf.config.encrypt.ConfigEncryptAESProvider";
+	private static String providerClass = "com.tencent.cloud.polaris.config.tsf.encrypt.ConfigEncryptAESProvider";
 
 	static {
 		// 环境变量

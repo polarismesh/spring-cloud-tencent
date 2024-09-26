@@ -17,12 +17,12 @@
 
 package com.tencent.cloud.polaris.tsf.registry;
 
-import com.tencent.cloud.polaris.context.tsf.config.TsfCoreProperties;
+import com.tencent.cloud.polaris.context.config.extend.tsf.TsfCoreProperties;
+import com.tencent.cloud.polaris.extend.consul.ConsulDiscoveryProperties;
+import com.tencent.cloud.polaris.extend.consul.ConsulDiscoveryUtil;
+import com.tencent.cloud.polaris.extend.consul.ConsulHeartbeatProperties;
 import com.tencent.cloud.polaris.registry.PolarisRegistration;
 import com.tencent.cloud.polaris.registry.PolarisRegistrationCustomizer;
-import com.tencent.cloud.polaris.tsf.TsfDiscoveryProperties;
-import com.tencent.cloud.polaris.tsf.TsfHeartbeatProperties;
-import com.tencent.cloud.polaris.tsf.util.RegistrationUtil;
 import com.tencent.polaris.client.api.SDKContext;
 
 import org.springframework.cloud.client.serviceregistry.AutoServiceRegistrationProperties;
@@ -37,29 +37,29 @@ public class TsfPortPolarisRegistrationCustomizer implements PolarisRegistration
 
 	private final AutoServiceRegistrationProperties autoServiceRegistrationProperties;
 	private final ApplicationContext context;
-	private final TsfDiscoveryProperties tsfDiscoveryProperties;
+	private final ConsulDiscoveryProperties consulDiscoveryProperties;
 	private final TsfCoreProperties tsfCoreProperties;
-	private final TsfHeartbeatProperties tsfHeartbeatProperties;
+	private final ConsulHeartbeatProperties consulHeartbeatProperties;
 	private final SDKContext sdkContext;
 
 	public TsfPortPolarisRegistrationCustomizer(AutoServiceRegistrationProperties autoServiceRegistrationProperties,
-			ApplicationContext context, TsfDiscoveryProperties tsfDiscoveryProperties, TsfCoreProperties tsfCoreProperties,
-			TsfHeartbeatProperties tsfHeartbeatProperties, SDKContext sdkContext) {
+			ApplicationContext context, ConsulDiscoveryProperties consulDiscoveryProperties, TsfCoreProperties tsfCoreProperties,
+			ConsulHeartbeatProperties consulHeartbeatProperties, SDKContext sdkContext) {
 		this.autoServiceRegistrationProperties = autoServiceRegistrationProperties;
 		this.context = context;
-		this.tsfDiscoveryProperties = tsfDiscoveryProperties;
+		this.consulDiscoveryProperties = consulDiscoveryProperties;
 		this.tsfCoreProperties = tsfCoreProperties;
-		this.tsfHeartbeatProperties = tsfHeartbeatProperties;
+		this.consulHeartbeatProperties = consulHeartbeatProperties;
 		this.sdkContext = sdkContext;
 	}
 
 	@Override
 	public void customize(PolarisRegistration registration) {
-		if (tsfDiscoveryProperties.getPort() != null) {
-			registration.setPort(tsfDiscoveryProperties.getPort());
+		if (consulDiscoveryProperties.getPort() != null) {
+			registration.setPort(consulDiscoveryProperties.getPort());
 		}
 		// we know the port and can set the check
-		RegistrationUtil.setCheck(autoServiceRegistrationProperties, tsfDiscoveryProperties, tsfCoreProperties, context,
-				tsfHeartbeatProperties, registration, sdkContext.getConfig());
+		ConsulDiscoveryUtil.setCheck(autoServiceRegistrationProperties, consulDiscoveryProperties, tsfCoreProperties, context,
+				consulHeartbeatProperties, registration, sdkContext.getConfig());
 	}
 }

@@ -15,24 +15,32 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package com.tencent.cloud.polaris.tsf;
+package com.tencent.cloud.polaris.extend.consul;
 
 import jakarta.validation.constraints.DecimalMax;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
-import org.apache.commons.logging.Log;
 import org.joda.time.Period;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.core.style.ToStringCreator;
 import org.springframework.validation.annotation.Validated;
 
-@ConfigurationProperties(prefix = "tsf.discovery.heartbeat")
+/**
+ * Copy from org.springframework.cloud.consul.discovery.HeartbeatProperties.
+ * Properties related to heartbeat verification.
+ *
+ * @author Spencer Gibb
+ * @author Chris Bono
+ */
+@ConfigurationProperties(prefix = "spring.cloud.consul.discovery.heartbeat")
 @Validated
-public class TsfHeartbeatProperties {
+public class ConsulHeartbeatProperties {
 
-	private static final Log log = org.apache.commons.logging.LogFactory.getLog(TsfHeartbeatProperties.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(ConsulHeartbeatProperties.class);
 	// TODO: change enabled to default to true when I stop seeing messages like
 	// [WARN] agent: Check 'service:testConsulApp:xtest:8080' missed TTL, is now critical
 	boolean enabled = true;
@@ -49,7 +57,7 @@ public class TsfHeartbeatProperties {
 
 	//TODO: did heartbeatInterval need to be a field?
 
-	protected Period computeHearbeatInterval() {
+	protected Period computeHeartbeatInterval() {
 		// heartbeat rate at ratio * ttl, but no later than ttl -1s and, (under lesser
 		// priority), no sooner than 1s from now
 		double interval = ttlValue * intervalRatio;
@@ -57,7 +65,7 @@ public class TsfHeartbeatProperties {
 		int ttlMinus1 = ttlValue - 1;
 		double min = Math.min(ttlMinus1, max);
 		Period heartbeatInterval = new Period(Math.round(1000 * min));
-		log.debug("Computed heartbeatInterval: " + heartbeatInterval);
+		LOGGER.debug("Computed heartbeatInterval: " + heartbeatInterval);
 		return heartbeatInterval;
 	}
 

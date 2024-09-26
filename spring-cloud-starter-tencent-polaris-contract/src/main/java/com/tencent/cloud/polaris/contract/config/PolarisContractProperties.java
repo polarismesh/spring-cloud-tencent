@@ -17,10 +17,6 @@
 
 package com.tencent.cloud.polaris.contract.config;
 
-import java.util.Objects;
-
-import javax.annotation.Nullable;
-
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
@@ -31,8 +27,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  */
 @ConfigurationProperties("spring.cloud.polaris.contract")
 public class PolarisContractProperties implements ContractProperties {
-
-	private final ExtendedContractProperties extendContractProperties;
 
 	private boolean enabled = true;
 	/**
@@ -59,103 +53,63 @@ public class PolarisContractProperties implements ContractProperties {
 
 	private String name;
 
-	public PolarisContractProperties(@Nullable ExtendedContractProperties extendContractProperties) {
-		this.extendContractProperties = extendContractProperties;
-	}
-
 	@Override
 	public boolean isEnabled() {
-		if (Objects.nonNull(extendContractProperties)) {
-			return extendContractProperties.isEnabled();
-		}
 		return enabled;
 	}
 
 	@Override
 	public void setEnabled(boolean enabled) {
-		if (Objects.nonNull(extendContractProperties)) {
-			extendContractProperties.setEnabled(enabled);
-		}
 		this.enabled = enabled;
 	}
 
 	@Override
 	public String getBasePackage() {
-		if (Objects.nonNull(extendContractProperties)) {
-			return extendContractProperties.getBasePackage();
-		}
 		return basePackage;
 	}
 
 	@Override
 	public void setBasePackage(String basePackage) {
-		if (Objects.nonNull(extendContractProperties)) {
-			extendContractProperties.setBasePackage(basePackage);
-		}
 		this.basePackage = basePackage;
 	}
 
 	@Override
 	public String getExcludePath() {
-		if (Objects.nonNull(extendContractProperties)) {
-			return extendContractProperties.getExcludePath();
-		}
 		return excludePath;
 	}
 
 	@Override
 	public void setExcludePath(String excludePath) {
-		if (Objects.nonNull(extendContractProperties)) {
-			extendContractProperties.setExcludePath(excludePath);
-		}
 		this.excludePath = excludePath;
 	}
 
 	@Override
 	public String getGroup() {
-		if (Objects.nonNull(extendContractProperties)) {
-			return extendContractProperties.getGroup();
-		}
 		return group;
 	}
 
 	@Override
 	public void setGroup(String group) {
-		if (Objects.nonNull(extendContractProperties)) {
-			extendContractProperties.setGroup(group);
-		}
 		this.group = group;
 	}
 
 	@Override
 	public String getBasePath() {
-		if (Objects.nonNull(extendContractProperties)) {
-			return extendContractProperties.getBasePath();
-		}
 		return basePath;
 	}
 
 	@Override
 	public void setBasePath(String basePath) {
-		if (Objects.nonNull(extendContractProperties)) {
-			extendContractProperties.setBasePath(basePath);
-		}
 		this.basePath = basePath;
 	}
 
 	@Override
 	public boolean isExposure() {
-		if (Objects.nonNull(extendContractProperties)) {
-			return extendContractProperties.isExposure();
-		}
 		return exposure;
 	}
 
 	@Override
 	public void setExposure(boolean exposure) {
-		if (Objects.nonNull(extendContractProperties)) {
-			extendContractProperties.setExposure(exposure);
-		}
 		this.exposure = exposure;
 	}
 
@@ -170,17 +124,11 @@ public class PolarisContractProperties implements ContractProperties {
 	}
 
 	public String getName() {
-		if (Objects.nonNull(extendContractProperties)) {
-			return extendContractProperties.getName();
-		}
 		return name;
 	}
 
 	@Override
 	public void setName(String name) {
-		if (Objects.nonNull(extendContractProperties)) {
-			extendContractProperties.setName(name);
-		}
 		this.name = name;
 	}
 }

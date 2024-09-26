@@ -15,7 +15,7 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package com.tencent.cloud.polaris.context.tsf.metadata;
+package com.tencent.cloud.polaris.context.config.extend.tsf;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -25,13 +25,8 @@ import com.tencent.cloud.common.constant.WarmupCons;
 import com.tencent.cloud.common.spi.InstanceMetadataProvider;
 import com.tencent.cloud.common.util.JacksonUtils;
 import com.tencent.cloud.common.util.inet.PolarisInetUtils;
-import com.tencent.cloud.polaris.context.tsf.TsfUtils;
-import com.tencent.cloud.polaris.context.tsf.config.TsfCoreProperties;
 import com.tencent.polaris.api.utils.StringUtils;
 import com.tencent.polaris.metadata.core.constant.TsfMetadataConstants;
-
-import static com.tencent.cloud.polaris.context.tsf.TsfUtils.TSF_ADDRESS_IPV4;
-import static com.tencent.cloud.polaris.context.tsf.TsfUtils.TSF_ADDRESS_IPV6;
 
 
 /**
@@ -63,14 +58,14 @@ public class TsfInstanceMetadataProvider implements InstanceMetadataProvider {
 			// 处理预热相关的参数
 			put(WarmupCons.TSF_START_TIME, String.valueOf(System.currentTimeMillis()));
 			put(TsfMetadataConstants.TSF_SDK_VERSION, SdkVersion.get());
-			put(TsfMetadataConstants.TSF_TAGS, JacksonUtils.serialize2Json(TsfUtils.createTags(tsfCoreProperties)));
+			put(TsfMetadataConstants.TSF_TAGS, JacksonUtils.serialize2Json(tsfCoreProperties.getTsfTags()));
 			String ipv4Address = PolarisInetUtils.getIpString(false);
 			if (StringUtils.isNotBlank(ipv4Address)) {
-				put(TSF_ADDRESS_IPV4, ipv4Address);
+				put(TsfMetadataConstants.TSF_ADDRESS_IPV4, ipv4Address);
 			}
 			String ipv6Address = PolarisInetUtils.getIpString(true);
 			if (StringUtils.isNotBlank(ipv6Address)) {
-				put(TSF_ADDRESS_IPV6, ipv6Address);
+				put(TsfMetadataConstants.TSF_ADDRESS_IPV6, ipv6Address);
 			}
 		}};
 	}

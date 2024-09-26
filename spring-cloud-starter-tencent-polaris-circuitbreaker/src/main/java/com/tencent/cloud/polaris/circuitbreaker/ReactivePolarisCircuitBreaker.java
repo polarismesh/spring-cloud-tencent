@@ -51,7 +51,8 @@ public class ReactivePolarisCircuitBreaker implements ReactiveCircuitBreaker {
 	public ReactivePolarisCircuitBreaker(PolarisCircuitBreakerConfigBuilder.PolarisCircuitBreakerConfiguration conf,
 			ConsumerAPI consumerAPI,
 			CircuitBreakAPI circuitBreakAPI) {
-		InvokeContext.RequestContext requestContext = new FunctionalDecoratorRequest(new ServiceKey(conf.getNamespace(), conf.getService()), conf.getMethod());
+		InvokeContext.RequestContext requestContext = new FunctionalDecoratorRequest(
+				new ServiceKey(conf.getNamespace(), conf.getService()), conf.getProtocol(), conf.getMethod(), conf.getPath());
 		requestContext.setSourceService(new ServiceKey(conf.getSourceNamespace(), conf.getSourceService()));
 		requestContext.setResultToErrorCode(new PolarisResultToErrorCode());
 		this.consumerAPI = consumerAPI;
