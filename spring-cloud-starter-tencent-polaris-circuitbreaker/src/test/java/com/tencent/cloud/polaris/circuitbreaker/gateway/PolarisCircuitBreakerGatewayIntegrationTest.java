@@ -84,8 +84,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 				"spring.cloud.gateway.enabled=true",
 				"spring.cloud.polaris.namespace=" + NAMESPACE_TEST,
 				"spring.cloud.polaris.service=test",
-				"spring.main.web-application-type=reactive",
-				"httpbin=http://localhost:${wiremock.server.port}"
+				"spring.main.web-application-type=reactive"
 		},
 		classes = PolarisCircuitBreakerGatewayIntegrationTest.TestApplication.class
 )
