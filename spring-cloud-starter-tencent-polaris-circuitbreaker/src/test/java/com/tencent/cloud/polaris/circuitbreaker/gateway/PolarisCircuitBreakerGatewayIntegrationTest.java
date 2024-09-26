@@ -57,7 +57,6 @@ import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWeb
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cloud.client.circuitbreaker.CircuitBreakerFactory;
 import org.springframework.cloud.client.circuitbreaker.Customizer;
-import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
 import org.springframework.cloud.gateway.filter.factory.SpringCloudCircuitBreakerFilterFactory;
 import org.springframework.cloud.gateway.route.RouteLocator;
 import org.springframework.cloud.gateway.route.builder.RouteLocatorBuilder;
@@ -90,7 +89,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 		},
 		classes = PolarisCircuitBreakerGatewayIntegrationTest.TestApplication.class
 )
-@AutoConfigureWireMock(port = 0)
 @ActiveProfiles("test-gateway")
 @AutoConfigureWebTestClient(timeout = "1000000")
 public class PolarisCircuitBreakerGatewayIntegrationTest {
