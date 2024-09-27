@@ -20,6 +20,7 @@ package com.tencent.cloud.polaris.context;
 import com.tencent.cloud.polaris.context.config.PolarisContextAutoConfiguration;
 import com.tencent.cloud.polaris.context.config.PolarisContextProperties;
 import com.tencent.polaris.client.api.SDKContext;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.platform.commons.util.StringUtils;
@@ -38,8 +39,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = PolarisContextApplication.class,
-		properties = { "spring.config.location = classpath:bootstrap.yml" })
-@ImportAutoConfiguration({ PolarisContextAutoConfiguration.class })
+		properties = {"spring.config.location = classpath:bootstrap.yml"})
+@ImportAutoConfiguration({PolarisContextAutoConfiguration.class})
 public class PolarisContextGetHostTest {
 
 	@Autowired
@@ -47,6 +48,11 @@ public class PolarisContextGetHostTest {
 
 	@Autowired
 	private PolarisContextProperties polarisContextProperties;
+
+	@BeforeEach
+	public void setUp() {
+		PolarisSDKContextManager.innerDestroy();
+	}
 
 	@Test
 	public void testGetConfigHost() {
@@ -58,5 +64,6 @@ public class PolarisContextGetHostTest {
 		assertThat(polarisContextProperties.getEnabled()).isTrue();
 		assertThat(polarisContextProperties.getNamespace()).isEqualTo("dev");
 		assertThat(polarisContextProperties.getService()).isEqualTo("TestApp");
+		assertThat(polarisContextProperties.getLocalPort()).isEqualTo(9090);
 	}
 }

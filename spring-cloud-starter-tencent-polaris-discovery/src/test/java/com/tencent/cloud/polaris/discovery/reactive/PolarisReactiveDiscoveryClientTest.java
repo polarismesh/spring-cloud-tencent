@@ -57,6 +57,7 @@ public class PolarisReactiveDiscoveryClientTest {
 
 	@Test
 	public void testGetInstances() throws PolarisException {
+
 		when(serviceDiscovery.getInstances(anyString())).thenAnswer(invocation -> {
 			String serviceName = invocation.getArgument(0);
 			if (SERVICE_PROVIDER.equalsIgnoreCase(serviceName)) {
@@ -78,6 +79,7 @@ public class PolarisReactiveDiscoveryClientTest {
 
 	@Test
 	public void testGetServices() throws PolarisException {
+
 		when(serviceDiscovery.getServices()).thenAnswer(invocation -> {
 			if (count == 0) {
 				count++;

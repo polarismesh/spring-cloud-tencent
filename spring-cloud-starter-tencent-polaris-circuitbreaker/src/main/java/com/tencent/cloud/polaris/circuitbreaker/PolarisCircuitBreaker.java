@@ -44,15 +44,20 @@ import org.springframework.cloud.client.circuitbreaker.CircuitBreaker;
 public class PolarisCircuitBreaker implements CircuitBreaker, InvokeHandler {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(PolarisCircuitBreaker.class);
-	private final PolarisCircuitBreakerConfigBuilder.PolarisCircuitBreakerConfiguration conf;
-	private final ConsumerAPI consumerAPI;
+
 	private final FunctionalDecorator decorator;
+
+	private final PolarisCircuitBreakerConfigBuilder.PolarisCircuitBreakerConfiguration conf;
+
+	private final ConsumerAPI consumerAPI;
+
 	private final InvokeHandler invokeHandler;
 
 	public PolarisCircuitBreaker(PolarisCircuitBreakerConfigBuilder.PolarisCircuitBreakerConfiguration conf,
 			ConsumerAPI consumerAPI,
 			CircuitBreakAPI circuitBreakAPI) {
-		FunctionalDecoratorRequest makeDecoratorRequest = new FunctionalDecoratorRequest(new ServiceKey(conf.getNamespace(), conf.getService()), conf.getMethod());
+		FunctionalDecoratorRequest makeDecoratorRequest = new FunctionalDecoratorRequest(
+				new ServiceKey(conf.getNamespace(), conf.getService()), conf.getProtocol(), conf.getMethod(), conf.getPath());
 		makeDecoratorRequest.setSourceService(new ServiceKey(conf.getSourceNamespace(), conf.getSourceService()));
 		makeDecoratorRequest.setResultToErrorCode(new PolarisResultToErrorCode());
 		this.consumerAPI = consumerAPI;

@@ -19,8 +19,6 @@
 package com.tencent.cloud.metadata.core;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -32,17 +30,21 @@ import javax.servlet.http.HttpServletResponse;
 import com.tencent.cloud.common.constant.OrderConstant;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
 import com.tencent.cloud.common.util.JacksonUtils;
+import com.tencent.cloud.common.util.UrlUtils;
+import com.tencent.cloud.metadata.provider.ServletMetadataProvider;
+import com.tencent.cloud.polaris.context.config.PolarisContextProperties;
+import com.tencent.polaris.api.utils.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.springframework.core.annotation.Order;
 import org.springframework.lang.NonNull;
-import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import static com.tencent.cloud.common.constant.ContextConstant.UTF_8;
+import static com.tencent.cloud.common.constant.MetadataConstant.HeaderName.APPLICATION_METADATA;
 import static com.tencent.cloud.common.constant.MetadataConstant.HeaderName.CUSTOM_DISPOSABLE_METADATA;
 import static com.tencent.cloud.common.constant.MetadataConstant.HeaderName.CUSTOM_METADATA;
+import static com.tencent.polaris.metadata.core.constant.MetadataConstants.LOCAL_IP;
 
 /**
  * Filter used for storing the metadata from upstream temporarily when web application is
@@ -55,21 +57,42 @@ public class DecodeTransferMetadataServletFilter extends OncePerRequestFilter {
 
 	private static final Logger LOG = LoggerFactory.getLogger(DecodeTransferMetadataServletFilter.class);
 
+	private PolarisContextProperties polarisContextProperties;
+
+	public DecodeTransferMetadataServletFilter(PolarisContextProperties polarisContextProperties) {
+		this.polarisContextProperties = polarisContextProperties;
+	}
+
 	@Override
 	protected void doFilterInternal(@NonNull HttpServletRequest httpServletRequest,
 			@NonNull HttpServletResponse httpServletResponse, FilterChain filterChain)
 			throws ServletException, IOException {
+		// transitive metadata
+		// from specific header
 		Map<String, String> internalTransitiveMetadata = getInternalMetadata(httpServletRequest, CUSTOM_METADATA);
+		// from header with specific prefix
 		Map<String, String> customTransitiveMetadata = CustomTransitiveMetadataResolver.resolve(httpServletRequest);
-
 		Map<String, String> mergedTransitiveMetadata = new HashMap<>();
 		mergedTransitiveMetadata.putAll(internalTransitiveMetadata);
 		mergedTransitiveMetadata.putAll(customTransitiveMetadata);
 
+		// disposable metadata
+		// from specific header
 		Map<String, String> internalDisposableMetadata = getInternalMetadata(httpServletRequest, CUSTOM_DISPOSABLE_METADATA);
 		Map<String, String> mergedDisposableMetadata = new HashMap<>(internalDisposableMetadata);
 
-		MetadataContextHolder.init(mergedTransitiveMetadata, mergedDisposableMetadata);
+		// application metadata
+		Map<String, String> internalApplicationMetadata = getInternalMetadata(httpServletRequest, APPLICATION_METADATA);
+		Map<String, String> mergedApplicationMetadata = new HashMap<>(internalApplicationMetadata);
+
+		String callerIp = "";
+		if (StringUtils.isNotBlank(mergedApplicationMetadata.get(LOCAL_IP))) {
+			callerIp = mergedApplicationMetadata.get(LOCAL_IP);
+		}
+		// message metadata
+		ServletMetadataProvider callerMessageMetadataProvider = new ServletMetadataProvider(httpServletRequest, callerIp);
+
+		MetadataContextHolder.init(mergedTransitiveMetadata, mergedDisposableMetadata, mergedApplicationMetadata, callerMessageMetadataProvider);
 
 		TransHeadersTransfer.transfer(httpServletRequest);
 		try {
@@ -83,15 +106,7 @@ public class DecodeTransferMetadataServletFilter extends OncePerRequestFilter {
 
 	private Map<String, String> getInternalMetadata(HttpServletRequest httpServletRequest, String headerName) {
 		// Get custom metadata string from http header.
-		String customMetadataStr = httpServletRequest.getHeader(headerName);
-		try {
-			if (StringUtils.hasText(customMetadataStr)) {
-				customMetadataStr = URLDecoder.decode(customMetadataStr, UTF_8);
-			}
-		}
-		catch (UnsupportedEncodingException e) {
-			LOG.error("Runtime system does not support utf-8 coding.", e);
-		}
+		String customMetadataStr = UrlUtils.decode(httpServletRequest.getHeader(headerName));
 		LOG.debug("Get upstream metadata string: {}", customMetadataStr);
 
 		// create custom metadata.

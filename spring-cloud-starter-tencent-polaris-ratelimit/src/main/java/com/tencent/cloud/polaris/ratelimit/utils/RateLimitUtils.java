@@ -41,12 +41,12 @@ public final class RateLimitUtils {
 	public static String getRejectTips(PolarisRateLimitProperties polarisRateLimitProperties) {
 		String tips = polarisRateLimitProperties.getRejectRequestTips();
 
-		if (!StringUtils.isEmpty(tips)) {
+		if (StringUtils.hasText(tips)) {
 			return tips;
 		}
 
 		String rejectFilePath = polarisRateLimitProperties.getRejectRequestTipsFilePath();
-		if (!StringUtils.isEmpty(rejectFilePath)) {
+		if (StringUtils.hasText(rejectFilePath)) {
 			try {
 				tips = ResourceFileUtils.readFile(rejectFilePath);
 			}
@@ -56,7 +56,7 @@ public final class RateLimitUtils {
 			}
 		}
 
-		if (!StringUtils.isEmpty(tips)) {
+		if (StringUtils.hasText(tips)) {
 			return tips;
 		}
 

@@ -20,7 +20,6 @@ package com.tencent.cloud.polaris.config;
 
 import com.tencent.cloud.polaris.config.adapter.AffectedConfigurationPropertiesRebinder;
 import com.tencent.cloud.polaris.config.adapter.PolarisConfigFileLocator;
-import com.tencent.cloud.polaris.config.adapter.PolarisPropertySourceManager;
 import com.tencent.cloud.polaris.config.condition.ConditionalOnReflectRefreshType;
 import com.tencent.cloud.polaris.config.config.PolarisConfigProperties;
 import com.tencent.cloud.polaris.config.config.PolarisCryptoConfigProperties;
@@ -37,6 +36,7 @@ import org.springframework.cloud.context.properties.ConfigurationPropertiesRebin
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.Primary;
 import org.springframework.core.env.Environment;
 
 /**
@@ -60,15 +60,9 @@ public class PolarisConfigBootstrapAutoConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnMissingBean
-	public PolarisPropertySourceManager polarisPropertySourceManager() {
-		return new PolarisPropertySourceManager();
-	}
-
-	@Bean
 	@ConditionalOnConnectRemoteServerEnabled
 	public ConfigFileService configFileService(PolarisSDKContextManager polarisSDKContextManager) {
-		return ConfigFileServiceFactory.createConfigFileService(polarisSDKContextManager.getSDKContext());
+		return ConfigFileServiceFactory.createConfigFileService(polarisSDKContextManager.getConfigSDKContext());
 	}
 
 	@Bean
@@ -77,11 +71,9 @@ public class PolarisConfigBootstrapAutoConfiguration {
 			PolarisConfigProperties polarisConfigProperties,
 			PolarisContextProperties polarisContextProperties,
 			ConfigFileService configFileService,
-			PolarisPropertySourceManager polarisPropertySourceManager,
 			Environment environment) {
 		return new PolarisConfigFileLocator(polarisConfigProperties,
-				polarisContextProperties, configFileService,
-				polarisPropertySourceManager, environment);
+				polarisContextProperties, configFileService, environment);
 	}
 
 	@Bean
@@ -93,6 +85,7 @@ public class PolarisConfigBootstrapAutoConfiguration {
 	}
 
 	@Bean
+	@Primary
 	@ConditionalOnMissingBean(search = SearchStrategy.CURRENT)
 	@ConditionalOnReflectRefreshType
 	public ConfigurationPropertiesRebinder affectedConfigurationPropertiesRebinder(

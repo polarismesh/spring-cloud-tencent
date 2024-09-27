@@ -1,47 +1,69 @@
 {
   "properties": [
     {
-      "name": "spring.cloud.polaris.loadbalancer.enabled",
+      "name": "spring.cloud.polaris.router.metadata-router.enabled",
       "type": "java.lang.Boolean",
-      "defaultValue": "true",
-      "description": "polaris loadbalancer."
+      "defaultValue": true,
+      "description": "the switch for metadata router."
     },
     {
-      "name": "spring.cloud.polaris.loadbalancer.discoveryType",
-      "type": "java.lang.String",
-      "defaultValue": "POLARIS",
-      "description": "Type of discovery server."
+      "name": "spring.cloud.polaris.router.nearby-router.enabled",
+      "type": "java.lang.Boolean",
+      "defaultValue": false,
+      "description": "the switch for nearby router."
     },
     {
-      "name": "spring.cloud.polaris.loadbalancer.strategy",
+      "name": "spring.cloud.polaris.router.nearby-router.matchLevel",
       "type": "java.lang.String",
-      "defaultValue": "roundRobin",
-      "description": "loadbalancer strategy."
+      "defaultValue": "ZONE",
+      "description": "the match level for nearby router, options can be REGION/ZONE/CAMPUS."
+    },
+    {
+      "name": "spring.cloud.polaris.router.rule-router.enabled",
+      "type": "java.lang.Boolean",
+      "defaultValue": true,
+      "description": "the switch for rule based router."
+    },
+    {
+      "name": "spring.cloud.polaris.router.rule-router.failOver",
+      "type": "java.lang.String",
+      "defaultValue": "all",
+      "description": "the fail over type for rule based router."
+    },
+    {
+      "name": "spring.cloud.polaris.router.namespace-router.enabled",
+      "type": "java.lang.Boolean",
+      "defaultValue": false,
+      "description": "the switch for namespace router."
+    },
+    {
+      "name": "spring.cloud.polaris.router.namespace-router.failOver",
+      "type": "java.lang.String",
+      "defaultValue": "all",
+      "description": "the fail over type for namespace router."
+    },
+    {
+      "name": "spring.cloud.polaris.router.enabled",
+      "type": "java.lang.Boolean",
+      "defaultValue": true,
+      "description": "the switch for router module."
     }
   ],
   "hints": [
     {
-      "name": "spring.cloud.polaris.loadbalancer.strategy",
+      "name": "spring.cloud.polaris.router.nearby-router.matchLevel",
       "values": [
         {
-          "value": "roundRobin",
-          "description": "round robin load balancer."
+          "value": "CAMPUS"
         },
         {
-          "value": "random",
-          "description": "random load balancer."
+          "value": "ZONE"
         },
         {
-          "value": "polarisWeightedRandom",
-          "description": "polaris weighted random load balancer."
+          "value": "REGION"
         },
         {
-          "value": "polarisWeightedRoundRobin",
-          "description": "polaris weighted round robin load balancer."
-        },
-        {
-          "value": "polarisRingHash",
-          "description": "polaris ring hash load balancer."
+          "value": "ALL"
         }
       ]
     }

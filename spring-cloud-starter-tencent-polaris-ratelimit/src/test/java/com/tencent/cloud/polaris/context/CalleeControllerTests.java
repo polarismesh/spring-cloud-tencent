@@ -63,10 +63,9 @@ import static org.mockito.Mockito.when;
  */
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
-		classes = { CalleeControllerTests.Config.class, TestController.class },
-		properties = { "spring.application.name=java_provider_test",
-				"spring.cloud.polaris.discovery.namespace=Test",
-				"spring.cloud.polaris.address=grpc://127.0.0.1:10081" })
+		classes = {CalleeControllerTests.Config.class, TestController.class},
+		properties = {"spring.application.name=java_provider_test", "spring.cloud.polaris.discovery.namespace=Test",
+				"spring.cloud.polaris.address=grpc://127.0.0.1:10081"})
 public class CalleeControllerTests {
 
 	private static NamingServer namingServer;
@@ -90,8 +89,7 @@ public class CalleeControllerTests {
 		instanceParameter.setIsolated(false);
 		instanceParameter.setWeight(100);
 		ServiceKey serviceKey = new ServiceKey(NAMESPACE_TEST, SERVICE_PROVIDER);
-		namingServer.getNamingService().batchAddInstances(serviceKey, PORT, 3,
-				instanceParameter);
+		namingServer.getNamingService().batchAddInstances(serviceKey, PORT, 3, instanceParameter);
 	}
 
 	@AfterAll

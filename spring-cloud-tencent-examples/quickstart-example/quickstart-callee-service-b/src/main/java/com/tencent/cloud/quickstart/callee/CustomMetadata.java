@@ -38,9 +38,4 @@ public class CustomMetadata implements InstanceMetadataProvider {
 		metadata.put("k1", "v2");
 		return metadata;
 	}
-
-	@Override
-	public String getZone() {
-		return "shenzhen-zone-2";
-	}
 }

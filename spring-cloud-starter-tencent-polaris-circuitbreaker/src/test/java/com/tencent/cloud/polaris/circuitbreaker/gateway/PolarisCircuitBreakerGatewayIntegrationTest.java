@@ -70,7 +70,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import static com.tencent.polaris.test.common.Consts.NAMESPACE_TEST;
-import static com.tencent.polaris.test.common.Consts.SERVICE_CIRCUIT_BREAKER;
 import static com.tencent.polaris.test.common.TestUtils.SERVER_ADDRESS_ENV;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -84,7 +83,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 		properties = {
 				"spring.cloud.gateway.enabled=true",
 				"spring.cloud.polaris.namespace=" + NAMESPACE_TEST,
-				"spring.cloud.polaris.service=" + SERVICE_CIRCUIT_BREAKER,
+				"spring.cloud.polaris.service=test",
 				"spring.main.web-application-type=reactive"
 		},
 		classes = PolarisCircuitBreakerGatewayIntegrationTest.TestApplication.class

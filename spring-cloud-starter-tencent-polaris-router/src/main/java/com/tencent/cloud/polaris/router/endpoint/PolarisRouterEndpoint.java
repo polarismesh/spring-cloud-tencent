@@ -42,7 +42,7 @@ import org.springframework.util.StringUtils;
  * Router actuator endpoint.
  * @author lepdou 2022-07-25
  */
-@Endpoint(id = "polaris-router")
+@Endpoint(id = "polarisrouter")
 public class PolarisRouterEndpoint {
 	private static final Logger LOGGER = LoggerFactory.getLogger(PolarisRouterEndpoint.class);
 

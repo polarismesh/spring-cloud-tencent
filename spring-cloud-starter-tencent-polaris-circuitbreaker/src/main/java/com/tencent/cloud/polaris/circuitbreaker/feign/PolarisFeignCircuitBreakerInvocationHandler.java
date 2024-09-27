@@ -76,24 +76,6 @@ public class PolarisFeignCircuitBreakerInvocationHandler implements InvocationHa
 		this.decoder = decoder;
 	}
 
-	/**
-	 * If the method param of {@link InvocationHandler#invoke(Object, Method, Object[])}
-	 * is not accessible, i.e in a package-private interface, the fallback call will cause
-	 * of access restrictions. But methods in dispatch are copied methods. So setting
-	 * access to dispatch method doesn't take effect to the method in
-	 * InvocationHandler.invoke. Use map to store a copy of method to invoke the fallback
-	 * to bypass this and reducing the count of reflection calls.
-	 * @return cached methods map for fallback invoking
-	 */
-	static Map<Method, Method> toFallbackMethod(Map<Method, InvocationHandlerFactory.MethodHandler> dispatch) {
-		Map<Method, Method> result = new LinkedHashMap<>();
-		for (Method method : dispatch.keySet()) {
-			method.setAccessible(true);
-			result.put(method, method);
-		}
-		return result;
-	}
-
 	@Override
 	public Object invoke(final Object proxy, final Method method, final Object[] args) throws Throwable {
 		// early exit if the invoked method is from java.lang.Object
@@ -186,6 +168,24 @@ public class PolarisFeignCircuitBreakerInvocationHandler implements InvocationHa
 				}
 			}
 		};
+	}
+
+	/**
+	 * If the method param of {@link InvocationHandler#invoke(Object, Method, Object[])}
+	 * is not accessible, i.e in a package-private interface, the fallback call will cause
+	 * of access restrictions. But methods in dispatch are copied methods. So setting
+	 * access to dispatch method doesn't take effect to the method in
+	 * InvocationHandler.invoke. Use map to store a copy of method to invoke the fallback
+	 * to bypass this and reducing the count of reflection calls.
+	 * @return cached methods map for fallback invoking
+	 */
+	static Map<Method, Method> toFallbackMethod(Map<Method, InvocationHandlerFactory.MethodHandler> dispatch) {
+		Map<Method, Method> result = new LinkedHashMap<>();
+		for (Method method : dispatch.keySet()) {
+			method.setAccessible(true);
+			result.put(method, method);
+		}
+		return result;
 	}
 
 	@Override

@@ -17,8 +17,6 @@
 
 package com.tencent.cloud.polaris.contract.config;
 
-import javax.annotation.Nullable;
-
 import com.tencent.cloud.polaris.context.ConditionalOnPolarisEnabled;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -36,8 +34,8 @@ public class PolarisContractPropertiesAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public PolarisContractProperties polarisContractProperties(@Nullable ExtendedContractProperties extendedContractProperties) {
-		return new PolarisContractProperties(extendedContractProperties);
+	public PolarisContractProperties polarisContractProperties() {
+		return new PolarisContractProperties();
 	}
 
 	@Bean

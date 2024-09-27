@@ -114,7 +114,9 @@ public class PolarisFeignLoadBalancerTest {
 				mockedMetadataContextHolder.when(MetadataContextHolder::get).thenReturn(metadataContext);
 
 				PolarisRouterContext routerContext = polarisFeignLoadBalancer.buildRouterContext(headers);
-				assertThat(routerContext).isNull();
+
+				Map<String, String> routerLabels = routerContext.getLabels(RouterConstant.ROUTER_LABELS);
+				assertThat(routerLabels).isEmpty();
 			}
 		}
 	}

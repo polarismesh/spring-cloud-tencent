@@ -20,6 +20,7 @@ package com.tencent.cloud.polaris.circuitbreaker.resttemplate;
 import java.io.IOException;
 import java.lang.reflect.Method;
 
+import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.polaris.circuitbreaker.exception.FallbackWrapperException;
 import com.tencent.polaris.api.pojo.CircuitBreakerStatus;
 import com.tencent.polaris.circuitbreak.client.exception.CallAbortedException;
@@ -59,13 +60,18 @@ public class PolarisCircuitBreakerRestTemplateInterceptor implements ClientHttpR
 		this.polarisCircuitBreaker = polarisCircuitBreaker;
 		this.applicationContext = applicationContext;
 		this.circuitBreakerFactory = circuitBreakerFactory;
-		this.restTemplate =  restTemplate;
+		this.restTemplate = restTemplate;
 	}
 
 	@Override
 	public ClientHttpResponse intercept(HttpRequest request, byte[] body, ClientHttpRequestExecution execution) throws IOException {
 		try {
-			return circuitBreakerFactory.create(request.getURI().getHost() + "#" + request.getURI().getPath()).run(
+			String httpMethod = "GET";
+			if (request.getMethod() != null) {
+				httpMethod = request.getMethod().name();
+			}
+			return circuitBreakerFactory.create(MetadataContext.LOCAL_NAMESPACE + "#" + request.getURI()
+					.getHost() + "#" + request.getURI().getPath() + "#http#" + httpMethod).run(
 					() -> {
 						try {
 							ClientHttpResponse response = execution.execute(request, body);
@@ -84,7 +90,8 @@ public class PolarisCircuitBreakerRestTemplateInterceptor implements ClientHttpR
 							CircuitBreakerStatus.FallbackInfo fallbackInfo = new CircuitBreakerStatus.FallbackInfo(200, null, polarisCircuitBreaker.fallback());
 							return new PolarisCircuitBreakerHttpResponse(fallbackInfo);
 						}
-						if (!PolarisCircuitBreakerFallback.class.toGenericString().equals(polarisCircuitBreaker.fallbackClass().toGenericString())) {
+						if (!PolarisCircuitBreakerFallback.class.toGenericString()
+								.equals(polarisCircuitBreaker.fallbackClass().toGenericString())) {
 							Method method = ReflectionUtils.findMethod(PolarisCircuitBreakerFallback.class, "fallback");
 							PolarisCircuitBreakerFallback polarisCircuitBreakerFallback = applicationContext.getBean(polarisCircuitBreaker.fallbackClass());
 							return (PolarisCircuitBreakerHttpResponse) ReflectionUtils.invokeMethod(method, polarisCircuitBreakerFallback);

@@ -34,8 +34,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
 		classes = MetadataLocalPropertiesTest.TestApplication.class,
-		properties = {"spring.config.location = classpath:application-test.yml",
-				"spring.main.web-application-type = reactive"})
+		properties = {"spring.config.location = classpath:application-test.yml", "spring.main.web-application-type=reactive"})
 public class MetadataLocalPropertiesTest {
 
 	@Autowired

@@ -18,14 +18,17 @@
 
 package com.tencent.cloud.polaris.config.adapter;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import com.tencent.cloud.polaris.config.config.PolarisConfigProperties;
 import com.tencent.cloud.polaris.config.logger.PolarisConfigLoggerContext;
+import com.tencent.polaris.configuration.api.core.ConfigKVFile;
 import com.tencent.polaris.configuration.api.core.ConfigKVFileChangeListener;
 import com.tencent.polaris.configuration.api.core.ConfigPropertyChangeInfo;
+import com.tencent.polaris.configuration.client.internal.CompositeConfigFile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,7 +41,7 @@ import org.springframework.util.CollectionUtils;
  * 1. Listen to the Polaris server configuration publishing event 2. Write the changed
  * configuration content to propertySource 3. Refresh the context through contextRefresher
  *
- * @author lepdou 2022-03-28
+ * @author lepdou
  */
 public abstract class PolarisConfigPropertyAutoRefresher implements ApplicationListener<ApplicationReadyEvent>, PolarisConfigPropertyRefresher {
 
@@ -46,16 +49,13 @@ public abstract class PolarisConfigPropertyAutoRefresher implements ApplicationL
 
 	private final PolarisConfigProperties polarisConfigProperties;
 
-	private final PolarisPropertySourceManager polarisPropertySourceManager;
-
 	private final AtomicBoolean registered = new AtomicBoolean(false);
 
 	// this class provides customized logic for some customers to configure special business group files
 	private final PolarisConfigCustomExtensionLayer polarisConfigCustomExtensionLayer = PolarisServiceLoaderUtil.getPolarisConfigCustomExtensionLayer();
 
-	public PolarisConfigPropertyAutoRefresher(PolarisConfigProperties polarisConfigProperties, PolarisPropertySourceManager polarisPropertySourceManager) {
+	public PolarisConfigPropertyAutoRefresher(PolarisConfigProperties polarisConfigProperties) {
 		this.polarisConfigProperties = polarisConfigProperties;
-		this.polarisPropertySourceManager = polarisPropertySourceManager;
 	}
 
 	@Override
@@ -68,7 +68,7 @@ public abstract class PolarisConfigPropertyAutoRefresher implements ApplicationL
 			return;
 		}
 
-		List<PolarisPropertySource> polarisPropertySources = polarisPropertySourceManager.getAllPropertySources();
+		List<PolarisPropertySource> polarisPropertySources = PolarisPropertySourceManager.getAllPropertySources();
 		if (CollectionUtils.isEmpty(polarisPropertySources)) {
 			return;
 		}
@@ -82,8 +82,18 @@ public abstract class PolarisConfigPropertyAutoRefresher implements ApplicationL
 
 		// register polaris config publish event
 		for (PolarisPropertySource polarisPropertySource : polarisPropertySources) {
-			registerPolarisConfigPublishChangeListener(polarisPropertySource);
-			customRegisterPolarisConfigPublishChangeListener(polarisPropertySource);
+			if (polarisPropertySource.getConfigKVFile() instanceof CompositeConfigFile) {
+				CompositeConfigFile configKVFile = (CompositeConfigFile) polarisPropertySource.getConfigKVFile();
+				for (ConfigKVFile cf : configKVFile.getConfigKVFiles()) {
+					PolarisPropertySource p = new PolarisPropertySource(cf.getNamespace(), cf.getFileGroup(), cf.getFileName(), cf, new HashMap<>());
+					registerPolarisConfigPublishChangeListener(p);
+					customRegisterPolarisConfigPublishChangeListener(p);
+				}
+			}
+			else {
+				registerPolarisConfigPublishChangeListener(polarisPropertySource);
+				customRegisterPolarisConfigPublishChangeListener(polarisPropertySource);
+			}
 		}
 	}
 
@@ -96,6 +106,7 @@ public abstract class PolarisConfigPropertyAutoRefresher implements ApplicationL
 	}
 
 	public void registerPolarisConfigPublishChangeListener(PolarisPropertySource polarisPropertySource) {
+		LOGGER.info("{} will register polaris config publish listener", polarisPropertySource.getPropertySourceName());
 		polarisPropertySource.getConfigKVFile()
 				.addChangeListener((ConfigKVFileChangeListener) configKVFileChangeEvent -> {
 
@@ -143,5 +154,12 @@ public abstract class PolarisConfigPropertyAutoRefresher implements ApplicationL
 			return;
 		}
 		polarisConfigCustomExtensionLayer.executeRegisterPublishChangeListener(polarisPropertySource);
+	}
+
+	/**
+	 * Just for junit test.
+	 */
+	public void setRegistered(boolean registered) {
+		this.registered.set(registered);
 	}
 }

@@ -36,7 +36,8 @@ public class PolarisFeignCircuitBreakerTargeter implements Targeter {
 
 	private final PolarisCircuitBreakerNameResolver circuitBreakerNameResolver;
 
-	public PolarisFeignCircuitBreakerTargeter(CircuitBreakerFactory circuitBreakerFactory, PolarisCircuitBreakerNameResolver circuitBreakerNameResolver) {
+	public PolarisFeignCircuitBreakerTargeter(CircuitBreakerFactory circuitBreakerFactory,
+			PolarisCircuitBreakerNameResolver circuitBreakerNameResolver) {
 		this.circuitBreakerFactory = circuitBreakerFactory;
 		this.circuitBreakerNameResolver = circuitBreakerNameResolver;
 	}

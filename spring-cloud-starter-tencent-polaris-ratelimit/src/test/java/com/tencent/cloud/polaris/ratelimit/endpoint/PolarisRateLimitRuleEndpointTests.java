@@ -51,17 +51,16 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 public class PolarisRateLimitRuleEndpointTests {
 
-	private WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
+	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(
-					PolarisRateLimitRuleEndpointTests.PolarisRateLimitAutoConfiguration.class,
+					PolarisRateLimitAutoConfiguration.class,
 					PolarisRateLimitRuleEndpointAutoConfiguration.class,
 					PolarisRateLimitAutoConfiguration.class,
 					PolarisRateLimitAutoConfiguration.class))
 			.withPropertyValues("spring.application.name=" + SERVICE_PROVIDER)
 			.withPropertyValues("server.port=" + PORT)
 			.withPropertyValues("spring.cloud.polaris.address=grpc://127.0.0.1:10081")
-			.withPropertyValues(
-					"spring.cloud.polaris.discovery.namespace=" + NAMESPACE_TEST)
+			.withPropertyValues("spring.cloud.polaris.discovery.namespace=" + NAMESPACE_TEST)
 			.withPropertyValues("spring.cloud.polaris.discovery.token=xxxxxx");
 
 	private ServiceRuleManager serviceRuleManager;

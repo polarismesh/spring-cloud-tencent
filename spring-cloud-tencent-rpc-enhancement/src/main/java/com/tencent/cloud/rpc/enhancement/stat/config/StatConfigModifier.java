@@ -62,7 +62,7 @@ public class StatConfigModifier implements PolarisConfigModifier {
 				// pull metrics
 				prometheusHandlerConfig.setType("pull");
 				if (!StringUtils.hasText(polarisStatProperties.getHost())) {
-					polarisStatProperties.setHost(environment.getProperty("spring.cloud.client.ip-address"));
+					polarisStatProperties.setHost("0.0.0.0");
 				}
 				prometheusHandlerConfig.setHost(polarisStatProperties.getHost());
 				prometheusHandlerConfig.setPort(polarisStatProperties.getPort());

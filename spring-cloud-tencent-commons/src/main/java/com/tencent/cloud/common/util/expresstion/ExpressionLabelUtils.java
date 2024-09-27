@@ -13,7 +13,6 @@
  * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
- *
  */
 
 package com.tencent.cloud.common.util.expresstion;
@@ -138,12 +137,16 @@ public final class ExpressionLabelUtils {
 	}
 
 	public static String getQueryValue(String queryString, String queryKey) {
+		return getQueryValue(queryString, queryKey, null);
+	}
+
+	public static String getQueryValue(String queryString, String queryKey, String defaultValue) {
 		if (StringUtils.isBlank(queryString)) {
-			return StringUtils.EMPTY;
+			return defaultValue;
 		}
 		String[] queries = StringUtils.split(queryString, "&");
 		if (queries == null || queries.length == 0) {
-			return StringUtils.EMPTY;
+			return defaultValue;
 		}
 		for (String query : queries) {
 			String[] queryKV = StringUtils.split(query, "=");
@@ -151,36 +154,36 @@ public final class ExpressionLabelUtils {
 				return queryKV[1];
 			}
 		}
-		return StringUtils.EMPTY;
+		return defaultValue;
 	}
 
 	public static String getFirstValue(Map<String, Collection<String>> valueMaps, String key) {
 		if (CollectionUtils.isEmpty(valueMaps)) {
-			return StringUtils.EMPTY;
+			return null;
 		}
 
 		Collection<String> values = valueMaps.get(key);
 
 		if (CollectionUtils.isEmpty(values)) {
-			return StringUtils.EMPTY;
+			return null;
 		}
 
 		for (String value : values) {
 			return value;
 		}
 
-		return StringUtils.EMPTY;
+		return null;
 	}
 
 	public static String getCookieFirstValue(Map<String, Collection<String>> valueMaps, String key) {
 		if (CollectionUtils.isEmpty(valueMaps)) {
-			return StringUtils.EMPTY;
+			return null;
 		}
 
 		Collection<String> values = valueMaps.get(HttpHeaderNames.COOKIE.toString());
 
 		if (CollectionUtils.isEmpty(values)) {
-			return StringUtils.EMPTY;
+			return null;
 		}
 
 		for (String value : values) {
@@ -192,6 +195,6 @@ public final class ExpressionLabelUtils {
 				}
 			}
 		}
-		return StringUtils.EMPTY;
+		return null;
 	}
 }

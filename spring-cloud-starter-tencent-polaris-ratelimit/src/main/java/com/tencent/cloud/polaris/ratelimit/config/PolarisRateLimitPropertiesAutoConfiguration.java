@@ -28,8 +28,8 @@ import org.springframework.context.annotation.Configuration;
  * @author Haotian Zhang
  */
 @Configuration(proxyBeanMethods = false)
-@ConditionalOnPolarisRateLimitEnabled
 @EnableConfigurationProperties(PolarisRateLimitProperties.class)
+@ConditionalOnPolarisRateLimitEnabled
 public class PolarisRateLimitPropertiesAutoConfiguration {
 
 	@Bean

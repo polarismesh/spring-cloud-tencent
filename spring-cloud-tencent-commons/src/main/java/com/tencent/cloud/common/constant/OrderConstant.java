@@ -17,12 +17,13 @@
 
 package com.tencent.cloud.common.constant;
 
-import org.springframework.cloud.gateway.filter.ReactiveLoadBalancerClientFilter;
 import org.springframework.core.Ordered;
 
+import static org.springframework.cloud.gateway.filter.LoadBalancerClientFilter.LOAD_BALANCER_CLIENT_FILTER_ORDER;
 import static org.springframework.cloud.netflix.zuul.filters.support.FilterConstants.PRE_DECORATION_FILTER_ORDER;
 import static org.springframework.cloud.netflix.zuul.filters.support.FilterConstants.RIBBON_ROUTING_FILTER_ORDER;
 import static org.springframework.cloud.netflix.zuul.filters.support.FilterConstants.SEND_RESPONSE_FILTER_ORDER;
+
 
 /**
  * Constant for order.
@@ -66,18 +67,15 @@ public class OrderConstant {
 		 * Order constant for Spring Cloud Gateway.
 		 */
 		public static class Scg {
-
 			/**
 			 * Order of encode transfer metadata filter.
-			 * {@link ReactiveLoadBalancerClientFilter}.LOAD_BALANCER_CLIENT_FILTER_ORDER = 10150.
 			 */
-			public static final int ENCODE_TRANSFER_METADATA_FILTER_ORDER = 10150 + 1;
+			public static final int ENCODE_TRANSFER_METADATA_FILTER_ORDER = LOAD_BALANCER_CLIENT_FILTER_ORDER + 1;
 
 			/**
 			 * Order of enhanced filter.
-			 * {@link ReactiveLoadBalancerClientFilter}.LOAD_BALANCER_CLIENT_FILTER_ORDER = 10150.
 			 */
-			public static final int ENHANCED_FILTER_ORDER = 10150 + 1;
+			public static final int ENHANCED_FILTER_ORDER = LOAD_BALANCER_CLIENT_FILTER_ORDER + 1;
 		}
 
 		/**
@@ -167,7 +165,7 @@ public class OrderConstant {
 		/**
 		 * Address modifier order.
 		 */
-		public static Integer ADDRESS_ORDER = Integer.MIN_VALUE;
+		public static Integer ADDRESS_ORDER = Integer.MIN_VALUE + 10;
 
 		/**
 		 * Discovery config modifier order.
@@ -215,8 +213,18 @@ public class OrderConstant {
 		public static Integer STAT_REPORTER_ORDER = 1;
 
 		/**
+		 * Order of lossless configuration modifier.
+		 */
+		public static Integer LOSSLESS_ORDER = 2;
+
+		/**
 		 * Order of service contract configuration modifier.
 		 */
 		public static Integer SERVICE_CONTRACT_ORDER = Integer.MAX_VALUE - 9;
+
+		/**
+		 * Order of trace configuration modifier.
+		 */
+		public static Integer TRACE_ORDER = 2;
 	}
 }

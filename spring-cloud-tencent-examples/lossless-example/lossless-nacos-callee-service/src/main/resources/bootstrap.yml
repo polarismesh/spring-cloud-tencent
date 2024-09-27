@@ -1,0 +1,20 @@
+server:
+  port: 48091
+spring:
+  application:
+    name: LosslessNacosCalleeService
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 127.0.0.1:8848
+        enabled: true
+    polaris:
+      lossless:
+        enabled: true
+        port: 28085
+        healthCheckPath: /actuator/health
+        healthCheckInterval: 5000
+lossless:
+  healthy:
+    delay:
+      second: 20

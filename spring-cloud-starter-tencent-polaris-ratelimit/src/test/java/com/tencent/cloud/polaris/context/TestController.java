@@ -31,7 +31,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class TestController {
 
 	@GetMapping("/info")
-	public String info() {
+	public String info() throws Exception {
 		return "hello service info";
 	}
 }

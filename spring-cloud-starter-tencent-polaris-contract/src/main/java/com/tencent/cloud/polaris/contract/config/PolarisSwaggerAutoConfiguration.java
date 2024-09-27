@@ -17,11 +17,6 @@
 
 package com.tencent.cloud.polaris.contract.config;
 
-import java.time.LocalDate;
-import java.util.Date;
-import java.util.List;
-import java.util.function.Predicate;
-
 import com.tencent.cloud.polaris.PolarisDiscoveryProperties;
 import com.tencent.cloud.polaris.context.ConditionalOnPolarisEnabled;
 import com.tencent.cloud.polaris.context.PolarisSDKContextManager;
@@ -30,13 +25,14 @@ import com.tencent.cloud.polaris.contract.PolarisSwaggerApplicationListener;
 import com.tencent.cloud.polaris.contract.filter.ApiDocServletFilter;
 import com.tencent.cloud.polaris.contract.filter.ApiDocWebFluxFilter;
 import com.tencent.cloud.polaris.contract.utils.PackageUtil;
-import springfox.boot.starter.autoconfigure.OpenApiAutoConfiguration;
-import springfox.documentation.builders.ApiInfoBuilder;
-import springfox.documentation.service.Contact;
-import springfox.documentation.spi.DocumentationType;
-import springfox.documentation.spring.web.DocumentationCache;
-import springfox.documentation.spring.web.plugins.Docket;
-import springfox.documentation.swagger2.mappers.ServiceModelToSwagger2Mapper;
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.info.Info;
+import io.swagger.v3.oas.models.info.License;
+import org.springdoc.core.GroupedOpenApi;
+import org.springdoc.core.SpringDocConfiguration;
+import org.springdoc.core.providers.ObjectMapperProvider;
+import org.springdoc.webflux.api.MultipleOpenApiWebFluxResource;
+import org.springdoc.webmvc.api.MultipleOpenApiWebMvcResource;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -45,6 +41,10 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplicat
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.lang.Nullable;
+import org.springframework.util.StringUtils;
+
+import static com.tencent.cloud.polaris.contract.utils.PackageUtil.SPLITTER;
 
 /**
  * Auto configuration for Polaris swagger.
@@ -54,7 +54,7 @@ import org.springframework.context.annotation.Import;
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnPolarisEnabled
 @ConditionalOnProperty(name = "spring.cloud.polaris.contract.enabled", havingValue = "true", matchIfMissing = true)
-@Import(OpenApiAutoConfiguration.class)
+@Import(SpringDocConfiguration.class)
 public class PolarisSwaggerAutoConfiguration {
 
 	static {
@@ -64,65 +64,45 @@ public class PolarisSwaggerAutoConfiguration {
 	}
 
 	@Bean
-	public Docket polarisDocket(PolarisContractProperties polarisContractProperties) {
-		List<Predicate<String>> excludePathList = PackageUtil.getExcludePathPredicates(polarisContractProperties.getExcludePath());
-		List<Predicate<String>> basePathList = PackageUtil.getBasePathPredicates(polarisContractProperties.getBasePath());
+	public GroupedOpenApi polarisGroupedOpenApi(PolarisContractProperties polarisContractProperties) {
 		String basePackage = PackageUtil.scanPackage(polarisContractProperties.getBasePackage());
-
-		Predicate<String> basePathListOr = null;
-		for (Predicate<String> basePathPredicate : basePathList) {
-			if (basePathListOr == null) {
-				basePathListOr = basePathPredicate;
-			}
-			else {
-				basePathListOr = basePathListOr.or(basePathPredicate);
-			}
+		String[] basePaths = {};
+		if (StringUtils.hasText(polarisContractProperties.getBasePath())) {
+			basePaths = polarisContractProperties.getBasePath().split(SPLITTER);
 		}
-
-		Predicate<String> excludePathListOr = null;
-		for (Predicate<String> excludePathPredicate : excludePathList) {
-			if (excludePathListOr == null) {
-				excludePathListOr = excludePathPredicate;
-			}
-			else {
-				excludePathListOr = excludePathListOr.or(excludePathPredicate);
-			}
+		String[] excludePaths = {};
+		if (StringUtils.hasText(polarisContractProperties.getExcludePath())) {
+			excludePaths = polarisContractProperties.getExcludePath().split(SPLITTER);
 		}
-
-		Predicate<String> pathsPredicate = basePathListOr;
-
-		if (excludePathListOr != null) {
-			excludePathListOr = excludePathListOr.negate();
-			pathsPredicate = pathsPredicate.and(excludePathListOr);
-		}
-
-		return new Docket(DocumentationType.SWAGGER_2)
-				.select()
-				.apis(PackageUtil.basePackage(basePackage))
-				.paths(pathsPredicate)
-				.build()
-				.groupName(polarisContractProperties.getGroup())
-				.enable(polarisContractProperties.isEnabled())
-				.directModelSubstitute(LocalDate.class, Date.class)
-				.apiInfo(new ApiInfoBuilder()
-						.title("Polaris Swagger API")
-						.description("This is to show polaris api description.")
-						.license("BSD-3-Clause")
-						.licenseUrl("https://opensource.org/licenses/BSD-3-Clause")
-						.termsOfServiceUrl("")
-						.version("1.0.0")
-						.contact(new Contact("", "", ""))
-						.build());
+		return GroupedOpenApi.builder()
+				.packagesToScan(basePackage)
+				.pathsToMatch(basePaths)
+				.pathsToExclude(excludePaths)
+				.group(polarisContractProperties.getGroup())
+				.build();
 	}
 
 	@Bean
-	@ConditionalOnBean(Docket.class)
 	@ConditionalOnMissingBean
-	public PolarisContractReporter polarisContractReporter(DocumentationCache documentationCache,
-			ServiceModelToSwagger2Mapper swagger2Mapper, PolarisContractProperties polarisContractProperties,
-			PolarisSDKContextManager polarisSDKContextManager, PolarisDiscoveryProperties polarisDiscoveryProperties) {
-		return new PolarisContractReporter(documentationCache, swagger2Mapper, polarisContractProperties,
-				polarisSDKContextManager.getProviderAPI(), polarisDiscoveryProperties);
+	public OpenAPI polarisOpenAPI() {
+		return new OpenAPI()
+				.info(new Info()
+						.title("Polaris Contract")
+						.description("This is to show polaris contract description.")
+						.license(new License().name("BSD-3-Clause").url("https://opensource.org/licenses/BSD-3-Clause"))
+						.version("1.0.0"));
+	}
+
+	@Bean
+	@ConditionalOnBean(OpenAPI.class)
+	@ConditionalOnMissingBean
+	public PolarisContractReporter polarisContractReporter(
+			@Nullable MultipleOpenApiWebMvcResource multipleOpenApiWebMvcResource,
+			@Nullable MultipleOpenApiWebFluxResource multipleOpenApiWebFluxResource,
+			PolarisContractProperties polarisContractProperties, PolarisSDKContextManager polarisSDKContextManager,
+			PolarisDiscoveryProperties polarisDiscoveryProperties, ObjectMapperProvider springdocObjectMapperProvider) {
+		return new PolarisContractReporter(multipleOpenApiWebMvcResource, multipleOpenApiWebFluxResource,
+				polarisContractProperties, polarisSDKContextManager.getProviderAPI(), polarisDiscoveryProperties, springdocObjectMapperProvider);
 	}
 
 	@Bean

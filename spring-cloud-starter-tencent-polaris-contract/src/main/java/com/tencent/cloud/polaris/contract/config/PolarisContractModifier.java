@@ -41,7 +41,8 @@ public class PolarisContractModifier implements PolarisConfigModifier {
 	public void modify(ConfigurationImpl configuration) {
 		List<RegisterConfigImpl> registerConfigs = configuration.getProvider().getRegisters();
 		for (RegisterConfigImpl registerConfig : registerConfigs) {
-			registerConfig.setReportServiceContractEnable(polarisContractProperties.isEnabled());
+			registerConfig.setReportServiceContractEnable(
+					polarisContractProperties.isEnabled() && polarisContractProperties.isReportEnabled());
 		}
 	}
 

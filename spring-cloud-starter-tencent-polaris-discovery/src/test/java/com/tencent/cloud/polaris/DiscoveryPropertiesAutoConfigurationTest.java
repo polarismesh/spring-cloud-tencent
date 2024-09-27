@@ -19,13 +19,11 @@ package com.tencent.cloud.polaris;
 
 import com.tencent.cloud.polaris.context.config.PolarisContextAutoConfiguration;
 import com.tencent.cloud.polaris.discovery.PolarisDiscoveryHandler;
-import com.tencent.cloud.polaris.extend.consul.ConsulContextProperties;
+import com.tencent.cloud.polaris.extend.consul.ConsulDiscoveryProperties;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -45,26 +43,9 @@ public class DiscoveryPropertiesAutoConfigurationTest {
 		applicationContextRunner.run(context -> {
 			assertThat(context).hasSingleBean(DiscoveryPropertiesAutoConfiguration.class);
 			assertThat(context).hasSingleBean(PolarisDiscoveryProperties.class);
-			assertThat(context).hasSingleBean(ConsulContextProperties.class);
+			assertThat(context).doesNotHaveBean(ConsulDiscoveryProperties.class);
 			assertThat(context).hasSingleBean(PolarisDiscoveryHandler.class);
 			assertThat(context).hasSingleBean(DiscoveryConfigModifier.class);
 		});
-	}
-
-	@Configuration
-	static class TestConfiguration {
-		@Bean
-		public PolarisDiscoveryProperties polarisDiscoveryProperties() {
-			PolarisDiscoveryProperties polarisDiscoveryProperties = new PolarisDiscoveryProperties();
-			polarisDiscoveryProperties.setEnabled(false);
-			return polarisDiscoveryProperties;
-		}
-
-		@Bean
-		public ConsulContextProperties consulContextProperties() {
-			ConsulContextProperties consulContextProperties = new ConsulContextProperties();
-			consulContextProperties.setEnabled(true);
-			return consulContextProperties;
-		}
 	}
 }

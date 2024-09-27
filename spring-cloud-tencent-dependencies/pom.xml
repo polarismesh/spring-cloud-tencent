@@ -70,18 +70,19 @@
 	</developers>
 
 	<properties>
-		<revision>1.13.4-Hoxton.SR12-SNAPSHOT</revision>
+		<revision>2.0.0.0-Hoxton.SR12-SNAPSHOT</revision>
 
 		<!-- Dependencies -->
-		<polaris.version>1.15.11-SNAPSHOT</polaris.version>
+		<polaris.version>2.0.0.0-SNAPSHOT</polaris.version>
 		<guava.version>32.0.1-jre</guava.version>
 		<logback.version>1.2.13</logback.version>
-		<springfox.swagger2.version>3.0.0</springfox.swagger2.version>
+		<springdoc.version>1.7.0</springdoc.version>
 		<io.swagger.version>1.5.24</io.swagger.version>
 		<mocktio.version>4.5.1</mocktio.version>
 		<byte-buddy.version>1.12.10</byte-buddy.version>
 		<jackson.version>2.12.7</jackson.version>
 		<protobuf-java.version>3.21.7</protobuf-java.version>
+		<joda-time.version>2.9.9</joda-time.version>
 		<system-stubs-jupiter.version>2.0.2</system-stubs-jupiter.version>
 
 		<!-- Maven Plugin Versions -->
@@ -93,6 +94,14 @@
 
 	<dependencyManagement>
 		<dependencies>
+			<dependency>
+				<groupId>com.fasterxml.jackson</groupId>
+				<artifactId>jackson-bom</artifactId>
+				<version>${jackson.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+
 			<dependency>
 				<artifactId>polaris-dependencies</artifactId>
 				<groupId>com.tencent.polaris</groupId>
@@ -193,6 +202,24 @@
 				<version>${revision}</version>
 			</dependency>
 
+			<dependency>
+				<groupId>com.tencent.cloud</groupId>
+				<artifactId>spring-cloud-tencent-lossless-plugin</artifactId>
+				<version>${revision}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>com.tencent.cloud</groupId>
+				<artifactId>spring-cloud-starter-tencent-threadlocal-plugin</artifactId>
+				<version>${revision}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>com.tencent.cloud</groupId>
+				<artifactId>spring-cloud-starter-tencent-trace-plugin</artifactId>
+				<version>${revision}</version>
+			</dependency>
+
 			<!-- third part framework dependencies -->
 			<dependency>
 				<groupId>com.google.guava</groupId>
@@ -227,39 +254,15 @@
 			</dependency>
 
 			<dependency>
-				<groupId>com.fasterxml.jackson.core</groupId>
-				<artifactId>jackson-annotations</artifactId>
-				<version>${jackson.version}</version>
+				<groupId>org.springdoc</groupId>
+				<artifactId>springdoc-openapi-ui</artifactId>
+				<version>${springdoc.version}</version>
 			</dependency>
 
 			<dependency>
-				<groupId>com.fasterxml.jackson.core</groupId>
-				<artifactId>jackson-core</artifactId>
-				<version>${jackson.version}</version>
-			</dependency>
-
-			<dependency>
-				<groupId>com.fasterxml.jackson.core</groupId>
-				<artifactId>jackson-databind</artifactId>
-				<version>${jackson.version}</version>
-			</dependency>
-
-			<dependency>
-				<groupId>io.springfox</groupId>
-				<artifactId>springfox-boot-starter</artifactId>
-				<version>${springfox.swagger2.version}</version>
-			</dependency>
-
-			<dependency>
-				<groupId>io.swagger</groupId>
-				<artifactId>swagger-models</artifactId>
-				<version>${io.swagger.version}</version>
-			</dependency>
-
-			<dependency>
-				<groupId>io.swagger</groupId>
-				<artifactId>swagger-annotations</artifactId>
-				<version>${io.swagger.version}</version>
+				<groupId>org.springdoc</groupId>
+				<artifactId>springdoc-openapi-webflux-ui</artifactId>
+				<version>${springdoc.version}</version>
 			</dependency>
 
 			<dependency>
@@ -272,6 +275,13 @@
 				<groupId>net.bytebuddy</groupId>
 				<artifactId>byte-buddy</artifactId>
 				<version>${byte-buddy.version}</version>
+			</dependency>
+
+
+			<dependency>
+				<groupId>joda-time</groupId>
+				<artifactId>joda-time</artifactId>
+				<version>${joda-time.version}</version>
 			</dependency>
 
 			<dependency>

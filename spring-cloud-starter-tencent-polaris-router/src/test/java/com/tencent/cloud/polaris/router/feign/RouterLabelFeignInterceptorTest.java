@@ -18,124 +18,82 @@
 
 package com.tencent.cloud.polaris.router.feign;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import com.tencent.cloud.common.constant.OrderConstant;
-import com.tencent.cloud.common.constant.RouterConstant;
-import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
-import com.tencent.cloud.common.metadata.StaticMetadataManager;
-import com.tencent.cloud.common.util.ApplicationContextAwareUtils;
-import com.tencent.cloud.common.util.JacksonUtils;
-import com.tencent.cloud.polaris.context.config.PolarisContextProperties;
-import com.tencent.cloud.polaris.router.RouterRuleLabelResolver;
-import com.tencent.cloud.polaris.router.spi.FeignRouterLabelResolver;
+import com.tencent.polaris.metadata.core.MessageMetadataContainer;
+import com.tencent.polaris.metadata.core.MetadataContainer;
+import com.tencent.polaris.metadata.core.MetadataType;
+import feign.Request;
 import feign.RequestTemplate;
-import feign.Target;
+import io.netty.handler.codec.http.HttpHeaderNames;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.MockedStatic;
-import org.mockito.Mockito;
-import org.mockito.junit.jupiter.MockitoExtension;
+
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 
 /**
  * test for {@link RouterLabelFeignInterceptor}.
  *
- * @author lepdou, cheese8
+ * @author lepdou 2022-05-26
  */
-@ExtendWith(MockitoExtension.class)
+@ExtendWith(SpringExtension.class)
+@SpringBootTest(classes = RouterLabelFeignInterceptorTest.TestApplication.class,
+		properties = {"spring.cloud.polaris.namespace=test", "spring.application.name=test",
+				"spring.cloud.gateway.enabled=false", "spring.cloud.polaris.router.zuul.enabled=false"})
 public class RouterLabelFeignInterceptorTest {
 
-	@Mock
-	private StaticMetadataManager staticMetadataManager;
-	@Mock
-	private RouterRuleLabelResolver routerRuleLabelResolver;
-	@Mock
-	private FeignRouterLabelResolver routerLabelResolver;
-	@Mock
-	private PolarisContextProperties polarisContextProperties;
-
 	@Test
-	public void testResolveRouterLabel() throws UnsupportedEncodingException {
-		RouterLabelFeignInterceptor routerLabelFeignInterceptor = new RouterLabelFeignInterceptor(
-				Collections.singletonList(routerLabelResolver),
-				staticMetadataManager, routerRuleLabelResolver, polarisContextProperties);
+	public void testRouterLabel() {
+		RouterLabelFeignInterceptor routerLabelFeignInterceptor = new RouterLabelFeignInterceptor();
 
 		assertThat(routerLabelFeignInterceptor.getOrder()).isEqualTo(OrderConstant.Client.Feign.ROUTER_LABEL_INTERCEPTOR_ORDER);
 
 		// mock request template
-		RequestTemplate requestTemplate = new RequestTemplate();
+		RequestTemplate requestTemplate = mock(RequestTemplate.class);
 		String headerUidKey = "uid";
 		String headerUidValue = "1000";
-		requestTemplate.header(headerUidKey, headerUidValue);
-		String peerService = "peerService";
-		Target.EmptyTarget<Object> target = Target.EmptyTarget.create(Object.class, peerService);
-		requestTemplate.feignTarget(target);
+		Map<String, List<String>> headerMap = new HashMap<>();
+		headerMap.put(headerUidKey, Collections.singletonList(headerUidValue));
+		headerMap.put(HttpHeaderNames.COOKIE.toString(), Collections.singletonList("k1=v1"));
+		doReturn(headerMap).when(requestTemplate).headers();
+		doReturn(Request.HttpMethod.POST.toString()).when(requestTemplate).method();
+		Request request = mock(Request.class);
+		doReturn(request).when(requestTemplate).request();
+		doReturn("http://callee/test/path").when(request).url();
+		Map<String, List<String>> queryMap = new HashMap<>();
+		queryMap.put("q1", Collections.singletonList("a1"));
+		doReturn(queryMap).when(requestTemplate).queries();
 
-		// mock ApplicationContextAwareUtils#getProperties
-		try (MockedStatic<ApplicationContextAwareUtils> mockedApplicationContextAwareUtils = Mockito.mockStatic(ApplicationContextAwareUtils.class)) {
-			String testService = "callerService";
-			mockedApplicationContextAwareUtils.when(() -> ApplicationContextAwareUtils.getProperties(anyString()))
-					.thenReturn(testService);
+		routerLabelFeignInterceptor.apply(requestTemplate);
 
-			MetadataContext metadataContext = Mockito.mock(MetadataContext.class);
+		// get message metadata container
+		MetadataContainer metadataContainer = MetadataContextHolder.get()
+				.getMetadataContainer(MetadataType.MESSAGE, false);
+		// method
+		assertThat(metadataContainer.getRawMetadataStringValue(MessageMetadataContainer.LABEL_KEY_METHOD)).isEqualTo(Request.HttpMethod.POST.toString());
+		// path
+		assertThat(metadataContainer.getRawMetadataStringValue(MessageMetadataContainer.LABEL_KEY_PATH)).isEqualTo("/test/path");
+		// header
+		assertThat(metadataContainer.getRawMetadataMapValue(MessageMetadataContainer.LABEL_MAP_KEY_HEADER, headerUidKey)).isEqualTo(headerUidValue);
+		// cookie
+		assertThat(metadataContainer.getRawMetadataMapValue(MessageMetadataContainer.LABEL_MAP_KEY_COOKIE, "k1")).isEqualTo("v1");
+		// query
+		assertThat(metadataContainer.getRawMetadataMapValue(MessageMetadataContainer.LABEL_MAP_KEY_QUERY, "q1")).isEqualTo("a1");
+	}
 
-			// mock transitive metadata
-			Map<String, String> transitiveLabels = new HashMap<>();
-			transitiveLabels.put("k1", "v1");
-			transitiveLabels.put("k2", "v22");
-			when(metadataContext.getTransitiveMetadata()).thenReturn(transitiveLabels);
+	@SpringBootApplication
+	protected static class TestApplication {
 
-			// mock MetadataContextHolder#get
-			try (MockedStatic<MetadataContextHolder> mockedMetadataContextHolder = Mockito.mockStatic(MetadataContextHolder.class)) {
-				mockedMetadataContextHolder.when(MetadataContextHolder::get).thenReturn(metadataContext);
-
-				// mock expression rule labels
-				Set<String> expressionKeys = new HashSet<>();
-				expressionKeys.add("${http.header.uid}");
-				expressionKeys.add("${http.header.name}");
-				when(routerRuleLabelResolver.getExpressionLabelKeys(MetadataContext.LOCAL_NAMESPACE,
-						MetadataContext.LOCAL_SERVICE, peerService)).thenReturn(expressionKeys);
-
-				// mock custom resolved labels from request
-				Map<String, String> customResolvedLabels = new HashMap<>();
-				customResolvedLabels.put("k2", "v2");
-				customResolvedLabels.put("k3", "v3");
-				when(routerLabelResolver.resolve(requestTemplate, expressionKeys)).thenReturn(customResolvedLabels);
-
-				Map<String, String> localMetadata = new HashMap<>();
-				localMetadata.put("k3", "v31");
-				localMetadata.put("k4", "v4");
-				when(staticMetadataManager.getMergedStaticMetadata()).thenReturn(localMetadata);
-
-				routerLabelFeignInterceptor.apply(requestTemplate);
-
-				Collection<String> routerLabels = requestTemplate.headers().get(RouterConstant.ROUTER_LABEL_HEADER);
-
-				assertThat(routerLabels).isNotNull();
-				for (String value : routerLabels) {
-					Map<String, String> labels = JacksonUtils.deserialize2Map(URLDecoder.decode(value, "UTF-8"));
-
-					assertThat(labels.get("k1")).isEqualTo("v1");
-					assertThat(labels.get("k2")).isEqualTo("v22");
-					assertThat(labels.get("k3")).isEqualTo("v3");
-					assertThat(labels.get("k4")).isEqualTo("v4");
-					assertThat(labels.get("${http.header.uid}")).isEqualTo(headerUidValue);
-					assertThat(labels.get("${http.header.name}")).isEqualTo("");
-				}
-			}
-		}
 	}
 }

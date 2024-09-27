@@ -26,7 +26,7 @@ import java.util.Objects;
 import com.tencent.cloud.common.metadata.StaticMetadataManager;
 import com.tencent.cloud.polaris.PolarisDiscoveryProperties;
 import com.tencent.cloud.polaris.context.config.PolarisContextProperties;
-import com.tencent.cloud.polaris.extend.consul.ConsulContextProperties;
+import com.tencent.cloud.polaris.extend.consul.ConsulDiscoveryProperties;
 import com.tencent.cloud.polaris.extend.nacos.NacosContextProperties;
 import com.tencent.polaris.client.api.SDKContext;
 import org.apache.commons.lang.StringUtils;
@@ -48,8 +48,6 @@ import static com.tencent.cloud.polaris.extend.nacos.NacosContextProperties.DEFA
  */
 public class PolarisRegistration implements Registration {
 
-	private static final String METADATA_KEY_IP = "internal-ip";
-	private static final String METADATA_KEY_ADDRESS = "internal-address";
 	private static final String GROUP_SERVER_ID_FORMAT = "%s__%s";
 	private static final String NACOS_CLUSTER = "nacos.cluster";
 
@@ -67,13 +65,14 @@ public class PolarisRegistration implements Registration {
 	private final List<PolarisRegistrationCustomizer> customizers;
 	private boolean registerEnabled = false;
 	private Map<String, String> metadata;
+	private Map<String, Map<String, String>> extendedMetadata;
 	private int port;
 	private String instanceId;
 
 	public PolarisRegistration(
 			PolarisDiscoveryProperties polarisDiscoveryProperties,
 			@Nullable PolarisContextProperties polarisContextProperties,
-			@Nullable ConsulContextProperties consulContextProperties,
+			@Nullable ConsulDiscoveryProperties consulDiscoveryProperties,
 			SDKContext context, StaticMetadataManager staticMetadataManager,
 			@Nullable NacosContextProperties nacosContextProperties,
 			@Nullable ServletWebServerApplicationContext servletWebServerApplicationContext,
@@ -115,10 +114,6 @@ public class PolarisRegistration implements Registration {
 		if (CollectionUtils.isEmpty(metadata)) {
 			Map<String, String> instanceMetadata = new HashMap<>();
 
-			// put internal metadata
-			instanceMetadata.put(METADATA_KEY_IP, host);
-			instanceMetadata.put(METADATA_KEY_ADDRESS, host + ":" + port);
-
 			// put internal-nacos-cluster if necessary
 			if (Objects.nonNull(nacosContextProperties)) {
 				String clusterName = nacosContextProperties.getClusterName();
@@ -132,12 +127,14 @@ public class PolarisRegistration implements Registration {
 			this.metadata = instanceMetadata;
 		}
 
+		this.extendedMetadata = new HashMap<>();
+
 		// generate registerEnabled
 		if (null != polarisDiscoveryProperties) {
 			registerEnabled = polarisDiscoveryProperties.isRegisterEnabled();
 		}
-		if (null != consulContextProperties && consulContextProperties.isEnabled()) {
-			registerEnabled |= consulContextProperties.isRegister();
+		if (null != consulDiscoveryProperties) {
+			registerEnabled |= consulDiscoveryProperties.isRegister();
 		}
 		if (null != nacosContextProperties && nacosContextProperties.isEnabled()) {
 			registerEnabled |= nacosContextProperties.isRegisterEnabled();
@@ -146,7 +143,7 @@ public class PolarisRegistration implements Registration {
 
 	public static PolarisRegistration registration(PolarisDiscoveryProperties polarisDiscoveryProperties,
 			@Nullable PolarisContextProperties polarisContextProperties,
-			@Nullable ConsulContextProperties consulContextProperties,
+			@Nullable ConsulDiscoveryProperties consulContextProperties,
 			SDKContext context, StaticMetadataManager staticMetadataManager,
 			@Nullable NacosContextProperties nacosContextProperties,
 			@Nullable ServletWebServerApplicationContext servletWebServerApplicationContext,
@@ -215,6 +212,13 @@ public class PolarisRegistration implements Registration {
 	@Override
 	public Map<String, String> getMetadata() {
 		return metadata;
+	}
+
+	public Map<String, Map<String, String>> getExtendedMetadata() {
+		if (extendedMetadata == null) {
+			extendedMetadata = new HashMap<>();
+		}
+		return extendedMetadata;
 	}
 
 	@Override

@@ -18,8 +18,6 @@
 
 package com.tencent.cloud.metadata.core;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -27,6 +25,10 @@ import com.tencent.cloud.common.constant.MetadataConstant;
 import com.tencent.cloud.common.constant.OrderConstant;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
 import com.tencent.cloud.common.util.JacksonUtils;
+import com.tencent.cloud.common.util.UrlUtils;
+import com.tencent.cloud.metadata.provider.ReactiveMetadataProvider;
+import com.tencent.cloud.polaris.context.config.PolarisContextProperties;
+import com.tencent.polaris.api.utils.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import reactor.core.publisher.Mono;
@@ -34,14 +36,14 @@ import reactor.core.publisher.Mono;
 import org.springframework.core.Ordered;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.server.reactive.ServerHttpRequest;
-import org.springframework.util.StringUtils;
 import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.server.WebFilter;
 import org.springframework.web.server.WebFilterChain;
 
-import static com.tencent.cloud.common.constant.ContextConstant.UTF_8;
+import static com.tencent.cloud.common.constant.MetadataConstant.HeaderName.APPLICATION_METADATA;
 import static com.tencent.cloud.common.constant.MetadataConstant.HeaderName.CUSTOM_DISPOSABLE_METADATA;
 import static com.tencent.cloud.common.constant.MetadataConstant.HeaderName.CUSTOM_METADATA;
+import static com.tencent.polaris.metadata.core.constant.MetadataConstants.LOCAL_IP;
 
 /**
  * Filter used for storing the metadata from upstream temporarily when web application is
@@ -52,6 +54,11 @@ import static com.tencent.cloud.common.constant.MetadataConstant.HeaderName.CUST
 public class DecodeTransferMetadataReactiveFilter implements WebFilter, Ordered {
 
 	private static final Logger LOG = LoggerFactory.getLogger(DecodeTransferMetadataReactiveFilter.class);
+	private PolarisContextProperties polarisContextProperties;
+
+	public DecodeTransferMetadataReactiveFilter(PolarisContextProperties polarisContextProperties) {
+		this.polarisContextProperties = polarisContextProperties;
+	}
 
 	@Override
 	public int getOrder() {
@@ -63,17 +70,32 @@ public class DecodeTransferMetadataReactiveFilter implements WebFilter, Ordered 
 		// Get metadata string from http header.
 		ServerHttpRequest serverHttpRequest = serverWebExchange.getRequest();
 
-		Map<String, String> internalTransitiveMetadata = getIntervalMetadata(serverHttpRequest, CUSTOM_METADATA);
+		// transitive metadata
+		// from specific header
+		Map<String, String> internalTransitiveMetadata = getInternalMetadata(serverHttpRequest, CUSTOM_METADATA);
+		// from header with specific prefix
 		Map<String, String> customTransitiveMetadata = CustomTransitiveMetadataResolver.resolve(serverWebExchange);
-
 		Map<String, String> mergedTransitiveMetadata = new HashMap<>();
 		mergedTransitiveMetadata.putAll(internalTransitiveMetadata);
 		mergedTransitiveMetadata.putAll(customTransitiveMetadata);
 
-		Map<String, String> internalDisposableMetadata = getIntervalMetadata(serverHttpRequest, CUSTOM_DISPOSABLE_METADATA);
+		// disposable metadata
+		// from specific header
+		Map<String, String> internalDisposableMetadata = getInternalMetadata(serverHttpRequest, CUSTOM_DISPOSABLE_METADATA);
 		Map<String, String> mergedDisposableMetadata = new HashMap<>(internalDisposableMetadata);
 
-		MetadataContextHolder.init(mergedTransitiveMetadata, mergedDisposableMetadata);
+		// application metadata
+		Map<String, String> internalApplicationMetadata = getInternalMetadata(serverHttpRequest, APPLICATION_METADATA);
+		Map<String, String> mergedApplicationMetadata = new HashMap<>(internalApplicationMetadata);
+
+		String callerIp = "";
+		if (StringUtils.isNotBlank(mergedApplicationMetadata.get(LOCAL_IP))) {
+			callerIp = mergedApplicationMetadata.get(LOCAL_IP);
+		}
+		// message metadata
+		ReactiveMetadataProvider callerMessageMetadataProvider = new ReactiveMetadataProvider(serverHttpRequest, callerIp);
+
+		MetadataContextHolder.init(mergedTransitiveMetadata, mergedDisposableMetadata, mergedApplicationMetadata, callerMessageMetadataProvider);
 
 		// Save to ServerWebExchange.
 		serverWebExchange.getAttributes().put(
@@ -87,17 +109,9 @@ public class DecodeTransferMetadataReactiveFilter implements WebFilter, Ordered 
 				.doFinally((type) -> MetadataContextHolder.remove());
 	}
 
-	private Map<String, String> getIntervalMetadata(ServerHttpRequest serverHttpRequest, String headerName) {
+	private Map<String, String> getInternalMetadata(ServerHttpRequest serverHttpRequest, String headerName) {
 		HttpHeaders httpHeaders = serverHttpRequest.getHeaders();
-		String customMetadataStr = httpHeaders.getFirst(headerName);
-		try {
-			if (StringUtils.hasText(customMetadataStr)) {
-				customMetadataStr = URLDecoder.decode(customMetadataStr, UTF_8);
-			}
-		}
-		catch (UnsupportedEncodingException e) {
-			LOG.error("Runtime system does not support utf-8 coding.", e);
-		}
+		String customMetadataStr = UrlUtils.decode(httpHeaders.getFirst(headerName));
 		LOG.debug("Get upstream metadata string: {}", customMetadataStr);
 
 		return JacksonUtils.deserialize2Map(customMetadataStr);

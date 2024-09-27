@@ -52,6 +52,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cloud.client.circuitbreaker.CircuitBreakerFactory;
 import org.springframework.cloud.client.circuitbreaker.Customizer;
@@ -275,18 +276,21 @@ public class PolarisCircuitBreakerRestTemplateIntegrationTest {
 		}
 
 		@Bean
+		@ConditionalOnMissingBean(SuccessCircuitBreakerReporter.class)
 		public SuccessCircuitBreakerReporter successCircuitBreakerReporter(RpcEnhancementReporterProperties properties,
 				CircuitBreakAPI circuitBreakAPI) {
 			return new SuccessCircuitBreakerReporter(properties, circuitBreakAPI);
 		}
 
 		@Bean
+		@ConditionalOnMissingBean(ExceptionCircuitBreakerReporter.class)
 		public ExceptionCircuitBreakerReporter exceptionCircuitBreakerReporter(RpcEnhancementReporterProperties properties,
 				CircuitBreakAPI circuitBreakAPI) {
 			return new ExceptionCircuitBreakerReporter(properties, circuitBreakAPI);
 		}
 
 		@Bean
+		@ConditionalOnMissingBean(CircuitBreakerFactory.class)
 		public CircuitBreakerFactory polarisCircuitBreakerFactory(CircuitBreakAPI circuitBreakAPI,
 				PolarisSDKContextManager polarisSDKContextManager, PolarisCircuitBreakerProperties polarisCircuitBreakerProperties) {
 			PolarisCircuitBreakerFactory factory = new PolarisCircuitBreakerFactory(

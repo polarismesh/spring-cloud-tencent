@@ -35,8 +35,7 @@ public class DiscoveryPropertiesBootstrapAutoConfigurationTest {
 	@Test
 	public void testDefaultInitialization() {
 		ApplicationContextRunner applicationContextRunner = new ApplicationContextRunner().withConfiguration(
-						AutoConfigurations.of(
-								PolarisContextAutoConfiguration.class,
+						AutoConfigurations.of(PolarisContextAutoConfiguration.class,
 								DiscoveryPropertiesBootstrapAutoConfiguration.class))
 				.withPropertyValues("spring.cloud.polaris.enabled=true");
 		applicationContextRunner.run(context -> {

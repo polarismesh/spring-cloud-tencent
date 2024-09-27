@@ -31,6 +31,7 @@ public interface PolarisRateLimiterLabelReactiveResolver {
 
 	/**
 	 * Resolve custom label from request.
+	 *
 	 * @param exchange the http request
 	 * @return resolved labels
 	 */

@@ -35,6 +35,7 @@ import com.netflix.loadbalancer.WeightedResponseTimeRule;
 import com.netflix.loadbalancer.ZoneAvoidanceRule;
 import com.tencent.cloud.common.constant.RouterConstant;
 import com.tencent.cloud.common.metadata.MetadataContext;
+import com.tencent.cloud.common.metadata.MetadataContextHolder;
 import com.tencent.cloud.common.pojo.PolarisServer;
 import com.tencent.cloud.common.util.JacksonUtils;
 import com.tencent.cloud.polaris.loadbalancer.LoadBalancerUtils;
@@ -206,6 +207,7 @@ public class PolarisLoadBalancerCompositeRule extends AbstractLoadBalancerRule {
 		serviceInfo.setNamespace(MetadataContext.LOCAL_NAMESPACE);
 		serviceInfo.setService(MetadataContext.LOCAL_SERVICE);
 		processRoutersRequest.setSourceService(serviceInfo);
+		processRoutersRequest.setMetadataContainerGroup(MetadataContextHolder.get().getMetadataContainerGroup(false));
 		return processRoutersRequest;
 	}
 

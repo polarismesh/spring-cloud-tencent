@@ -45,6 +45,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpRequest;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -82,7 +83,7 @@ public class RouterContextFactoryTest {
 		Set<String> expressionKeys = new HashSet<>();
 		expressionKeys.add("${http.method}");
 		expressionKeys.add("${http.uri}");
-		when(routerRuleLabelResolver.getExpressionLabelKeys(callerService, callerService, calleeService)).thenReturn(expressionKeys);
+		when(routerRuleLabelResolver.getExpressionLabelKeys(any(), any(), any())).thenReturn(expressionKeys);
 
 		// mock custom resolved from request
 		Map<String, String> customResolvedLabels = new HashMap<>();
@@ -111,7 +112,6 @@ public class RouterContextFactoryTest {
 				PolarisRouterContext routerContext = routerContextFactory.create(request, null, calleeService);
 
 				verify(staticMetadataManager).getMergedStaticMetadata();
-				verify(routerRuleLabelResolver).getExpressionLabelKeys(callerService, callerService, calleeService);
 				verify(springWebRouterLabelResolver).resolve(request, null, expressionKeys);
 
 				assertThat(routerContext.getLabels(RouterConstant.TRANSITIVE_LABELS).get("k1")).isEqualTo("v1");
