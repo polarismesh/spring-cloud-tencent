@@ -17,7 +17,11 @@
 
 package org.springframework.cloud.client.serviceregistry;
 
-public class AutoServiceRegistrationUtils {
+public final class AutoServiceRegistrationUtils {
+
+	private AutoServiceRegistrationUtils() {
+
+	}
 
 	public static void register(AbstractAutoServiceRegistration autoServiceRegistration) {
 		autoServiceRegistration.register();
