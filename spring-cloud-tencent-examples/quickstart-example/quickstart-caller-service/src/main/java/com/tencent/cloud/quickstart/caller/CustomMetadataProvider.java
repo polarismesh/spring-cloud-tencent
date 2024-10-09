@@ -27,8 +27,4 @@ import org.springframework.stereotype.Component;
 @Component
 public class CustomMetadataProvider implements InstanceMetadataProvider {
 
-	@Override
-	public String getRegion() {
-		return "huadong";
-	}
 }
