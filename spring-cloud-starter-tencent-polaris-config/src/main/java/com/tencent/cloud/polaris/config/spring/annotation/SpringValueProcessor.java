@@ -21,11 +21,13 @@ import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.google.common.base.CaseFormat;
 import com.google.common.collect.LinkedListMultimap;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
@@ -35,6 +37,7 @@ import com.tencent.cloud.polaris.config.spring.property.PlaceholderHelper;
 import com.tencent.cloud.polaris.config.spring.property.SpringValue;
 import com.tencent.cloud.polaris.config.spring.property.SpringValueDefinition;
 import com.tencent.cloud.polaris.config.spring.property.SpringValueRegistry;
+import com.tencent.polaris.api.utils.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,6 +53,8 @@ import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.config.TypedStringValue;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProcessor;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.context.annotation.Bean;
 import org.springframework.lang.NonNull;
 
@@ -105,23 +110,31 @@ public class SpringValueProcessor extends PolarisProcessor implements BeanDefini
 
 
 	@Override
-	protected void processField(Object bean, String beanName, Field field) {
+	protected void processField(Object bean, String beanName, Field field, boolean isRefreshScope) {
 		// register @Value on field
 		Value value = field.getAnnotation(Value.class);
 		if (value == null) {
 			return;
 		}
 
-		doRegister(bean, beanName, field, value);
+		doRegister(bean, beanName, field, value, isRefreshScope);
 	}
 
 	@Override
-	protected void processMethod(Object bean, String beanName, Method method) {
+	protected void processMethod(Object bean, String beanName, Method method, boolean isRefreshScope) {
 		//register @Value on method
 		Value value = method.getAnnotation(Value.class);
-		if (value == null) {
+		if (value != null) {
+			processMethodValue(bean, beanName, method, value, isRefreshScope);
 			return;
 		}
+
+		if (method.getAnnotation(RefreshScope.class) != null) {
+			processMethodRefreshScope(bean, beanName, method);
+		}
+	}
+
+	private void processMethodValue(Object bean, String beanName, Method method, Value value, boolean isRefreshScope) {
 		//skip Configuration bean methods
 		if (method.getAnnotation(Bean.class) != null) {
 			return;
@@ -131,8 +144,87 @@ public class SpringValueProcessor extends PolarisProcessor implements BeanDefini
 					bean.getClass().getName(), method.getName(), method.getParameterTypes().length);
 			return;
 		}
+		doRegister(bean, beanName, method, value, isRefreshScope);
+	}
 
-		doRegister(bean, beanName, method, value);
+	private void processMethodRefreshScope(Object bean, String beanName, Method method) {
+		// must have @Bean annotation
+		if (method.getAnnotation(Bean.class) == null) {
+			return;
+		}
+
+		for (Parameter parameter : method.getParameters()) {
+			Value value = parameter.getAnnotation(Value.class);
+			if (value != null) {
+				Set<String> keys = placeholderHelper.extractPlaceholderKeys(value.value());
+				springValueRegistry.putRefreshScopeKeys(keys);
+			}
+			ConfigurationProperties configurationProperties = parameter.getType().getAnnotation(ConfigurationProperties.class);
+			parseConfigurationPropertiesKeys(configurationProperties, parameter.getType());
+		}
+
+		for (Field field : findAllField(bean.getClass())) {
+			Value value = field.getAnnotation(Value.class);
+			if (value != null) {
+				Set<String> keys = placeholderHelper.extractPlaceholderKeys(value.value());
+				springValueRegistry.putRefreshScopeKeys(keys);
+				continue;
+			}
+			ConfigurationProperties configurationProperties = field.getType().getAnnotation(ConfigurationProperties.class);
+			parseConfigurationPropertiesKeys(configurationProperties, field.getType());
+		}
+	}
+
+	private void parseConfigurationPropertiesKeys(ConfigurationProperties configurationProperties, Class<?> clazz) {
+		if (configurationProperties != null) {
+			String prefix = configurationProperties.value();
+			if (StringUtils.isEmpty(prefix)) {
+				prefix = configurationProperties.prefix();
+			}
+			if (StringUtils.isNotEmpty(prefix)) {
+				prefix += ".";
+			}
+			parseConfigKeys(clazz, prefix);
+		}
+	}
+
+	private void parseConfigKeys(Class<?> configClazz, String prefix) {
+		for (Field field : findAllField(configClazz)) {
+			if (isPrimitiveOrWrapper(field.getType())) {
+				// lowerCamel
+				springValueRegistry.putRefreshScopeKey(prefix + field.getName());
+				// lower-hyphen
+				springValueRegistry.putRefreshScopeKey(
+						prefix + CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_HYPHEN, field.getName()));
+			}
+			else if (isCollection(field.getType())) {
+				springValueRegistry.putRefreshScopePrefixKey(prefix + field.getName());
+				springValueRegistry.putRefreshScopePrefixKey(
+						prefix + CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_HYPHEN, field.getName()));
+			}
+			else {
+				parseConfigKeys(field.getType(), prefix + field.getName() + ".");
+				parseConfigKeys(field.getType(),
+						prefix + CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_HYPHEN, field.getName()) + ".");
+			}
+		}
+	}
+
+	private static boolean isPrimitiveOrWrapper(Class<?> clazz) {
+		return clazz.isPrimitive() ||
+				clazz == String.class ||
+				clazz == Boolean.class ||
+				clazz == Character.class ||
+				clazz == Byte.class ||
+				clazz == Short.class ||
+				clazz == Integer.class ||
+				clazz == Long.class ||
+				clazz == Float.class ||
+				clazz == Double.class;
+	}
+
+	private static boolean isCollection(Class<?> clazz) {
+		return clazz.isArray() || Collection.class.isAssignableFrom(clazz) || Map.class.isAssignableFrom(clazz);
 	}
 
 	@Override
@@ -147,7 +239,7 @@ public class SpringValueProcessor extends PolarisProcessor implements BeanDefini
 		}
 	}
 
-	private void doRegister(Object bean, String beanName, Member member, Value value) {
+	private void doRegister(Object bean, String beanName, Member member, Value value, boolean isRefreshScope) {
 		Set<String> keys = placeholderHelper.extractPlaceholderKeys(value.value());
 		if (keys.isEmpty()) {
 			return;
@@ -158,10 +250,16 @@ public class SpringValueProcessor extends PolarisProcessor implements BeanDefini
 			if (member instanceof Field) {
 				Field field = (Field) member;
 				springValue = new SpringValue(key, value.value(), bean, beanName, field);
+				if (isRefreshScope) {
+					springValueRegistry.putRefreshScopeKey(key);
+				}
 			}
 			else if (member instanceof Method) {
 				Method method = (Method) member;
 				springValue = new SpringValue(key, value.value(), bean, beanName, method);
+				if (isRefreshScope) {
+					springValueRegistry.putRefreshScopeKey(key);
+				}
 			}
 			else {
 				LOGGER.error("Polaris @Value annotation currently only support to be used on methods and fields, "
