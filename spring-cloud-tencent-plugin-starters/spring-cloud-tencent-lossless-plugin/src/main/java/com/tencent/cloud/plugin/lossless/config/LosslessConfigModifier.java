@@ -21,6 +21,7 @@ import java.util.Objects;
 
 import com.tencent.cloud.common.constant.OrderConstant.Modifier;
 import com.tencent.cloud.polaris.context.PolarisConfigModifier;
+import com.tencent.polaris.api.utils.StringUtils;
 import com.tencent.polaris.factory.config.ConfigurationImpl;
 import com.tencent.polaris.factory.config.provider.LosslessConfigImpl;
 import com.tencent.polaris.specification.api.v1.traffic.manage.LosslessProto;
@@ -47,7 +48,7 @@ public class LosslessConfigModifier implements PolarisConfigModifier {
 			if (Objects.nonNull(losslessProperties.getDelayRegisterInterval())) {
 				losslessConfig.setDelayRegisterInterval(losslessProperties.getDelayRegisterInterval());
 			}
-			if (Objects.nonNull(losslessProperties.getHealthCheckPath())) {
+			if (StringUtils.isNotEmpty(losslessProperties.getHealthCheckPath())) {
 				losslessConfig.setHealthCheckPath(losslessProperties.getHealthCheckPath());
 				losslessConfig.setStrategy(LosslessProto.DelayRegister.DelayStrategy.DELAY_BY_HEALTH_CHECK);
 
