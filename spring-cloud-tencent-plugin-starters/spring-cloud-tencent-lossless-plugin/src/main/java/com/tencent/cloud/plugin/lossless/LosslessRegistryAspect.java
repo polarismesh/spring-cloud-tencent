@@ -22,6 +22,7 @@ import com.tencent.cloud.polaris.context.PolarisSDKContextManager;
 import com.tencent.cloud.polaris.context.config.PolarisContextProperties;
 import com.tencent.cloud.rpc.enhancement.transformer.RegistrationTransformer;
 import com.tencent.polaris.api.pojo.BaseInstance;
+import com.tencent.polaris.plugin.lossless.common.HttpLosslessActionProvider;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -78,12 +79,13 @@ public class LosslessRegistryAspect {
 		}
 
 		// web started, get port from registration
-		BaseInstance instance = SpringCloudLosslessActionProvider.getBaseInstance(registration, registrationTransformer);
+		BaseInstance instance = getBaseInstance(registration, registrationTransformer);
 
 		Runnable registerAction = () -> executeJoinPoint(joinPoint);
-
-		SpringCloudLosslessActionProvider losslessActionProvider =
-				new SpringCloudLosslessActionProvider(serviceRegistry, registration, losslessProperties, registerAction);
+		Runnable deregisterAction = () -> serviceRegistry.deregister(registration);
+		HttpLosslessActionProvider losslessActionProvider =
+				new HttpLosslessActionProvider(registerAction, deregisterAction, registration.getPort(),
+						instance, polarisSDKContextManager.getSDKContext().getExtensions());
 
 		polarisSDKContextManager.getLosslessAPI().setLosslessActionProvider(instance, losslessActionProvider);
 		polarisSDKContextManager.getLosslessAPI().losslessRegister(instance);
@@ -103,5 +105,9 @@ public class LosslessRegistryAspect {
 		catch (Throwable e) {
 			throw new RuntimeException(e);
 		}
+	}
+
+	public static BaseInstance getBaseInstance(Registration registration, RegistrationTransformer registrationTransformer) {
+		return registrationTransformer.transform(registration);
 	}
 }
