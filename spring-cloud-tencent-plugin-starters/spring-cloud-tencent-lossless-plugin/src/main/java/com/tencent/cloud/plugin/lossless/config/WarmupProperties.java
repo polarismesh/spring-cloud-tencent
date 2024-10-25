@@ -13,21 +13,23 @@
  * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
+ *
  */
 
-package org.springframework.cloud.client.serviceregistry;
+package com.tencent.cloud.plugin.lossless.config;
 
-public final class AutoServiceRegistrationUtils {
+import org.springframework.boot.context.properties.ConfigurationProperties;
 
-	private AutoServiceRegistrationUtils() {
+@ConfigurationProperties("spring.cloud.polaris.warmup")
+public class WarmupProperties {
 
+	private boolean enabled = false;
+
+	public boolean isEnabled() {
+		return enabled;
 	}
 
-	public static void register(AbstractAutoServiceRegistration autoServiceRegistration) {
-		autoServiceRegistration.register();
-	}
-
-	public static void deRegister(AbstractAutoServiceRegistration autoServiceRegistration) {
-		autoServiceRegistration.deregister();
+	public void setEnabled(boolean enabled) {
+		this.enabled = enabled;
 	}
 }

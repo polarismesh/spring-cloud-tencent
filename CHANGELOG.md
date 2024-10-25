@@ -34,3 +34,4 @@
 - [fix: fix PolarisCircuitBreakerConfiguration not clear when gateway invoke by wildcard apis](https://github.com/Tencent/spring-cloud-tencent/pull/1418)
 - [fix:fix actuator name warning from #1428 .](https://github.com/Tencent/spring-cloud-tencent/pull/1429)
 - [feat:upgrade api circuit breaker.](https://github.com/Tencent/spring-cloud-tencent/pull/1438)
+- [feat: support lossless config from console & support warmup.](https://github.com/Tencent/spring-cloud-tencent/pull/1435)

@@ -19,6 +19,7 @@ package com.tencent.cloud.plugin.lossless.config;
 
 import com.tencent.cloud.polaris.context.PolarisSDKContextManager;
 import com.tencent.polaris.api.config.provider.LosslessConfig;
+import com.tencent.polaris.specification.api.v1.traffic.manage.LosslessProto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -35,14 +36,23 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class LosslessConfigModifierTest {
 
-	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+	private final ApplicationContextRunner delayRegisterContextRunner = new ApplicationContextRunner()
+			.withConfiguration(AutoConfigurations.of(TestApplication.class))
+			.withPropertyValues("spring.cloud.nacos.discovery.enabled=false")
+			.withPropertyValues("spring.cloud.polaris.enabled=true")
+			.withPropertyValues("spring.cloud.polaris.lossless.enabled=true")
+			.withPropertyValues("spring.cloud.polaris.lossless.port=20000")
+			.withPropertyValues("spring.cloud.polaris.lossless.delayRegisterInterval=10")
+			.withPropertyValues("spring.application.name=test")
+			.withPropertyValues("spring.cloud.gateway.enabled=false");
+
+	private final ApplicationContextRunner healthCheckContextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(TestApplication.class))
 			.withPropertyValues("spring.cloud.nacos.discovery.enabled=false")
 			.withPropertyValues("spring.cloud.polaris.enabled=true")
 			.withPropertyValues("spring.cloud.polaris.lossless.enabled=true")
 			.withPropertyValues("spring.cloud.polaris.lossless.port=20000")
 			.withPropertyValues("spring.cloud.polaris.lossless.healthCheckPath=/xxx")
-			.withPropertyValues("spring.cloud.polaris.lossless.delayRegisterInterval=10")
 			.withPropertyValues("spring.cloud.polaris.lossless.healthCheckInterval=5")
 			.withPropertyValues("spring.application.name=test")
 			.withPropertyValues("spring.cloud.gateway.enabled=false");
@@ -60,15 +70,29 @@ public class LosslessConfigModifierTest {
 	}
 
 	@Test
-	void testModify() {
-		contextRunner.run(context -> {
+	void testDelayRegister() {
+		delayRegisterContextRunner.run(context -> {
 			PolarisSDKContextManager polarisSDKContextManager = context.getBean(PolarisSDKContextManager.class);
 			LosslessConfig losslessConfig = polarisSDKContextManager.getSDKContext().
 					getConfig().getProvider().getLossless();
 			assertThat(losslessConfig.getHost()).isEqualTo("0.0.0.0");
 			assertThat(losslessConfig.getPort()).isEqualTo(20000);
 			assertThat(losslessConfig.getDelayRegisterInterval()).isEqualTo(10);
+			assertThat(losslessConfig.getStrategy()).isEqualTo(LosslessProto.DelayRegister.DelayStrategy.DELAY_BY_TIME);
+		});
+	}
+
+	@Test
+	void testHealthCheck() {
+		healthCheckContextRunner.run(context -> {
+			PolarisSDKContextManager polarisSDKContextManager = context.getBean(PolarisSDKContextManager.class);
+			LosslessConfig losslessConfig = polarisSDKContextManager.getSDKContext().
+					getConfig().getProvider().getLossless();
+			assertThat(losslessConfig.getHost()).isEqualTo("0.0.0.0");
+			assertThat(losslessConfig.getPort()).isEqualTo(20000);
+			assertThat(losslessConfig.getHealthCheckPath()).isEqualTo("/xxx");
 			assertThat(losslessConfig.getHealthCheckInterval()).isEqualTo(5);
+			assertThat(losslessConfig.getStrategy()).isEqualTo(LosslessProto.DelayRegister.DelayStrategy.DELAY_BY_HEALTH_CHECK);
 		});
 	}
 
