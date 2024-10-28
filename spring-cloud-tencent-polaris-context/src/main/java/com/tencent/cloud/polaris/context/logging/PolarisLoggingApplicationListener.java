@@ -16,13 +16,16 @@
  */
 package com.tencent.cloud.polaris.context.logging;
 
+import com.tencent.polaris.api.utils.StringUtils;
 import com.tencent.polaris.logging.LoggingConsts;
 import com.tencent.polaris.logging.PolarisLogging;
-import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
 import org.springframework.boot.context.event.ApplicationFailedEvent;
 import org.springframework.boot.context.logging.LoggingApplicationListener;
+import org.springframework.boot.web.context.WebServerInitializedEvent;
 import org.springframework.cloud.context.environment.EnvironmentChangeEvent;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.event.GenericApplicationListener;
@@ -37,6 +40,8 @@ import org.springframework.lang.NonNull;
  */
 public class PolarisLoggingApplicationListener implements GenericApplicationListener {
 
+	private static final Logger LOG = LoggerFactory.getLogger(PolarisLoggingApplicationListener.class);
+
 	private static final int ORDER = LoggingApplicationListener.DEFAULT_ORDER + 2;
 
 	@Override
@@ -47,7 +52,8 @@ public class PolarisLoggingApplicationListener implements GenericApplicationList
 		}
 		return ApplicationEnvironmentPreparedEvent.class.isAssignableFrom(type)
 				|| ApplicationFailedEvent.class.isAssignableFrom(type)
-				|| EnvironmentChangeEvent.class.isAssignableFrom(type);
+				|| EnvironmentChangeEvent.class.isAssignableFrom(type)
+				|| WebServerInitializedEvent.class.isAssignableFrom(type);
 	}
 
 	@Override
@@ -72,7 +78,7 @@ public class PolarisLoggingApplicationListener implements GenericApplicationList
 				System.setProperty(LoggingConsts.LOGGING_PATH_PROPERTY, loggingPath);
 			}
 		}
-
+		LOG.info("Polaris logging configuration reloaded in {}.", applicationEvent.getClass().getSimpleName());
 		PolarisLogging.getInstance().loadConfiguration();
 	}
 }
