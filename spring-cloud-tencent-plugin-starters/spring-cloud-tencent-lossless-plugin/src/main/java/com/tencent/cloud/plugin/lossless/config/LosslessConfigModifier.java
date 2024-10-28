@@ -21,8 +21,10 @@ import java.util.Objects;
 
 import com.tencent.cloud.common.constant.OrderConstant.Modifier;
 import com.tencent.cloud.polaris.context.PolarisConfigModifier;
+import com.tencent.polaris.api.utils.StringUtils;
 import com.tencent.polaris.factory.config.ConfigurationImpl;
 import com.tencent.polaris.factory.config.provider.LosslessConfigImpl;
+import com.tencent.polaris.specification.api.v1.traffic.manage.LosslessProto;
 
 /**
  * Config modifier for lossless.
@@ -39,16 +41,27 @@ public class LosslessConfigModifier implements PolarisConfigModifier {
 
 	@Override
 	public void modify(ConfigurationImpl configuration) {
+		LosslessConfigImpl losslessConfig = (LosslessConfigImpl) configuration.getProvider().getLossless();
 		if (losslessProperties.isEnabled()) {
-			LosslessConfigImpl losslessConfig = (LosslessConfigImpl) configuration.getProvider().getLossless();
 			losslessConfig.setEnable(true);
 			losslessConfig.setPort(losslessProperties.getPort());
 			if (Objects.nonNull(losslessProperties.getDelayRegisterInterval())) {
 				losslessConfig.setDelayRegisterInterval(losslessProperties.getDelayRegisterInterval());
 			}
-			if (Objects.nonNull(losslessProperties.getHealthCheckInterval())) {
-				losslessConfig.setHealthCheckInterval(losslessProperties.getHealthCheckInterval());
+			if (StringUtils.isNotEmpty(losslessProperties.getHealthCheckPath())) {
+				losslessConfig.setHealthCheckPath(losslessProperties.getHealthCheckPath());
+				losslessConfig.setStrategy(LosslessProto.DelayRegister.DelayStrategy.DELAY_BY_HEALTH_CHECK);
+
+				if (Objects.nonNull(losslessProperties.getHealthCheckInterval())) {
+					losslessConfig.setHealthCheckInterval(losslessProperties.getHealthCheckInterval());
+				}
 			}
+			else {
+				losslessConfig.setStrategy(LosslessProto.DelayRegister.DelayStrategy.DELAY_BY_TIME);
+			}
+		}
+		else {
+			losslessConfig.setEnable(false);
 		}
 	}
 

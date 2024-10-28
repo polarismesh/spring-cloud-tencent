@@ -32,7 +32,7 @@ import org.springframework.context.annotation.Configuration;
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnPolarisEnabled
-@EnableConfigurationProperties(LosslessProperties.class)
+@EnableConfigurationProperties({LosslessProperties.class, WarmupProperties.class})
 public class LosslessPropertiesAutoConfiguration {
 
 	@Bean
@@ -41,4 +41,9 @@ public class LosslessPropertiesAutoConfiguration {
 		return new LosslessConfigModifier(losslessProperties);
 	}
 
+	@Bean
+	@ConditionalOnMissingBean
+	public WarmupConfigModifier warmupConfigModifier(WarmupProperties warmupProperties) {
+		return new WarmupConfigModifier(warmupProperties);
+	}
 }
