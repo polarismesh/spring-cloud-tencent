@@ -17,8 +17,10 @@
 
 package com.tencent.cloud.polaris.circuitbreaker.config;
 
+import com.tencent.cloud.polaris.context.PolarisSDKContextManager;
 import com.tencent.cloud.polaris.context.config.PolarisContextAutoConfiguration;
 import com.tencent.cloud.rpc.enhancement.config.RpcEnhancementAutoConfiguration;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -41,6 +43,11 @@ public class PolarisCircuitBreakerBootstrapConfigurationTest {
 					PolarisCircuitBreakerBootstrapConfiguration.class))
 			.withPropertyValues("spring.cloud.polaris.enabled=true")
 			.withPropertyValues("spring.cloud.polaris.circuitbreaker.enabled=true");
+
+	@BeforeAll
+	static void beforeAll() {
+		PolarisSDKContextManager.innerDestroy();
+	}
 
 	@Test
 	public void testDefaultInitialization() {

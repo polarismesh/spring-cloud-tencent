@@ -36,3 +36,4 @@
 - [fix:fix actuator name warning from #1428 .](https://github.com/Tencent/spring-cloud-tencent/pull/1431)
 - [feat:upgrade api circuit breaker.](https://github.com/Tencent/spring-cloud-tencent/pull/1442)
 - [feat: support lossless config from console & support warmup.](https://github.com/Tencent/spring-cloud-tencent/pull/1445)
+- [feat:add admin http handler.](https://github.com/Tencent/spring-cloud-tencent/pull/1450)

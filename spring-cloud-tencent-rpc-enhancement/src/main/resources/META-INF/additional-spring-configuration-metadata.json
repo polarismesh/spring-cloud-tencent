@@ -57,20 +57,28 @@
       "name": "spring.cloud.polaris.stat.pushgateway.address",
       "type": "java.lang.String",
       "description": "PushGateway address.",
-      "sourceType": "com.tencent.cloud.plugin.pushgateway.PolarisStatPushGatewayProperties"
+      "sourceType": "com.tencent.cloud.rpc.enhancement.stat.config.PolarisStatProperties"
     },
     {
       "name": "spring.cloud.polaris.stat.pushgateway.enabled",
       "type": "java.lang.Boolean",
       "description": "If state pushGateway reporter enabled.",
-      "sourceType": "com.tencent.cloud.plugin.pushgateway.PolarisStatPushGatewayProperties",
+      "sourceType": "com.tencent.cloud.rpc.enhancement.stat.config.PolarisStatProperties",
       "defaultValue": false
     },
     {
       "name": "spring.cloud.polaris.stat.pushgateway.push-interval",
       "type": "java.lang.Long",
       "description": "Push metrics interval. unit: milliseconds default 30s.",
-      "sourceType": "com.tencent.cloud.plugin.pushgateway.PolarisStatPushGatewayProperties"
+      "sourceType": "com.tencent.cloud.rpc.enhancement.stat.config.PolarisStatProperties",
+      "defaultValue": 30000
+    },
+    {
+      "name": "spring.cloud.polaris.stat.pushgateway.open-gzip",
+      "type": "java.lang.Boolean",
+      "description": "If push gateway gzip open. default false.",
+      "sourceType": "com.tencent.cloud.rpc.enhancement.stat.config.PolarisStatProperties",
+      "defaultValue": false
     }
   ]
 }

@@ -20,10 +20,8 @@ package com.tencent.cloud.rpc.enhancement.stat.config;
 import com.tencent.cloud.common.constant.OrderConstant;
 import com.tencent.cloud.polaris.context.PolarisConfigModifier;
 import com.tencent.polaris.factory.config.ConfigurationImpl;
+import com.tencent.polaris.factory.config.global.StatReporterConfigImpl;
 import com.tencent.polaris.plugins.stat.prometheus.handler.PrometheusHandlerConfig;
-
-import org.springframework.core.env.Environment;
-import org.springframework.util.StringUtils;
 
 import static com.tencent.polaris.api.config.global.StatReporterConfig.DEFAULT_REPORTER_PROMETHEUS;
 
@@ -36,43 +34,31 @@ public class StatConfigModifier implements PolarisConfigModifier {
 
 	private final PolarisStatProperties polarisStatProperties;
 
-	private final Environment environment;
-
-	public StatConfigModifier(PolarisStatProperties polarisStatProperties, Environment environment) {
+	public StatConfigModifier(PolarisStatProperties polarisStatProperties) {
 		this.polarisStatProperties = polarisStatProperties;
-		this.environment = environment;
 	}
 
 	@Override
 	public void modify(ConfigurationImpl configuration) {
 		// Turn on stat reporter configuration.
 		configuration.getGlobal().getStatReporter().setEnable(polarisStatProperties.isEnabled());
-		PrometheusHandlerConfig prometheusHandlerConfig = configuration.getGlobal().getStatReporter()
-				.getPluginConfig(DEFAULT_REPORTER_PROMETHEUS, PrometheusHandlerConfig.class);
+		StatReporterConfigImpl statReporterConfig = configuration.getGlobal().getStatReporter();
+		statReporterConfig.setEnable(polarisStatProperties.isEnabled());
+		PrometheusHandlerConfig prometheusHandlerConfig = statReporterConfig.getPluginConfig(DEFAULT_REPORTER_PROMETHEUS, PrometheusHandlerConfig.class);
 		// Set prometheus plugin.
 		if (polarisStatProperties.isEnabled()) {
-
 			if (polarisStatProperties.isPushGatewayEnabled()) {
 				// push gateway
 				prometheusHandlerConfig.setType("push");
 				prometheusHandlerConfig.setAddress(polarisStatProperties.getPushGatewayAddress());
 				prometheusHandlerConfig.setPushInterval(polarisStatProperties.getPushGatewayPushInterval());
+				prometheusHandlerConfig.setOpenGzip(polarisStatProperties.getOpenGzip());
 			}
 			else {
 				// pull metrics
 				prometheusHandlerConfig.setType("pull");
-				if (!StringUtils.hasText(polarisStatProperties.getHost())) {
-					polarisStatProperties.setHost("0.0.0.0");
-				}
-				prometheusHandlerConfig.setHost(polarisStatProperties.getHost());
-				prometheusHandlerConfig.setPort(polarisStatProperties.getPort());
 				prometheusHandlerConfig.setPath(polarisStatProperties.getPath());
 			}
-
-		}
-		else {
-			// Set port to -1 to disable stat plugin.
-			prometheusHandlerConfig.setPort(-1);
 		}
 		configuration.getGlobal().getStatReporter()
 				.setPluginConfig(DEFAULT_REPORTER_PROMETHEUS, prometheusHandlerConfig);

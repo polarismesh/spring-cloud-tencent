@@ -61,30 +61,18 @@ public final class TsfCoreEnvironmentPostProcessor implements EnvironmentPostPro
 		if (StringUtils.isNotBlank(tsfAppId)) {
 			Map<String, Object> defaultProperties = new HashMap<>();
 
-			String tsfConsulIp = environment.getProperty("tsf_consul_ip");
-			String tsePolarisAddress = environment.getProperty("spring.cloud.polaris.address");
-			if (StringUtils.isBlank(tsePolarisAddress) && StringUtils.isNotBlank(environment.getProperty("tse_polaris_ip"))) {
-				tsePolarisAddress = "grpc://" + environment.getProperty("tse_polaris_ip") + ":8091";
-			}
-
-			// tsf_prog_version
-			String tsfProgVersion = environment.getProperty("tsf_prog_version");
-			if (StringUtils.isBlank(tsfProgVersion)) {
-				LOGGER.error("tsf_prog_version is empty");
-			}
-			else {
-				defaultProperties.put("spring.cloud.polaris.discovery.version", tsfProgVersion);
-			}
-
 			// lossless
-			defaultProperties.put("spring.cloud.polaris.lossless.enabled", true);
-			defaultProperties.put("spring.cloud.polaris.lossless.port", environment.getProperty("tsf_sctt_extensions_port", "11134"));
+			String polarisAdminPort = environment.getProperty("polaris_admin_port");
+			if (StringUtils.isNotBlank(polarisAdminPort)) {
+				defaultProperties.put("spring.cloud.polaris.lossless.enabled", true);
+			}
 
-			// state
-			defaultProperties.put("spring.cloud.polaris.stat.port", environment.getProperty("tsf_sctt_extensions_port", "11134"));
-
-			boolean tsfConsulEnable = StringUtils.isNotBlank(tsfConsulIp) && StringUtils.isBlank(tsePolarisAddress);
-			if (tsfConsulEnable) {
+			if (TsfContextUtils.isTsfConsulEnabled(environment)) {
+				// tsf_consul_ip
+				String tsfConsulIp = environment.getProperty("tsf_consul_ip");
+				if (StringUtils.isBlank(tsfConsulIp)) {
+					LOGGER.error("tsf_consul_ip is empty");
+				}
 				// tsf_consul_port
 				String tsfConsulPort = environment.getProperty("tsf_consul_port");
 				if (StringUtils.isBlank(tsfConsulPort)) {
@@ -116,9 +104,6 @@ public final class TsfCoreEnvironmentPostProcessor implements EnvironmentPostPro
 				String tsfNamespaceId = environment.getProperty("tsf_namespace_id");
 				if (StringUtils.isBlank(tsfNamespaceId)) {
 					LOGGER.error("tsf_namespace_id is empty");
-				}
-				else {
-					defaultProperties.put("spring.cloud.polaris.namespace", tsfNamespaceId);
 				}
 
 				// context

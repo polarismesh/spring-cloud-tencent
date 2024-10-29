@@ -4,4 +4,5 @@ org.springframework.cloud.bootstrap.BootstrapConfiguration=\
 org.springframework.context.ApplicationListener=\
   com.tencent.cloud.polaris.context.logging.PolarisLoggingApplicationListener
 org.springframework.boot.env.EnvironmentPostProcessor=\
+  com.tencent.cloud.polaris.context.config.PolarisContextEnvironmentPostProcessor,\
   com.tencent.cloud.polaris.context.config.extend.tsf.TsfCoreEnvironmentPostProcessor
