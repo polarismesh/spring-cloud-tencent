@@ -20,9 +20,10 @@ spring:
           enabled: true
       circuitbreaker:
         enabled: true
+      admin:
+        port: 28082
       stat:
         enabled: true
-        port: 28082
     #        pushgateway:
     #          enabled: true
     #          address: 127.0.0.1:9091
