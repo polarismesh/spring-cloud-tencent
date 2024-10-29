@@ -34,16 +34,6 @@ public class PolarisStatProperties {
 	private boolean enabled = true;
 
 	/**
-	 * Local host for prometheus to pull.
-	 */
-	private String host;
-
-	/**
-	 * Port for prometheus to pull. 0 for random from 20000 to 65535.
-	 */
-	private int port = 0;
-
-	/**
 	 * Path for prometheus to pull.
 	 */
 	private String path = "/metrics";
@@ -67,28 +57,18 @@ public class PolarisStatProperties {
 	@Value("${spring.cloud.polaris.stat.pushgateway.push-interval:#{30000}}")
 	private Long pushGatewayPushInterval = 30 * 1000L;
 
+	/**
+	 * If push gateway gzip open. default false.
+	 */
+	@Value("${spring.cloud.polaris.stat.pushgateway.open-gzip:#{false}}")
+	private Boolean openGzip = false;
+
 	public boolean isEnabled() {
 		return enabled;
 	}
 
 	public void setEnabled(boolean enabled) {
 		this.enabled = enabled;
-	}
-
-	public String getHost() {
-		return host;
-	}
-
-	public void setHost(String host) {
-		this.host = host;
-	}
-
-	public int getPort() {
-		return port;
-	}
-
-	public void setPort(int port) {
-		this.port = port;
 	}
 
 	public String getPath() {
@@ -121,5 +101,13 @@ public class PolarisStatProperties {
 
 	public void setPushGatewayPushInterval(Long pushGatewayPushInterval) {
 		this.pushGatewayPushInterval = pushGatewayPushInterval;
+	}
+
+	public Boolean getOpenGzip() {
+		return openGzip;
+	}
+
+	public void setOpenGzip(Boolean openGzip) {
+		this.openGzip = openGzip;
 	}
 }

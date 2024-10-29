@@ -41,7 +41,7 @@ public class LosslessConfigModifierTest {
 			.withPropertyValues("spring.cloud.nacos.discovery.enabled=false")
 			.withPropertyValues("spring.cloud.polaris.enabled=true")
 			.withPropertyValues("spring.cloud.polaris.lossless.enabled=true")
-			.withPropertyValues("spring.cloud.polaris.lossless.port=20000")
+			.withPropertyValues("spring.cloud.polaris.admin.port=20000")
 			.withPropertyValues("spring.cloud.polaris.lossless.delayRegisterInterval=10")
 			.withPropertyValues("spring.application.name=test")
 			.withPropertyValues("spring.cloud.gateway.enabled=false");
@@ -51,7 +51,7 @@ public class LosslessConfigModifierTest {
 			.withPropertyValues("spring.cloud.nacos.discovery.enabled=false")
 			.withPropertyValues("spring.cloud.polaris.enabled=true")
 			.withPropertyValues("spring.cloud.polaris.lossless.enabled=true")
-			.withPropertyValues("spring.cloud.polaris.lossless.port=20000")
+			.withPropertyValues("spring.cloud.polaris.admin.port=20000")
 			.withPropertyValues("spring.cloud.polaris.lossless.healthCheckPath=/xxx")
 			.withPropertyValues("spring.cloud.polaris.lossless.healthCheckInterval=5")
 			.withPropertyValues("spring.application.name=test")
@@ -75,8 +75,6 @@ public class LosslessConfigModifierTest {
 			PolarisSDKContextManager polarisSDKContextManager = context.getBean(PolarisSDKContextManager.class);
 			LosslessConfig losslessConfig = polarisSDKContextManager.getSDKContext().
 					getConfig().getProvider().getLossless();
-			assertThat(losslessConfig.getHost()).isEqualTo("0.0.0.0");
-			assertThat(losslessConfig.getPort()).isEqualTo(20000);
 			assertThat(losslessConfig.getDelayRegisterInterval()).isEqualTo(10);
 			assertThat(losslessConfig.getStrategy()).isEqualTo(LosslessProto.DelayRegister.DelayStrategy.DELAY_BY_TIME);
 		});
@@ -88,8 +86,6 @@ public class LosslessConfigModifierTest {
 			PolarisSDKContextManager polarisSDKContextManager = context.getBean(PolarisSDKContextManager.class);
 			LosslessConfig losslessConfig = polarisSDKContextManager.getSDKContext().
 					getConfig().getProvider().getLossless();
-			assertThat(losslessConfig.getHost()).isEqualTo("0.0.0.0");
-			assertThat(losslessConfig.getPort()).isEqualTo(20000);
 			assertThat(losslessConfig.getHealthCheckPath()).isEqualTo("/xxx");
 			assertThat(losslessConfig.getHealthCheckInterval()).isEqualTo(5);
 			assertThat(losslessConfig.getStrategy()).isEqualTo(LosslessProto.DelayRegister.DelayStrategy.DELAY_BY_HEALTH_CHECK);
