@@ -25,8 +25,6 @@ public class LosslessProperties {
 
 	private boolean enabled = false;
 
-	private int port = 28080;
-
 	private String healthCheckPath;
 
 	private Long delayRegisterInterval;
@@ -39,14 +37,6 @@ public class LosslessProperties {
 
 	public void setEnabled(boolean enabled) {
 		this.enabled = enabled;
-	}
-
-	public int getPort() {
-		return port;
-	}
-
-	public void setPort(int port) {
-		this.port = port;
 	}
 
 	public String getHealthCheckPath() {

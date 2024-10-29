@@ -15,9 +15,10 @@ spring:
         exposure: true
         report:
           enabled: true
+      admin:
+        port: 28083
       stat:
         enabled: true
-        port: 28083
       #        pushgateway:
       #          enabled: true
       #          address: 127.0.0.1:9091

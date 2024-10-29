@@ -15,12 +15,12 @@ spring:
         exposure: true
         report:
           enabled: true
+      admin:
+        port: 28084
       stat:
         enabled: true
-        port: 28084
       lossless:
         enabled: true
-        port: 28084
         #healthCheckPath: /actuator/health
         #healthCheckInterval: 5000
 lossless:
