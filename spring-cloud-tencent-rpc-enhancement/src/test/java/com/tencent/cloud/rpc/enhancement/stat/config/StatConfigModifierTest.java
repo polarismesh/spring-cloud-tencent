@@ -18,6 +18,7 @@
 package com.tencent.cloud.rpc.enhancement.stat.config;
 
 import com.tencent.cloud.polaris.context.PolarisSDKContextManager;
+import com.tencent.polaris.api.config.global.StatReporterConfig;
 import com.tencent.polaris.plugins.stat.prometheus.handler.PrometheusHandlerConfig;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -53,6 +54,7 @@ public class StatConfigModifierTest {
 			.withPropertyValues("spring.cloud.polaris.stat.pushgateway.enabled=true")
 			.withPropertyValues("spring.cloud.polaris.stat.pushgateway.address=127.0.0.1:9091")
 			.withPropertyValues("spring.cloud.polaris.stat.pushgateway.push-interval=1000")
+			.withPropertyValues("spring.cloud.polaris.stat.pushgateway.open-gzip=true")
 			.withPropertyValues("spring.application.name=test")
 			.withPropertyValues("spring.cloud.gateway.enabled=false");
 
@@ -76,8 +78,6 @@ public class StatConfigModifierTest {
 					.getGlobal().getStatReporter()
 					.getPluginConfig(DEFAULT_REPORTER_PROMETHEUS, PrometheusHandlerConfig.class);
 			assertThat(prometheusHandlerConfig.getType()).isEqualTo("pull");
-			assertThat(prometheusHandlerConfig.getHost()).isEqualTo("127.0.0.1");
-			assertThat(prometheusHandlerConfig.getPort()).isEqualTo(20000);
 			assertThat(prometheusHandlerConfig.getPath()).isEqualTo("/xxx");
 		});
 	}
@@ -92,6 +92,7 @@ public class StatConfigModifierTest {
 			assertThat(prometheusHandlerConfig.getType()).isEqualTo("push");
 			assertThat(prometheusHandlerConfig.getAddress()).isEqualTo("127.0.0.1:9091");
 			assertThat(prometheusHandlerConfig.getPushInterval()).isEqualTo(1000);
+			assertThat(prometheusHandlerConfig.isOpenGzip()).isTrue();
 		});
 	}
 
@@ -99,10 +100,9 @@ public class StatConfigModifierTest {
 	void testDisabled() {
 		disabledContextRunner.run(context -> {
 			PolarisSDKContextManager polarisSDKContextManager = context.getBean(PolarisSDKContextManager.class);
-			PrometheusHandlerConfig prometheusHandlerConfig = polarisSDKContextManager.getSDKContext().getConfig()
-					.getGlobal().getStatReporter()
-					.getPluginConfig(DEFAULT_REPORTER_PROMETHEUS, PrometheusHandlerConfig.class);
-			assertThat(prometheusHandlerConfig.getPort()).isEqualTo(-1);
+			StatReporterConfig statReporterConfig = polarisSDKContextManager.getSDKContext().getConfig()
+					.getGlobal().getStatReporter();
+			assertThat(statReporterConfig.isEnable()).isFalse();
 		});
 	}
 

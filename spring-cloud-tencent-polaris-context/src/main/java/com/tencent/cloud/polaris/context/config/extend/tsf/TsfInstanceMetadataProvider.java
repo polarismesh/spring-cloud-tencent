@@ -44,39 +44,46 @@ public class TsfInstanceMetadataProvider implements InstanceMetadataProvider {
 
 	@Override
 	public Map<String, String> getMetadata() {
-		return new HashMap<String, String>() {{
-			put(TsfMetadataConstants.TSF_PROG_VERSION, tsfCoreProperties.getTsfProgVersion());
-			put(TsfMetadataConstants.TSF_APPLICATION_ID, tsfCoreProperties.getTsfApplicationId());
-			put(TsfMetadataConstants.TSF_GROUP_ID, tsfCoreProperties.getTsfGroupId());
-			put(TsfMetadataConstants.TSF_APPLICATION_ID, tsfCoreProperties.getTsfApplicationId());
-			put(TsfMetadataConstants.TSF_PROG_VERSION, tsfCoreProperties.getTsfProgVersion());
-			put(TsfMetadataConstants.TSF_GROUP_ID, tsfCoreProperties.getTsfGroupId());
-			put(TsfMetadataConstants.TSF_NAMESPACE_ID, tsfCoreProperties.getTsfNamespaceId());
-			put(TsfMetadataConstants.TSF_INSTNACE_ID, tsfCoreProperties.getInstanceId());
-			put(TsfMetadataConstants.TSF_REGION, tsfCoreProperties.getTsfRegion());
-			put(TsfMetadataConstants.TSF_ZONE, tsfCoreProperties.getTsfZone());
-			// 处理预热相关的参数
-			put(WarmupCons.TSF_START_TIME, String.valueOf(System.currentTimeMillis()));
-			put(TsfMetadataConstants.TSF_SDK_VERSION, SdkVersion.get());
-			put(TsfMetadataConstants.TSF_TAGS, JacksonUtils.serialize2Json(tsfCoreProperties.getTsfTags()));
-			String ipv4Address = PolarisInetUtils.getIpString(false);
-			if (StringUtils.isNotBlank(ipv4Address)) {
-				put(TsfMetadataConstants.TSF_ADDRESS_IPV4, ipv4Address);
-			}
-			String ipv6Address = PolarisInetUtils.getIpString(true);
-			if (StringUtils.isNotBlank(ipv6Address)) {
-				put(TsfMetadataConstants.TSF_ADDRESS_IPV6, ipv6Address);
-			}
-		}};
-	}
+		HashMap<String, String> tsfMetadata = new HashMap<>();
+		if (StringUtils.isNotBlank(tsfCoreProperties.getTsfApplicationId())) {
+			tsfMetadata.put(TsfMetadataConstants.TSF_APPLICATION_ID, tsfCoreProperties.getTsfApplicationId());
+		}
 
-	@Override
-	public String getRegion() {
-		return tsfCoreProperties.getTsfRegion();
-	}
+		if (StringUtils.isNotBlank(tsfCoreProperties.getTsfProgVersion())) {
+			tsfMetadata.put(TsfMetadataConstants.TSF_PROG_VERSION, tsfCoreProperties.getTsfProgVersion());
+		}
 
-	@Override
-	public String getZone() {
-		return tsfCoreProperties.getTsfZone();
+		if (StringUtils.isNotBlank(tsfCoreProperties.getTsfGroupId())) {
+			tsfMetadata.put(TsfMetadataConstants.TSF_GROUP_ID, tsfCoreProperties.getTsfGroupId());
+		}
+
+		if (StringUtils.isNotBlank(tsfCoreProperties.getTsfNamespaceId())) {
+			tsfMetadata.put(TsfMetadataConstants.TSF_NAMESPACE_ID, tsfCoreProperties.getTsfNamespaceId());
+		}
+
+		if (StringUtils.isNotBlank(tsfCoreProperties.getInstanceId())) {
+			tsfMetadata.put(TsfMetadataConstants.TSF_INSTNACE_ID, tsfCoreProperties.getInstanceId());
+		}
+
+		if (StringUtils.isNotBlank(tsfCoreProperties.getTsfRegion())) {
+			tsfMetadata.put(TsfMetadataConstants.TSF_REGION, tsfCoreProperties.getTsfRegion());
+		}
+
+		if (StringUtils.isNotBlank(tsfCoreProperties.getTsfZone())) {
+			tsfMetadata.put(TsfMetadataConstants.TSF_ZONE, tsfCoreProperties.getTsfZone());
+		}
+
+		tsfMetadata.put(WarmupCons.TSF_START_TIME, String.valueOf(System.currentTimeMillis()));
+		tsfMetadata.put(TsfMetadataConstants.TSF_SDK_VERSION, SdkVersion.get());
+		tsfMetadata.put(TsfMetadataConstants.TSF_TAGS, JacksonUtils.serialize2Json(tsfCoreProperties.getTsfTags()));
+		String ipv4Address = PolarisInetUtils.getIpString(false);
+		if (StringUtils.isNotBlank(ipv4Address)) {
+			tsfMetadata.put(TsfMetadataConstants.TSF_ADDRESS_IPV4, ipv4Address);
+		}
+		String ipv6Address = PolarisInetUtils.getIpString(true);
+		if (StringUtils.isNotBlank(ipv6Address)) {
+			tsfMetadata.put(TsfMetadataConstants.TSF_ADDRESS_IPV6, ipv6Address);
+		}
+		return tsfMetadata;
 	}
 }

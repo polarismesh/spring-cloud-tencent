@@ -16,7 +16,6 @@
  */
 package com.tencent.cloud.tsf.demo.provider;
 
-import java.io.IOException;
 import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
@@ -31,6 +30,7 @@ import org.slf4j.LoggerFactory;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -85,36 +85,35 @@ public class ProviderController {
 	}
 
 	@RequestMapping(value = "/echo/{param}", method = RequestMethod.GET)
-	public String echo(@PathVariable String param, HttpServletResponse response) throws IOException {
+	public ResponseEntity<String> echo(@PathVariable String param) {
+		int status;
+		String responseBody;
+
 		switch (param) {
 		case "1xx":
-			response.setStatus(HttpServletResponse.SC_CONTINUE);
-			response.getWriter().write("mock 1xx return.");
-			response.getWriter().flush();
-			return "mock 1xx return.";
+			status = HttpServletResponse.SC_CONTINUE;
+			responseBody = "mock 1xx return.";
+			break;
 		case "3xx":
-			response.setStatus(HttpServletResponse.SC_FOUND);
-			response.getWriter().write("mock 3xx return.");
-			response.getWriter().flush();
-			return "mock 3xx return.";
+			status = HttpServletResponse.SC_FOUND;
+			responseBody = "mock 3xx return.";
+			break;
 		case "4xx":
-			response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-			response.getWriter().write("mock 4xx return.");
-			response.getWriter().flush();
-			return "mock 4xx return.";
+			status = HttpServletResponse.SC_NOT_FOUND;
+			responseBody = "mock 4xx return.";
+			break;
 		case "5xx":
-			response.setStatus(HttpServletResponse.SC_BAD_GATEWAY);
-			response.getWriter().write("mock 5xx return.");
-			response.getWriter().flush();
-			return "mock 5xx return.";
+			status = HttpServletResponse.SC_BAD_GATEWAY;
+			responseBody = "mock 5xx return.";
+			break;
 		default:
-			LOG.info("provider-demo -- request param: [" + param + "]");
-			String result = "from host-ip: " + getInet4Address() + ", request param: " + param + ", response from " + providerNameConfig.getName();
-			LOG.info("provider-demo -- provider config name: [" + providerNameConfig.getName() + ']');
-			LOG.info("provider-demo -- response info: [" + result + "]");
-			return result;
+			responseBody = String.format("from host-ip: %s, request param: %s, response from %s",
+					getInet4Address(), param, providerNameConfig.getName());
+			status = HttpServletResponse.SC_OK;
+			break;
 		}
 
+		return ResponseEntity.status(status).body(responseBody);
 	}
 
 	@RequestMapping(value = "/echo/error/{param}", method = RequestMethod.GET)

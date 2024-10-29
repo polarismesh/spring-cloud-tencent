@@ -9,9 +9,10 @@ spring:
         server-addr: 127.0.0.1:8848
         enabled: true
     polaris:
+      admin:
+        port: 28085
       lossless:
         enabled: true
-        port: 28085
         healthCheckPath: /actuator/health
         healthCheckInterval: 5000
 lossless:
