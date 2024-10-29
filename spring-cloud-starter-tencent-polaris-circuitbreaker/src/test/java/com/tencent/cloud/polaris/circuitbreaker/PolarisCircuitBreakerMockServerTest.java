@@ -37,6 +37,7 @@ import com.tencent.polaris.api.core.ConsumerAPI;
 import com.tencent.polaris.api.pojo.ServiceKey;
 import com.tencent.polaris.circuitbreak.api.CircuitBreakAPI;
 import com.tencent.polaris.circuitbreak.factory.CircuitBreakAPIFactory;
+import com.tencent.polaris.client.api.SDKContext;
 import com.tencent.polaris.client.util.Utils;
 import com.tencent.polaris.factory.api.DiscoveryAPIFactory;
 import com.tencent.polaris.specification.api.v1.fault.tolerance.CircuitBreakerProto;
@@ -71,6 +72,8 @@ public class PolarisCircuitBreakerMockServerTest {
 	private static MockedStatic<ApplicationContextAwareUtils> mockedApplicationContextAwareUtils;
 	private static NamingServer namingServer;
 
+	private static SDKContext context;
+
 	@BeforeAll
 	public static void beforeAll() throws IOException {
 		mockedApplicationContextAwareUtils = Mockito.mockStatic(ApplicationContextAwareUtils.class);
@@ -79,18 +82,23 @@ public class PolarisCircuitBreakerMockServerTest {
 		mockedApplicationContextAwareUtils.when(() -> ApplicationContextAwareUtils.getProperties("spring.cloud.polaris.service"))
 				.thenReturn(SERVICE_CIRCUIT_BREAKER);
 		PolarisSDKContextManager.innerDestroy();
+
 		namingServer = NamingServer.startNamingServer(-1);
 		System.setProperty(SERVER_ADDRESS_ENV, String.format("127.0.0.1:%d", namingServer.getPort()));
-
 		ServiceKey serviceKey = new ServiceKey(NAMESPACE_TEST, SERVICE_CIRCUIT_BREAKER);
-
-		CircuitBreakerProto.CircuitBreakerRule.Builder circuitBreakerRuleBuilder =  CircuitBreakerProto.CircuitBreakerRule.newBuilder();
-		InputStream inputStream = PolarisCircuitBreakerMockServerTest.class.getClassLoader().getResourceAsStream("circuitBreakerRule.json");
-		String json = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8)).lines().collect(Collectors.joining(""));
+		CircuitBreakerProto.CircuitBreakerRule.Builder circuitBreakerRuleBuilder = CircuitBreakerProto.CircuitBreakerRule.newBuilder();
+		InputStream inputStream = PolarisCircuitBreakerMockServerTest.class.getClassLoader()
+				.getResourceAsStream("circuitBreakerRule.json");
+		String json = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8)).lines()
+				.collect(Collectors.joining(""));
 		JsonFormat.parser().ignoringUnknownFields().merge(json, circuitBreakerRuleBuilder);
 		CircuitBreakerProto.CircuitBreakerRule circuitBreakerRule = circuitBreakerRuleBuilder.build();
-		CircuitBreakerProto.CircuitBreaker circuitBreaker = CircuitBreakerProto.CircuitBreaker.newBuilder().addRules(circuitBreakerRule).build();
+		CircuitBreakerProto.CircuitBreaker circuitBreaker = CircuitBreakerProto.CircuitBreaker.newBuilder()
+				.addRules(circuitBreakerRule).build();
 		namingServer.getNamingService().setCircuitBreaker(serviceKey, circuitBreaker);
+
+		Configuration configuration = TestUtils.configWithEnvAddress();
+		context = SDKContext.initContextByConfig(configuration);
 	}
 
 	@AfterAll
@@ -101,14 +109,15 @@ public class PolarisCircuitBreakerMockServerTest {
 		if (null != mockedApplicationContextAwareUtils) {
 			mockedApplicationContextAwareUtils.close();
 		}
+		if (null != context) {
+			context.close();
+		}
 	}
 
 	@Test
 	public void testCircuitBreaker() {
-		Configuration configuration = TestUtils.configWithEnvAddress();
-		CircuitBreakAPI circuitBreakAPI = CircuitBreakAPIFactory.createCircuitBreakAPIByConfig(configuration);
-
-		ConsumerAPI consumerAPI = DiscoveryAPIFactory.createConsumerAPIByConfig(configuration);
+		CircuitBreakAPI circuitBreakAPI = CircuitBreakAPIFactory.createCircuitBreakAPIByContext(context);
+		ConsumerAPI consumerAPI = DiscoveryAPIFactory.createConsumerAPIByContext(context);
 		PolarisCircuitBreakerProperties polarisCircuitBreakerProperties = new PolarisCircuitBreakerProperties();
 		PolarisCircuitBreakerFactory polarisCircuitBreakerFactory = new PolarisCircuitBreakerFactory(circuitBreakAPI, consumerAPI, polarisCircuitBreakerProperties);
 		CircuitBreaker cb = polarisCircuitBreakerFactory.create(SERVICE_CIRCUIT_BREAKER);
@@ -140,7 +149,8 @@ public class PolarisCircuitBreakerMockServerTest {
 		assertThat(Mono.error(new RuntimeException("boom")).transform(it -> rcb.run(it, t -> Mono.just("fallback")))
 				.block()).isEqualTo("fallback");
 
-		assertThat(Flux.just("foobar", "hello world").transform(it -> rcb.run(it, t -> Flux.just("fallback", "fallback")))
+		assertThat(Flux.just("foobar", "hello world")
+				.transform(it -> rcb.run(it, t -> Flux.just("fallback", "fallback")))
 				.collectList().block())
 				.isEqualTo(Arrays.asList("fallback", "fallback"));
 
