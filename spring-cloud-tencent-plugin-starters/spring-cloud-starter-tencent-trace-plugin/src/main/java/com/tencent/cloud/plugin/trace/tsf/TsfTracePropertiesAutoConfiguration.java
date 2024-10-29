@@ -18,15 +18,12 @@
 
 package com.tencent.cloud.plugin.trace.tsf;
 
-import com.tencent.cloud.common.tsf.ConditionalOnTsfEnabled;
-
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration(proxyBeanMethods = false)
-@ConditionalOnTsfEnabled
 @ConditionalOnProperty(value = "spring.cloud.polaris.trace.enabled", matchIfMissing = true)
 public class TsfTracePropertiesAutoConfiguration {
 

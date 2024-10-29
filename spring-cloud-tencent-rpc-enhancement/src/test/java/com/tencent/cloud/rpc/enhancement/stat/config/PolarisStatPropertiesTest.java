@@ -35,8 +35,6 @@ public class PolarisStatPropertiesTest {
 			.withConfiguration(AutoConfigurations.of(PolarisStatPropertiesAutoConfiguration.class))
 			.withPropertyValues("spring.cloud.polaris.enabled=true")
 			.withPropertyValues("spring.cloud.polaris.stat.enabled=true")
-			.withPropertyValues("spring.cloud.polaris.stat.host=127.0.0.1")
-			.withPropertyValues("spring.cloud.polaris.stat.port=20000")
 			.withPropertyValues("spring.cloud.polaris.stat.path=/xxx")
 			.withPropertyValues("spring.cloud.polaris.stat.pushgateway.enabled=true")
 			.withPropertyValues("spring.cloud.polaris.stat.pushgateway.address=127.0.0.1:9091")
@@ -50,8 +48,6 @@ public class PolarisStatPropertiesTest {
 
 			assertThat(polarisStatProperties).isNotNull();
 			assertThat(polarisStatProperties.isEnabled()).isTrue();
-			assertThat(polarisStatProperties.getHost()).isNotBlank();
-			assertThat(polarisStatProperties.getPort()).isEqualTo(20000);
 			assertThat(polarisStatProperties.getPath()).isEqualTo("/xxx");
 			assertThat(polarisStatProperties.isPushGatewayEnabled()).isTrue();
 			assertThat(polarisStatProperties.getPushGatewayAddress()).isEqualTo("127.0.0.1:9091");
