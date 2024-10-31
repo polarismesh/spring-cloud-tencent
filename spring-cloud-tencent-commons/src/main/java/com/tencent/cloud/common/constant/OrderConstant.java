@@ -178,6 +178,11 @@ public class OrderConstant {
 		public static Integer LOSSLESS_ORDER = 2;
 
 		/**
+		 * Order of admin configuration modifier.
+		 */
+		public static Integer ADMIN_ORDER = 2;
+
+		/**
 		 * Order of service contract configuration modifier.
 		 */
 		public static Integer SERVICE_CONTRACT_ORDER = Integer.MAX_VALUE - 9;

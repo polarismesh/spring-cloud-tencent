@@ -9,7 +9,6 @@ spring:
       enabled: true
       stat:
         enabled: true
-        port: 28081
       loadbalancer:
         strategy: polarisWeightedRandom
     tencent:

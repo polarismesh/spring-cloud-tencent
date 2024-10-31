@@ -44,7 +44,6 @@ public class LosslessConfigModifier implements PolarisConfigModifier {
 		LosslessConfigImpl losslessConfig = (LosslessConfigImpl) configuration.getProvider().getLossless();
 		if (losslessProperties.isEnabled()) {
 			losslessConfig.setEnable(true);
-			losslessConfig.setPort(losslessProperties.getPort());
 			if (Objects.nonNull(losslessProperties.getDelayRegisterInterval())) {
 				losslessConfig.setDelayRegisterInterval(losslessProperties.getDelayRegisterInterval());
 			}
