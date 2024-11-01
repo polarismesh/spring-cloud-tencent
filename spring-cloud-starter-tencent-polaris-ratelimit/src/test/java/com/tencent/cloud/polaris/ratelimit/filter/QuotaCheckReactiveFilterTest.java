@@ -22,7 +22,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Field;
 import java.nio.charset.StandardCharsets;
-import java.util.Collections;
 import java.util.concurrent.CountDownLatch;
 import java.util.stream.Collectors;
 
@@ -32,8 +31,6 @@ import com.tencent.cloud.common.constant.OrderConstant;
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.polaris.context.ServiceRuleManager;
 import com.tencent.cloud.polaris.ratelimit.config.PolarisRateLimitProperties;
-import com.tencent.cloud.polaris.ratelimit.resolver.RateLimitRuleArgumentReactiveResolver;
-import com.tencent.cloud.polaris.ratelimit.spi.PolarisRateLimiterLabelReactiveResolver;
 import com.tencent.cloud.polaris.ratelimit.spi.PolarisRateLimiterLimitedFallback;
 import com.tencent.polaris.api.plugin.ratelimiter.QuotaResult;
 import com.tencent.polaris.ratelimit.api.core.LimitAPI;
@@ -74,8 +71,6 @@ import static org.mockito.Mockito.when;
 @SpringBootTest(classes = QuotaCheckReactiveFilterTest.TestApplication.class,
 		properties = {"spring.cloud.polaris.namespace=Test", "spring.cloud.polaris.service=TestApp"})
 public class QuotaCheckReactiveFilterTest {
-	private final PolarisRateLimiterLabelReactiveResolver labelResolver =
-			exchange -> Collections.singletonMap("xxx", "xxx");
 	private QuotaCheckReactiveFilter quotaCheckReactiveFilter;
 	private QuotaCheckReactiveFilter quotaCheckWithRateLimiterLimitedFallbackReactiveFilter;
 	private PolarisRateLimiterLimitedFallback polarisRateLimiterLimitedFallback;
@@ -123,10 +118,10 @@ public class QuotaCheckReactiveFilterTest {
 		RateLimitProto.RateLimit rateLimit = RateLimitProto.RateLimit.newBuilder().addRules(rateLimitRule).build();
 		when(serviceRuleManager.getServiceRateLimitRule(anyString(), anyString())).thenReturn(rateLimit);
 
-		RateLimitRuleArgumentReactiveResolver rateLimitRuleArgumentReactiveResolver = new RateLimitRuleArgumentReactiveResolver(serviceRuleManager, labelResolver);
-		this.quotaCheckReactiveFilter = new QuotaCheckReactiveFilter(limitAPI, polarisRateLimitProperties, rateLimitRuleArgumentReactiveResolver, null);
+		this.quotaCheckReactiveFilter = new QuotaCheckReactiveFilter(limitAPI, null, polarisRateLimitProperties, null);
 		this.polarisRateLimiterLimitedFallback = new JsonPolarisRateLimiterLimitedFallback();
-		this.quotaCheckWithRateLimiterLimitedFallbackReactiveFilter = new QuotaCheckReactiveFilter(limitAPI, polarisRateLimitWithHtmlRejectTipsProperties, rateLimitRuleArgumentReactiveResolver, polarisRateLimiterLimitedFallback);
+		this.quotaCheckWithRateLimiterLimitedFallbackReactiveFilter = new QuotaCheckReactiveFilter(limitAPI, null,
+				polarisRateLimitWithHtmlRejectTipsProperties, polarisRateLimiterLimitedFallback);
 	}
 
 	@Test

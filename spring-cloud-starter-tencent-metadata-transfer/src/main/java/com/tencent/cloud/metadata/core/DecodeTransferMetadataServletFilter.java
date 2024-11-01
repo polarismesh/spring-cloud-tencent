@@ -32,7 +32,6 @@ import com.tencent.cloud.common.metadata.MetadataContextHolder;
 import com.tencent.cloud.common.util.JacksonUtils;
 import com.tencent.cloud.common.util.UrlUtils;
 import com.tencent.cloud.metadata.provider.ServletMetadataProvider;
-import com.tencent.cloud.polaris.context.config.PolarisContextProperties;
 import com.tencent.polaris.api.utils.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,12 +55,6 @@ import static com.tencent.polaris.metadata.core.constant.MetadataConstants.LOCAL
 public class DecodeTransferMetadataServletFilter extends OncePerRequestFilter {
 
 	private static final Logger LOG = LoggerFactory.getLogger(DecodeTransferMetadataServletFilter.class);
-
-	private PolarisContextProperties polarisContextProperties;
-
-	public DecodeTransferMetadataServletFilter(PolarisContextProperties polarisContextProperties) {
-		this.polarisContextProperties = polarisContextProperties;
-	}
 
 	@Override
 	protected void doFilterInternal(@NonNull HttpServletRequest httpServletRequest,
