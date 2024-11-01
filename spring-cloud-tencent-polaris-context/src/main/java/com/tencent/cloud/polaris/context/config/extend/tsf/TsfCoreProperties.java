@@ -129,6 +129,12 @@ public class TsfCoreProperties {
 	@Value("${tsf_event_master_port:15200}")
 	private Integer eventMasterPort;
 
+	@Value("${tsf_ratelimit_master_ip:}")
+	private String ratelimitMasterIp;
+
+	@Value("${tsf_ratelimit_master_port:7000}")
+	private Integer ratelimitMasterPort;
+
 	public String getAppId() {
 		return appId;
 	}
@@ -270,6 +276,22 @@ public class TsfCoreProperties {
 		this.eventMasterPort = eventMasterPort;
 	}
 
+	public String getRatelimitMasterIp() {
+		return ratelimitMasterIp;
+	}
+
+	public void setRatelimitMasterIp(String ratelimitMasterIp) {
+		this.ratelimitMasterIp = ratelimitMasterIp;
+	}
+
+	public Integer getRatelimitMasterPort() {
+		return ratelimitMasterPort;
+	}
+
+	public void setRatelimitMasterPort(Integer ratelimitMasterPort) {
+		this.ratelimitMasterPort = ratelimitMasterPort;
+	}
+
 	@Override
 	public String toString() {
 		return "TsfCoreProperties{" +
@@ -289,6 +311,8 @@ public class TsfCoreProperties {
 				", scheme='" + scheme + '\'' +
 				", eventMasterIp='" + eventMasterIp + '\'' +
 				", eventMasterPort=" + eventMasterPort +
+				", ratelimitMasterIp='" + ratelimitMasterIp + '\'' +
+				", ratelimitMasterPort=" + ratelimitMasterPort +
 				'}';
 	}
 }
