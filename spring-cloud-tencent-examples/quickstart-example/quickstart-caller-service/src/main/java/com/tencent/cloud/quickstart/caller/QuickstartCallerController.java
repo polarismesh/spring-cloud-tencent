@@ -40,6 +40,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -100,7 +101,12 @@ public class QuickstartCallerController {
 		HttpEntity<String> entity = new HttpEntity<>(headers);
 
 		// 使用 exchange 方法发送 GET 请求，并获取响应
-		return restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
+		try {
+			return restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
+		}
+		catch (HttpClientErrorException | HttpServerErrorException httpClientErrorException) {
+			return new ResponseEntity<>(httpClientErrorException.getResponseBodyAsString(), httpClientErrorException.getStatusCode());
+		}
 	}
 
 	/**
@@ -121,32 +127,33 @@ public class QuickstartCallerController {
 	 * Get information 30 times per 1 second.
 	 *
 	 * @return result of 30 calls.
-	 * @throws InterruptedException exception
 	 */
 	@GetMapping("/ratelimit")
-	public String invokeInfo() throws InterruptedException {
-		StringBuffer builder = new StringBuffer();
-		CountDownLatch count = new CountDownLatch(30);
+	public String invokeInfo() {
+		StringBuilder builder = new StringBuilder();
 		AtomicInteger index = new AtomicInteger(0);
 		for (int i = 0; i < 30; i++) {
-			new Thread(() -> {
+			try {
+				ResponseEntity<String> entity = restTemplate.getForEntity(
+						"http://QuickstartCalleeService/quickstart/callee/info", String.class);
+				builder.append(entity.getBody() + "\n");
 				try {
-					ResponseEntity<String> entity = restTemplate.getForEntity(
-							"http://QuickstartCalleeService/quickstart/callee/info", String.class);
-					builder.append(entity.getBody() + "\n");
+					Thread.sleep(30);
 				}
-				catch (RestClientException e) {
-					if (e instanceof HttpClientErrorException.TooManyRequests) {
-						builder.append("TooManyRequests " + index.incrementAndGet() + "\n");
-					}
-					else {
-						throw e;
-					}
+				catch (InterruptedException e) {
+					throw new RuntimeException(e);
 				}
-				count.countDown();
-			}).start();
+			}
+			catch (RestClientException e) {
+				if (e instanceof HttpClientErrorException.TooManyRequests) {
+					builder.append("TooManyRequests " + index.incrementAndGet() + "\n");
+				}
+				else {
+					throw e;
+				}
+			}
 		}
-		count.await();
+
 		return builder.toString();
 	}
 

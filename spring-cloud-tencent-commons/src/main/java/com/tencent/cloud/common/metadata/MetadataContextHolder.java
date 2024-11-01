@@ -28,6 +28,8 @@ import com.tencent.polaris.metadata.core.MetadataContainer;
 import com.tencent.polaris.metadata.core.MetadataProvider;
 import com.tencent.polaris.metadata.core.MetadataType;
 import com.tencent.polaris.metadata.core.TransitiveType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
@@ -42,6 +44,8 @@ import static com.tencent.cloud.common.metadata.MetadataContext.FRAGMENT_UPSTREA
  */
 public final class MetadataContextHolder {
 
+	private static final Logger LOG = LoggerFactory.getLogger(MetadataContextHolder.class);
+
 	private static StaticMetadataManager staticMetadataManager;
 
 	static {
@@ -52,7 +56,13 @@ public final class MetadataContextHolder {
 	}
 
 	public static MetadataContext get() {
-		return (MetadataContext) com.tencent.polaris.metadata.core.manager.MetadataContextHolder.getOrCreate();
+		try {
+			return (MetadataContext) com.tencent.polaris.metadata.core.manager.MetadataContextHolder.getOrCreate();
+		}
+		catch (Throwable throwable) {
+			LOG.error("Failed to get or create MetadataContext.", throwable);
+			return null;
+		}
 	}
 
 	private static MetadataContext createMetadataManager() {
