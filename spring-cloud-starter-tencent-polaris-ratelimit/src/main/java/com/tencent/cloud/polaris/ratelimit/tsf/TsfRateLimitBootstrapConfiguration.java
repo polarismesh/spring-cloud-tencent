@@ -13,26 +13,22 @@
  * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
- *
  */
 
-package com.tencent.cloud.polaris.ratelimit.spi;
+package com.tencent.cloud.polaris.ratelimit.tsf;
 
-import java.util.Map;
+import com.tencent.cloud.common.tsf.ConditionalOnTsfConsulEnabled;
 
-import javax.servlet.http.HttpServletRequest;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 
 /**
- * Resolve custom label from request. The label used for rate limit params.
+ * Bootstrap configuration for TSF rate limit.
  *
- * @author lepdou 2022-03-31
+ * @author Haotian Zhang
  */
-public interface PolarisRateLimiterLabelServletResolver {
-
-	/**
-	 * Resolve custom label from request.
-	 * @param request the http request
-	 * @return resolved labels
-	 */
-	Map<String, String> resolve(HttpServletRequest request);
+@Configuration(proxyBeanMethods = false)
+@ConditionalOnTsfConsulEnabled
+@Import(TsfRateLimitAutoConfiguration.class)
+public class TsfRateLimitBootstrapConfiguration {
 }
