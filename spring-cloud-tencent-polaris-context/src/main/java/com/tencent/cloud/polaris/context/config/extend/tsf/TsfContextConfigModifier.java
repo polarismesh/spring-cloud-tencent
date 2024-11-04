@@ -53,6 +53,7 @@ public class TsfContextConfigModifier implements PolarisConfigModifier {
 		tsfEventReporterConfig.setTsfNamespaceId(tsfCoreProperties.getTsfNamespaceId());
 		tsfEventReporterConfig.setServiceName(tsfCoreProperties.getServiceName());
 		tsfEventReporterConfig.setToken(consulProperties.getAclToken());
+		tsfEventReporterConfig.setApplicationId(tsfCoreProperties.getTsfApplicationId());
 		configuration.getGlobal().getEventReporter()
 				.setPluginConfig(DefaultPlugins.TSF_EVENT_REPORTER_TYPE, tsfEventReporterConfig);
 	}

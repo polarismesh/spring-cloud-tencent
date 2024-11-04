@@ -55,3 +55,8 @@ spring:
             - Path=/QuickstartCallerService/**
           filters:
             - StripPrefix=1
+logging:
+  file:
+    name: /sct-demo-logs/${spring.application.name}/root.log
+  level:
+    root: INFO
