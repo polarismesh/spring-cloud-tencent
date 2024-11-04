@@ -23,7 +23,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Field;
 import java.nio.charset.StandardCharsets;
-import java.util.Collections;
 import java.util.stream.Collectors;
 
 import com.google.protobuf.InvalidProtocolBufferException;
@@ -33,8 +32,6 @@ import com.tencent.cloud.common.constant.HeaderConstant;
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.polaris.context.ServiceRuleManager;
 import com.tencent.cloud.polaris.ratelimit.config.PolarisRateLimitProperties;
-import com.tencent.cloud.polaris.ratelimit.resolver.RateLimitRuleArgumentServletResolver;
-import com.tencent.cloud.polaris.ratelimit.spi.PolarisRateLimiterLabelServletResolver;
 import com.tencent.cloud.polaris.ratelimit.spi.PolarisRateLimiterLimitedFallback;
 import com.tencent.polaris.api.plugin.ratelimiter.QuotaResult;
 import com.tencent.polaris.ratelimit.api.core.LimitAPI;
@@ -70,12 +67,10 @@ import static org.mockito.Mockito.when;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
 		classes = QuotaCheckServletFilterTest.TestApplication.class,
 		properties = {
-		"spring.cloud.polaris.namespace=Test", "spring.cloud.polaris.service=TestApp"
-})
+				"spring.cloud.polaris.namespace=Test", "spring.cloud.polaris.service=TestApp"
+		})
 public class QuotaCheckServletFilterTest {
 
-	private final PolarisRateLimiterLabelServletResolver labelResolver =
-			exchange -> Collections.singletonMap("xxx", "xxx");
 	private QuotaCheckServletFilter quotaCheckServletFilter;
 	private QuotaCheckServletFilter quotaCheckWithHtmlRejectTipsServletFilter;
 	private QuotaCheckServletFilter quotaCheckWithRateLimiterLimitedFallbackFilter;
@@ -96,7 +91,8 @@ public class QuotaCheckServletFilterTest {
 			}
 			else if (serviceName.equals("TestApp3")) {
 				QuotaResponse response = new QuotaResponse(new QuotaResult(QuotaResult.Code.QuotaResultLimited, 0, "QuotaResultLimited"));
-				response.setActiveRule(RateLimitProto.Rule.newBuilder().setName(StringValue.newBuilder().setValue("MOCK_RULE").build()).build());
+				response.setActiveRule(RateLimitProto.Rule.newBuilder()
+						.setName(StringValue.newBuilder().setValue("MOCK_RULE").build()).build());
 				return response;
 			}
 			else {
@@ -114,19 +110,22 @@ public class QuotaCheckServletFilterTest {
 
 		ServiceRuleManager serviceRuleManager = mock(ServiceRuleManager.class);
 
-		RateLimitProto.Rule.Builder ratelimitRuleBuilder =  RateLimitProto.Rule.newBuilder();
-		InputStream inputStream = QuotaCheckServletFilterTest.class.getClassLoader().getResourceAsStream("ratelimit.json");
-		String json = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8)).lines().collect(Collectors.joining(""));
+		RateLimitProto.Rule.Builder ratelimitRuleBuilder = RateLimitProto.Rule.newBuilder();
+		InputStream inputStream = QuotaCheckServletFilterTest.class.getClassLoader()
+				.getResourceAsStream("ratelimit.json");
+		String json = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8)).lines()
+				.collect(Collectors.joining(""));
 		JsonFormat.parser().ignoringUnknownFields().merge(json, ratelimitRuleBuilder);
 		RateLimitProto.Rule rateLimitRule = ratelimitRuleBuilder.build();
 		RateLimitProto.RateLimit rateLimit = RateLimitProto.RateLimit.newBuilder().addRules(rateLimitRule).build();
 		when(serviceRuleManager.getServiceRateLimitRule(anyString(), anyString())).thenReturn(rateLimit);
 
-		RateLimitRuleArgumentServletResolver rateLimitRuleArgumentServletResolver = new RateLimitRuleArgumentServletResolver(serviceRuleManager, labelResolver);
-		this.quotaCheckServletFilter = new QuotaCheckServletFilter(limitAPI, polarisRateLimitProperties, rateLimitRuleArgumentServletResolver, null);
-		this.quotaCheckWithHtmlRejectTipsServletFilter = new QuotaCheckServletFilter(limitAPI, polarisRateLimitWithHtmlRejectTipsProperties, rateLimitRuleArgumentServletResolver, null);
+		this.quotaCheckServletFilter = new QuotaCheckServletFilter(limitAPI, null, polarisRateLimitProperties, null);
+		this.quotaCheckWithHtmlRejectTipsServletFilter = new QuotaCheckServletFilter(limitAPI, null,
+				polarisRateLimitWithHtmlRejectTipsProperties, null);
 		this.polarisRateLimiterLimitedFallback = new JsonPolarisRateLimiterLimitedFallback();
-		this.quotaCheckWithRateLimiterLimitedFallbackFilter = new QuotaCheckServletFilter(limitAPI, polarisRateLimitWithHtmlRejectTipsProperties, rateLimitRuleArgumentServletResolver, polarisRateLimiterLimitedFallback);
+		this.quotaCheckWithRateLimiterLimitedFallbackFilter = new QuotaCheckServletFilter(limitAPI, null,
+				polarisRateLimitWithHtmlRejectTipsProperties, polarisRateLimiterLimitedFallback);
 	}
 
 	@Test

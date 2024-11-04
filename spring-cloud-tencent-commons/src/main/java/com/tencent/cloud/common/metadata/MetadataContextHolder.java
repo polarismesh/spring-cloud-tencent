@@ -28,6 +28,8 @@ import com.tencent.polaris.metadata.core.MetadataContainer;
 import com.tencent.polaris.metadata.core.MetadataProvider;
 import com.tencent.polaris.metadata.core.MetadataType;
 import com.tencent.polaris.metadata.core.TransitiveType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
@@ -41,6 +43,8 @@ import static com.tencent.cloud.common.metadata.MetadataContext.FRAGMENT_UPSTREA
  * @author Haotian Zhang
  */
 public final class MetadataContextHolder {
+
+	private static final Logger LOG = LoggerFactory.getLogger(MetadataContextHolder.class);
 
 	private static StaticMetadataManager staticMetadataManager;
 
@@ -58,8 +62,14 @@ public final class MetadataContextHolder {
 	private static MetadataContext createMetadataManager() {
 		MetadataContext metadataManager = new MetadataContext();
 		if (staticMetadataManager == null) {
-			staticMetadataManager = ApplicationContextAwareUtils.getApplicationContext()
-					.getBean(StaticMetadataManager.class);
+			if (ApplicationContextAwareUtils.getApplicationContext() != null) {
+				staticMetadataManager = ApplicationContextAwareUtils.getApplicationContext()
+						.getBean(StaticMetadataManager.class);
+			}
+			else {
+				// for junit test.
+				return metadataManager;
+			}
 		}
 		// local custom metadata
 		MetadataContainer metadataContainer = metadataManager.getMetadataContainer(MetadataType.CUSTOM, false);
