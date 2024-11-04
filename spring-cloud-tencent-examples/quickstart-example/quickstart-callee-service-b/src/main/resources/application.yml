@@ -48,3 +48,8 @@ management:
           - polaris-config
 label:
   key-value: user2:lisi
+logging:
+  file:
+    name: /sct-demo-logs/${spring.application.name}/root.log
+  level:
+    root: INFO

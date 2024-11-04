@@ -1,3 +1,4 @@
 com.tencent.cloud.polaris.ratelimit.config.PolarisRateLimitAutoConfiguration
 com.tencent.cloud.polaris.ratelimit.config.PolarisRateLimitPropertiesAutoConfiguration
 com.tencent.cloud.polaris.ratelimit.endpoint.PolarisRateLimitRuleEndpointAutoConfiguration
+com.tencent.cloud.polaris.ratelimit.tsf.TsfRateLimitAutoConfiguration
