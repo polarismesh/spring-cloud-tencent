@@ -56,20 +56,20 @@ public final class MetadataContextHolder {
 	}
 
 	public static MetadataContext get() {
-		try {
-			return (MetadataContext) com.tencent.polaris.metadata.core.manager.MetadataContextHolder.getOrCreate();
-		}
-		catch (Throwable throwable) {
-			LOG.error("Failed to get or create MetadataContext.", throwable);
-			return null;
-		}
+		return (MetadataContext) com.tencent.polaris.metadata.core.manager.MetadataContextHolder.getOrCreate();
 	}
 
 	private static MetadataContext createMetadataManager() {
 		MetadataContext metadataManager = new MetadataContext();
 		if (staticMetadataManager == null) {
-			staticMetadataManager = ApplicationContextAwareUtils.getApplicationContext()
-					.getBean(StaticMetadataManager.class);
+			if (ApplicationContextAwareUtils.getApplicationContext() != null) {
+				staticMetadataManager = ApplicationContextAwareUtils.getApplicationContext()
+						.getBean(StaticMetadataManager.class);
+			}
+			else {
+				// for junit test.
+				return metadataManager;
+			}
 		}
 		// local custom metadata
 		MetadataContainer metadataContainer = metadataManager.getMetadataContainer(MetadataType.CUSTOM, false);
