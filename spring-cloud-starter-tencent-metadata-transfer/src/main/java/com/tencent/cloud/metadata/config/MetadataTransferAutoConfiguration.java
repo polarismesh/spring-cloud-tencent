@@ -68,8 +68,8 @@ public class MetadataTransferAutoConfiguration {
 		}
 
 		@Bean
-		public DecodeTransferMetadataServletFilter metadataServletFilter(PolarisContextProperties polarisContextProperties) {
-			return new DecodeTransferMetadataServletFilter(polarisContextProperties);
+		public DecodeTransferMetadataServletFilter metadataServletFilter() {
+			return new DecodeTransferMetadataServletFilter();
 		}
 	}
 
@@ -81,8 +81,8 @@ public class MetadataTransferAutoConfiguration {
 	protected static class MetadataReactiveFilterConfig {
 
 		@Bean
-		public DecodeTransferMetadataReactiveFilter metadataReactiveFilter(PolarisContextProperties polarisContextProperties) {
-			return new DecodeTransferMetadataReactiveFilter(polarisContextProperties);
+		public DecodeTransferMetadataReactiveFilter metadataReactiveFilter() {
+			return new DecodeTransferMetadataReactiveFilter();
 		}
 
 	}

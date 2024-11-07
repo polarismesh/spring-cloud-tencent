@@ -57,12 +57,6 @@ public class DecodeTransferMetadataServletFilter extends OncePerRequestFilter {
 
 	private static final Logger LOG = LoggerFactory.getLogger(DecodeTransferMetadataServletFilter.class);
 
-	private PolarisContextProperties polarisContextProperties;
-
-	public DecodeTransferMetadataServletFilter(PolarisContextProperties polarisContextProperties) {
-		this.polarisContextProperties = polarisContextProperties;
-	}
-
 	@Override
 	protected void doFilterInternal(@NonNull HttpServletRequest httpServletRequest,
 			@NonNull HttpServletResponse httpServletResponse, FilterChain filterChain)

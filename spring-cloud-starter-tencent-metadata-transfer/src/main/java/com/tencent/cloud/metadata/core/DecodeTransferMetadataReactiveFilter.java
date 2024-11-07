@@ -54,11 +54,6 @@ import static com.tencent.polaris.metadata.core.constant.MetadataConstants.LOCAL
 public class DecodeTransferMetadataReactiveFilter implements WebFilter, Ordered {
 
 	private static final Logger LOG = LoggerFactory.getLogger(DecodeTransferMetadataReactiveFilter.class);
-	private PolarisContextProperties polarisContextProperties;
-
-	public DecodeTransferMetadataReactiveFilter(PolarisContextProperties polarisContextProperties) {
-		this.polarisContextProperties = polarisContextProperties;
-	}
 
 	@Override
 	public int getOrder() {

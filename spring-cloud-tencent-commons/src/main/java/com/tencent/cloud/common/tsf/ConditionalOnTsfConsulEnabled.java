@@ -47,12 +47,12 @@ public @interface ConditionalOnTsfConsulEnabled {
 			Environment environment = conditionContext.getEnvironment();
 			boolean tsfConsulEnable = false;
 
-			String tsfAppId = environment.getProperty("tsf_app_id", "");
+			String tsfAppId = environment.getProperty("tsf_app_id");
 			if (StringUtils.isNotBlank(tsfAppId)) {
 				String tsfConsulIp = environment.getProperty("tsf_consul_ip");
-				String tsePolarisAddress = environment.getProperty("spring.cloud.polaris.address");
-				if (StringUtils.isBlank(tsePolarisAddress) && StringUtils.isNotBlank(environment.getProperty("tse_polaris_ip"))) {
-					tsePolarisAddress = "grpc://" + environment.getProperty("tse_polaris_ip") + ":8091";
+				String tsePolarisAddress = environment.getProperty("polaris_address");
+				if (StringUtils.isBlank(tsePolarisAddress) && StringUtils.isNotBlank(environment.getProperty("spring.cloud.polaris.address"))) {
+					tsePolarisAddress = environment.getProperty("spring.cloud.polaris.address");
 				}
 				tsfConsulEnable = StringUtils.isNotBlank(tsfConsulIp) && StringUtils.isBlank(tsePolarisAddress);
 			}

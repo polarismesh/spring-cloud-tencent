@@ -36,6 +36,7 @@ public class CustomMetadata implements InstanceMetadataProvider {
 	public Map<String, String> getMetadata() {
 		Map<String, String> metadata = new HashMap<>();
 		metadata.put("k1", "v1");
+		metadata.put("lane", "lane1");
 		return metadata;
 	}
 }

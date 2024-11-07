@@ -16,24 +16,20 @@
  *
  */
 
-package com.tencent.cloud.polaris.ratelimit.spi;
+package com.tencent.cloud.plugin.lossless.config;
 
-import java.util.Map;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 
-import org.springframework.web.server.ServerWebExchange;
+@ConfigurationProperties("spring.cloud.polaris.warmup")
+public class WarmupProperties {
 
-/**
- * Resolve custom label from request. The label used for rate limit params.
- *
- * @author lepdou 2022-03-31
- */
-public interface PolarisRateLimiterLabelReactiveResolver {
+	private boolean enabled = false;
 
-	/**
-	 * Resolve custom label from request.
-	 *
-	 * @param exchange the http request
-	 * @return resolved labels
-	 */
-	Map<String, String> resolve(ServerWebExchange exchange);
+	public boolean isEnabled() {
+		return enabled;
+	}
+
+	public void setEnabled(boolean enabled) {
+		this.enabled = enabled;
+	}
 }

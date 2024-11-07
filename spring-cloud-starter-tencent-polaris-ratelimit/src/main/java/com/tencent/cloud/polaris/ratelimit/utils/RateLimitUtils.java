@@ -18,9 +18,17 @@
 
 package com.tencent.cloud.polaris.ratelimit.utils;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import com.tencent.cloud.common.util.ResourceFileUtils;
 import com.tencent.cloud.polaris.ratelimit.config.PolarisRateLimitProperties;
 import com.tencent.cloud.polaris.ratelimit.constant.RateLimitConstant;
+import com.tencent.polaris.api.plugin.stat.TraceConstants;
+import com.tencent.polaris.api.utils.CollectionUtils;
+import com.tencent.polaris.assembly.api.AssemblyAPI;
+import com.tencent.polaris.assembly.api.pojo.TraceAttributes;
+import com.tencent.polaris.ratelimit.api.rpc.QuotaResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,6 +44,7 @@ public final class RateLimitUtils {
 	private static final Logger LOG = LoggerFactory.getLogger(RateLimitUtils.class);
 
 	private RateLimitUtils() {
+
 	}
 
 	public static String getRejectTips(PolarisRateLimitProperties polarisRateLimitProperties) {
@@ -61,5 +70,34 @@ public final class RateLimitUtils {
 		}
 
 		return RateLimitConstant.QUOTA_LIMITED_INFO;
+	}
+
+	public static void reportTrace(AssemblyAPI assemblyAPI, String ruleId) {
+		try {
+			if (assemblyAPI != null) {
+				Map<String, String> attributes = new HashMap<>();
+				attributes.put(TraceConstants.RateLimitRuleId, ruleId);
+				TraceAttributes traceAttributes = new TraceAttributes();
+				traceAttributes.setAttributes(attributes);
+				traceAttributes.setAttributeLocation(TraceAttributes.AttributeLocation.SPAN);
+				assemblyAPI.updateTraceAttributes(traceAttributes);
+			}
+		}
+		catch (Throwable throwable) {
+			LOG.warn("[RateLimit] Report rule id {} to trace error.", ruleId, throwable);
+		}
+	}
+
+	public static void release(QuotaResponse quotaResponse) {
+		if (quotaResponse != null && CollectionUtils.isNotEmpty(quotaResponse.getReleaseList())) {
+			for (Runnable release : quotaResponse.getReleaseList()) {
+				try {
+					release.run();
+				}
+				catch (Throwable throwable) {
+					LOG.warn("[RateLimit] Release error.", throwable);
+				}
+			}
+		}
 	}
 }

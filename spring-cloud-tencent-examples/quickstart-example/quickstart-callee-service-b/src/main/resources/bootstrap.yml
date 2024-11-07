@@ -14,10 +14,11 @@ spring:
       contract:
         exposure: true
         report:
-          enabled: false
+          enabled: true
+      admin:
+        port: 28084
       stat:
         enabled: true
-        port: 28084
       #        pushgateway:
       #          enabled: true
       #          address: 127.0.0.1:9091
@@ -34,7 +35,7 @@ spring:
       metadata:
         content:
           label1: value2
-          region: huanan
+#          region: huanan
 management:
   endpoints:
     web:

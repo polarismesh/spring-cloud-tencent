@@ -39,12 +39,18 @@ public class TsfSpanAttributesProvider implements SpanAttributesProvider {
 		}
 		ServiceInstance targetServiceInstance = context.getTargetServiceInstance();
 		if (null != targetServiceInstance && CollectionUtils.isNotEmpty(targetServiceInstance.getMetadata())) {
-			String nsId = targetServiceInstance.getMetadata().get(TsfMetadataConstants.TSF_NAMESPACE_ID);
-			attributes.put("remote.namespace-id", StringUtils.defaultString(nsId));
-			String groupId = targetServiceInstance.getMetadata().get(TsfMetadataConstants.TSF_GROUP_ID);
-			attributes.put("remote.group-id", StringUtils.defaultString(groupId));
-			String applicationId = targetServiceInstance.getMetadata().get(TsfMetadataConstants.TSF_APPLICATION_ID);
-			attributes.put("remote.application-id", StringUtils.defaultString(applicationId));
+			if (targetServiceInstance.getMetadata().containsKey(TsfMetadataConstants.TSF_NAMESPACE_ID)) {
+				attributes.put("remote.namespace-id", StringUtils.defaultString(
+						targetServiceInstance.getMetadata().get(TsfMetadataConstants.TSF_NAMESPACE_ID)));
+			}
+			if (targetServiceInstance.getMetadata().containsKey(TsfMetadataConstants.TSF_GROUP_ID)) {
+				attributes.put("remote.group-id", StringUtils.defaultString(
+						targetServiceInstance.getMetadata().get(TsfMetadataConstants.TSF_GROUP_ID)));
+			}
+			if (targetServiceInstance.getMetadata().containsKey(TsfMetadataConstants.TSF_APPLICATION_ID)) {
+				attributes.put("remote.application-id", StringUtils.defaultString(
+						targetServiceInstance.getMetadata().get(TsfMetadataConstants.TSF_APPLICATION_ID)));
+			}
 		}
 		return attributes;
 	}

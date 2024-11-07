@@ -53,7 +53,7 @@ public class PolarisRateLimitRuleEndpointTests {
 
 	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(
-					PolarisRateLimitAutoConfiguration.class,
+					PolarisRateLimitRuleEndpointTests.PolarisRateLimitAutoConfiguration.class,
 					PolarisRateLimitRuleEndpointAutoConfiguration.class,
 					PolarisRateLimitAutoConfiguration.class,
 					PolarisRateLimitAutoConfiguration.class))

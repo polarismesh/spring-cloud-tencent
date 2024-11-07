@@ -24,9 +24,10 @@ spring:
         exposure: true
         report:
           enabled: true
+      admin:
+        port: 28081
       stat:
         enabled: true
-        port: 28081
     gateway:
       discovery:
         locator:

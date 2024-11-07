@@ -43,7 +43,7 @@ public final class TsfContext {
 			return;
 		}
 		MetadataContext tsfCoreContext = MetadataContextHolder.get();
-		TransitiveType transitive = TransitiveType.NONE;
+		TransitiveType transitive = TransitiveType.DISPOSABLE;
 		if (null != flags) {
 			for (Tag.ControlFlag flag : flags) {
 				if (flag == Tag.ControlFlag.TRANSITIVE) {

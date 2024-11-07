@@ -13,28 +13,51 @@
  * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
- *
  */
 
-package com.tencent.cloud.polaris.ratelimit.spi;
+package com.tencent.cloud.polaris.context.admin;
 
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
- * Resolve custom label from request. The label used for rate limit params.
+ * Properties for Polaris Admin.
  *
- * @author lepdou 2022-03-31
+ * @author Haotian Zhang
  */
-public interface PolarisRateLimiterLabelServletResolver {
+@ConfigurationProperties(prefix = "spring.cloud.polaris.admin")
+public class PolarisAdminProperties {
 
 	/**
-	 * Resolve custom label from request.
-	 *
-	 * @param request the http request
-	 * @return resolved labels
+	 * Admin host.
 	 */
-	Map<String, String> resolve(HttpServletRequest request);
+	private String host = "0.0.0.0";
 
+	/**
+	 * Admin port.
+	 */
+	private int port = 28080;
+
+	public String getHost() {
+		return host;
+	}
+
+	public void setHost(String host) {
+		this.host = host;
+	}
+
+	public int getPort() {
+		return port;
+	}
+
+	public void setPort(int port) {
+		this.port = port;
+	}
+
+	@Override
+	public String toString() {
+		return "PolarisAdminProperties{" +
+				"host='" + host + '\'' +
+				", port=" + port +
+				'}';
+	}
 }

@@ -15,29 +15,20 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package com.tencent.cloud.rpc.enhancement.stat.config;
+package com.tencent.cloud.polaris.ratelimit.tsf;
 
-import com.tencent.cloud.polaris.context.ConditionalOnPolarisEnabled;
+import com.tencent.cloud.common.tsf.ConditionalOnTsfConsulEnabled;
 
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.env.Environment;
+import org.springframework.context.annotation.Import;
 
 /**
- * Autoconfiguration of stat reporter.
+ * Bootstrap configuration for TSF rate limit.
  *
  * @author Haotian Zhang
  */
 @Configuration(proxyBeanMethods = false)
-@ConditionalOnPolarisEnabled
-@EnableConfigurationProperties(PolarisStatProperties.class)
-public class PolarisStatPropertiesAutoConfiguration {
-
-	@Bean
-	@ConditionalOnMissingBean
-	public StatConfigModifier statReporterConfigModifier(PolarisStatProperties polarisStatProperties) {
-		return new StatConfigModifier(polarisStatProperties);
-	}
+@ConditionalOnTsfConsulEnabled
+@Import(TsfRateLimitAutoConfiguration.class)
+public class TsfRateLimitBootstrapConfiguration {
 }

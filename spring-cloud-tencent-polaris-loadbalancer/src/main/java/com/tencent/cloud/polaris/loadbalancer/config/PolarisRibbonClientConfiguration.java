@@ -56,7 +56,7 @@ public class PolarisRibbonClientConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	@ConditionalOnProperty(value = "spring.cloud.polaris.loadbalancer.strategy", havingValue = "roundRobin", matchIfMissing = true)
+	@ConditionalOnProperty(value = "spring.cloud.polaris.loadbalancer.strategy", havingValue = "roundRobin")
 	public IRule roundRobinRule() {
 		return new RoundRobinRule();
 	}
@@ -77,7 +77,7 @@ public class PolarisRibbonClientConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	@ConditionalOnProperty(value = "spring.cloud.polaris.loadbalancer.strategy", havingValue = "polarisWeightedRoundRobin")
+	@ConditionalOnProperty(value = "spring.cloud.polaris.loadbalancer.strategy", havingValue = "polarisWeightedRoundRobin", matchIfMissing = true)
 	public IRule polarisWeightedRoundRobinRule(PolarisSDKContextManager polarisSDKContextManager) {
 		return new PolarisWeightedRoundRobinRule(polarisSDKContextManager.getRouterAPI());
 	}
