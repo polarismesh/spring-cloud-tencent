@@ -25,3 +25,4 @@
 - [fix: memory not released while using wildcard api call with circuitbreaker](https://github.com/Tencent/spring-cloud-tencent/pull/1361)
 - [fix: fix PolarisCircuitBreakerConfiguration not clear when gateway invoke by wildcard apis](https://github.com/Tencent/spring-cloud-tencent/pull/1392)
 - [fix: fix npe when feign.hystrix.enabled=false](https://github.com/Tencent/spring-cloud-tencent/pull/1436)
+- [feat: support 2.0.0](https://github.com/Tencent/spring-cloud-tencent/pull/1458)
