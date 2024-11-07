@@ -31,8 +31,6 @@ public class PolarisNearByRouterProperties {
 
 	private String matchLevel;
 
-	private String matchLevel;
-
 	public boolean isEnabled() {
 		return enabled;
 	}
