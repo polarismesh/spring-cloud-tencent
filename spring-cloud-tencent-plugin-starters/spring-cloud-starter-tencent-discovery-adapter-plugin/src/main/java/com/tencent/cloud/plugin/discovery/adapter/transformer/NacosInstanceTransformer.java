@@ -18,10 +18,11 @@
 
 package com.tencent.cloud.plugin.discovery.adapter.transformer;
 
-import com.alibaba.cloud.nacos.ribbon.NacosServer;
-import com.netflix.loadbalancer.Server;
-import com.tencent.cloud.polaris.loadbalancer.transformer.InstanceTransformer;
+import com.tencent.cloud.rpc.enhancement.transformer.InstanceTransformer;
 import com.tencent.polaris.api.pojo.DefaultInstance;
+import org.apache.commons.lang.StringUtils;
+
+import org.springframework.cloud.client.ServiceInstance;
 
 /**
  * NacosInstanceTransformer.
@@ -31,12 +32,20 @@ import com.tencent.polaris.api.pojo.DefaultInstance;
 public class NacosInstanceTransformer implements InstanceTransformer {
 
 	@Override
-	public void transformCustom(DefaultInstance instance, Server server) {
-		if ("com.alibaba.cloud.nacos.ribbon.NacosServer".equals(server.getClass().getName())) {
-			NacosServer nacosServer = (NacosServer) server;
-			instance.setWeight((int) (nacosServer.getInstance().getWeight() * 100));
-			instance.setHealthy(nacosServer.getInstance().isHealthy());
-			instance.setMetadata(nacosServer.getMetadata());
+	public void transformCustom(DefaultInstance instance, ServiceInstance serviceInstance) {
+		if ("com.alibaba.cloud.nacos.NacosServiceInstance".equals(serviceInstance.getClass().getName())) {
+			String nacosWeight = serviceInstance.getMetadata().get("nacos.weight");
+			instance.setWeight(
+					StringUtils.isBlank(nacosWeight) ? 100 : (int) Double.parseDouble(nacosWeight) * 100
+			);
+			String nacosHealthy = serviceInstance.getMetadata().get("nacos.healthy");
+			instance.setHealthy(
+					!StringUtils.isBlank(nacosHealthy) && Boolean.parseBoolean(nacosHealthy)
+			);
+			String nacosInstanceId = serviceInstance.getMetadata().get("nacos.instanceId");
+			instance.setId(nacosInstanceId);
+
 		}
 	}
+
 }

@@ -3,6 +3,7 @@ name: License checker
 on:
   push:
     branches:
+      - 2023.0
       - 2022.0
       - 2021.0
       - 2020.0
@@ -10,6 +11,7 @@ on:
       - greenwich
   pull_request:
     branches:
+      - 2023.0
       - 2022.0
       - 2021.0
       - 2020.0
@@ -20,6 +22,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout codes
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Check License Header
         uses: apache/skywalking-eyes@v0.4.0

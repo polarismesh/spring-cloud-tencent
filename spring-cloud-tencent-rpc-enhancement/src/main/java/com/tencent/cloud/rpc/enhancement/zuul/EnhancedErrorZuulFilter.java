@@ -20,6 +20,7 @@ package com.tencent.cloud.rpc.enhancement.zuul;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import com.netflix.client.ClientException;
 import com.netflix.zuul.ZuulFilter;
 import com.netflix.zuul.context.RequestContext;
 import com.netflix.zuul.exception.ZuulException;
@@ -30,6 +31,7 @@ import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginRunner;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginType;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedResponseContext;
 
+import org.springframework.cloud.netflix.zuul.util.ZuulRuntimeException;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpHeaders;
 import org.springframework.util.StringUtils;
@@ -86,26 +88,45 @@ public class EnhancedErrorZuulFilter extends ZuulFilter {
 		Object startTimeMilliObject = context.get(POLARIS_PRE_ROUTE_TIME);
 		Throwable throwable = context.getThrowable();
 		if (throwable != null && startTimeMilliObject != null && startTimeMilliObject instanceof Long) {
-			HttpHeaders responseHeaders = new HttpHeaders();
-			Collection<String> names = context.getResponse().getHeaderNames();
-			for (String name : names) {
-				responseHeaders.put(name, new ArrayList<>(context.getResponse().getHeaders(name)));
+			if (checkNoInstanceException(throwable)) {
+				enhancedPluginContext.setThrowable(throwable);
 			}
-			EnhancedResponseContext enhancedResponseContext = EnhancedResponseContext.builder()
-					.httpStatus(context.getResponse().getStatus())
-					.httpHeaders(responseHeaders)
-					.build();
-			enhancedPluginContext.setResponse(enhancedResponseContext);
-			Long startTimeMilli = (Long) startTimeMilliObject;
-			enhancedPluginContext.setDelay(System.currentTimeMillis() - startTimeMilli);
-			enhancedPluginContext.setThrowable(throwable);
+			else {
+				HttpHeaders responseHeaders = new HttpHeaders();
+				Collection<String> names = context.getResponse().getHeaderNames();
+				for (String name : names) {
+					responseHeaders.put(name, new ArrayList<>(context.getResponse().getHeaders(name)));
+				}
+				EnhancedResponseContext enhancedResponseContext = EnhancedResponseContext.builder()
+						.httpStatus(context.getResponse().getStatus())
+						.httpHeaders(responseHeaders)
+						.build();
+				enhancedPluginContext.setResponse(enhancedResponseContext);
+				Long startTimeMilli = (Long) startTimeMilliObject;
+				enhancedPluginContext.setDelay(System.currentTimeMillis() - startTimeMilli);
+				enhancedPluginContext.setThrowable(throwable);
 
-			// Run post enhanced plugins.
-			pluginRunner.run(EnhancedPluginType.Client.EXCEPTION, enhancedPluginContext);
+				// Run post enhanced plugins.
+				pluginRunner.run(EnhancedPluginType.Client.EXCEPTION, enhancedPluginContext);
 
-			// Run finally enhanced plugins.
-			pluginRunner.run(EnhancedPluginType.Client.FINALLY, enhancedPluginContext);
+				// Run finally enhanced plugins.
+				pluginRunner.run(EnhancedPluginType.Client.FINALLY, enhancedPluginContext);
+			}
 		}
 		return null;
+	}
+
+	protected boolean checkNoInstanceException(Throwable throwable) {
+		if (throwable.getCause() instanceof ZuulRuntimeException) {
+			Throwable cause = null;
+			if (throwable.getCause().getCause() != null) {
+				cause = throwable.getCause().getCause().getCause();
+			}
+			if (cause instanceof ClientException && StringUtils.hasText(cause.getMessage()) &&
+					cause.getMessage().contains("Load balancer does not have available server for client")) {
+				return true;
+			}
+		}
+		return false;
 	}
 }
