@@ -17,12 +17,10 @@
 
 package org.springframework.cloud.openfeign;
 
-import com.tencent.cloud.polaris.circuitbreaker.feign.PolarisCircuitBreakerNameResolver;
 import com.tencent.cloud.polaris.circuitbreaker.feign.PolarisFeignCircuitBreaker;
 import feign.Feign;
 import feign.Target;
 
-import org.springframework.cloud.client.circuitbreaker.CircuitBreakerFactory;
 import org.springframework.util.StringUtils;
 
 /**
@@ -31,16 +29,6 @@ import org.springframework.util.StringUtils;
  * @author sean yu
  */
 public class PolarisFeignCircuitBreakerTargeter implements Targeter {
-
-	private final CircuitBreakerFactory circuitBreakerFactory;
-
-	private final PolarisCircuitBreakerNameResolver circuitBreakerNameResolver;
-
-	public PolarisFeignCircuitBreakerTargeter(CircuitBreakerFactory circuitBreakerFactory,
-			PolarisCircuitBreakerNameResolver circuitBreakerNameResolver) {
-		this.circuitBreakerFactory = circuitBreakerFactory;
-		this.circuitBreakerNameResolver = circuitBreakerNameResolver;
-	}
 
 	@Override
 	public <T> T target(FeignClientFactoryBean factory, Feign.Builder feign, FeignContext context,
@@ -58,20 +46,20 @@ public class PolarisFeignCircuitBreakerTargeter implements Targeter {
 		if (fallbackFactory != void.class) {
 			return targetWithFallbackFactory(name, context, target, builder, fallbackFactory);
 		}
-		return builder(name, builder).target(target);
+		return builder.target(target);
 	}
 
 	private <T> T targetWithFallbackFactory(String feignClientName, FeignContext context,
 			Target.HardCodedTarget<T> target, PolarisFeignCircuitBreaker.Builder builder, Class<?> fallbackFactoryClass) {
 		FallbackFactory<? extends T> fallbackFactory = (FallbackFactory<? extends T>) getFromContext("fallbackFactory",
 				feignClientName, context, fallbackFactoryClass, FallbackFactory.class);
-		return builder(feignClientName, builder).target(target, fallbackFactory);
+		return builder.target(target, fallbackFactory);
 	}
 
 	private <T> T targetWithFallback(String feignClientName, FeignContext context, Target.HardCodedTarget<T> target,
 			PolarisFeignCircuitBreaker.Builder builder, Class<?> fallback) {
 		T fallbackInstance = getFromContext("fallback", feignClientName, context, fallback, target.type());
-		return builder(feignClientName, builder).target(target, fallbackInstance);
+		return builder.target(target, fallbackInstance);
 	}
 
 	private <T> T getFromContext(String fallbackMechanism, String feignClientName, FeignContext context,
@@ -89,13 +77,6 @@ public class PolarisFeignCircuitBreakerTargeter implements Targeter {
 					beanType, targetType, feignClientName));
 		}
 		return (T) fallbackInstance;
-	}
-
-	private PolarisFeignCircuitBreaker.Builder builder(String feignClientName, PolarisFeignCircuitBreaker.Builder builder) {
-		return builder
-				.circuitBreakerFactory(circuitBreakerFactory)
-				.feignClientName(feignClientName)
-				.circuitBreakerNameResolver(circuitBreakerNameResolver);
 	}
 
 }

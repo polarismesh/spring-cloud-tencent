@@ -43,7 +43,8 @@ import com.tencent.cloud.polaris.router.spi.ServletRouterLabelResolver;
 import com.tencent.cloud.polaris.router.spi.SpringWebRouterLabelResolver;
 import com.tencent.cloud.polaris.router.zuul.PolarisRibbonRoutingFilter;
 import com.tencent.cloud.polaris.router.zuul.RouterLabelZuulFilter;
-import com.tencent.cloud.rpc.enhancement.resttemplate.EnhancedRestTemplateInterceptor;
+import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginRunner;
+import com.tencent.cloud.rpc.enhancement.zuul.EnhancedZuulPluginRunner;
 
 import org.springframework.beans.factory.SmartInitializingSingleton;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,6 +57,7 @@ import org.springframework.cloud.netflix.zuul.filters.ProxyRequestHelper;
 import org.springframework.cloud.netflix.zuul.filters.route.RibbonCommandFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.web.client.RestTemplate;
@@ -165,9 +167,12 @@ public class RouterAutoConfiguration {
 				RibbonCommandFactory<?> ribbonCommandFactory,
 				StaticMetadataManager staticMetadataManager,
 				RouterRuleLabelResolver routerRuleLabelResolver,
-				List<ServletRouterLabelResolver> routerLabelResolvers) {
+				List<ServletRouterLabelResolver> routerLabelResolvers,
+				@Lazy EnhancedPluginRunner pluginRunner) {
+			EnhancedZuulPluginRunner enhancedZuulPluginRunner = new EnhancedZuulPluginRunner(pluginRunner);
+
 			return new PolarisRibbonRoutingFilter(helper, ribbonCommandFactory, staticMetadataManager,
-					routerRuleLabelResolver, routerLabelResolvers);
+					routerRuleLabelResolver, routerLabelResolvers, enhancedZuulPluginRunner);
 		}
 
 		@Bean
@@ -198,13 +203,7 @@ public class RouterAutoConfiguration {
 		public SmartInitializingSingleton addRouterLabelInterceptorForRestTemplate(RouterLabelRestTemplateInterceptor interceptor) {
 			return () -> restTemplates.forEach(restTemplate -> {
 				List<ClientHttpRequestInterceptor> list = new ArrayList<>(restTemplate.getInterceptors());
-				int addIndex = list.size();
-				for (int i = 0; i < list.size(); i++) {
-					if (list.get(i) instanceof EnhancedRestTemplateInterceptor) {
-						addIndex = i;
-					}
-				}
-				list.add(addIndex, interceptor);
+				list.add(interceptor);
 				restTemplate.setInterceptors(list);
 			});
 		}

@@ -35,7 +35,7 @@ import org.springframework.util.LinkedCaseInsensitiveMap;
  */
 public class PolarisRouterContext {
 
-	private Map<String, Map<String, String>> labels;
+	private Map<String, Map<String, String>> labels = new HashMap<>();
 
 	public Map<String, String> getLabels(String labelType) {
 		if (CollectionUtils.isEmpty(labels)) {

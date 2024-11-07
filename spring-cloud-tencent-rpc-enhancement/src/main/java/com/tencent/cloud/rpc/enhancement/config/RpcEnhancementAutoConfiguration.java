@@ -32,7 +32,6 @@ import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPlugin;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginRunner;
 import com.tencent.cloud.rpc.enhancement.plugin.reporter.ExceptionPolarisReporter;
 import com.tencent.cloud.rpc.enhancement.plugin.reporter.SuccessPolarisReporter;
-import com.tencent.cloud.rpc.enhancement.resttemplate.EnhancedRestTemplateInterceptor;
 import com.tencent.cloud.rpc.enhancement.resttemplate.PolarisLoadBalancerRequestTransformer;
 import com.tencent.cloud.rpc.enhancement.scg.EnhancedGatewayGlobalFilter;
 import com.tencent.cloud.rpc.enhancement.transformer.InstanceTransformer;
@@ -44,7 +43,6 @@ import com.tencent.cloud.rpc.enhancement.webclient.PolarisLoadBalancerClientRequ
 import com.tencent.cloud.rpc.enhancement.webclient.RibbonLoadBalancerClientAspect;
 import com.tencent.cloud.rpc.enhancement.zuul.EnhancedErrorZuulFilter;
 import com.tencent.cloud.rpc.enhancement.zuul.EnhancedPostZuulFilter;
-import com.tencent.cloud.rpc.enhancement.zuul.EnhancedPreZuulFilter;
 import com.tencent.cloud.rpc.enhancement.zuul.EnhancedRouteZuulFilter;
 
 import org.springframework.beans.factory.SmartInitializingSingleton;
@@ -187,19 +185,6 @@ public class RpcEnhancementAutoConfiguration {
 		@Autowired(required = false)
 		private List<RestTemplate> restTemplates = Collections.emptyList();
 
-		@Bean
-		public EnhancedRestTemplateInterceptor enhancedPolarisRestTemplateReporter(@Lazy EnhancedPluginRunner pluginRunner) {
-			return new EnhancedRestTemplateInterceptor(pluginRunner);
-		}
-
-		@Bean
-		public SmartInitializingSingleton setPolarisReporterForRestTemplate(EnhancedRestTemplateInterceptor reporter) {
-			return () -> {
-				for (RestTemplate restTemplate : restTemplates) {
-					restTemplate.getInterceptors().add(reporter);
-				}
-			};
-		}
 
 		@Bean
 		@ConditionalOnMissingBean
@@ -271,11 +256,6 @@ public class RpcEnhancementAutoConfiguration {
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(name = "com.netflix.zuul.http.ZuulServlet")
 	protected static class PolarisCircuitBreakerZuulFilterConfig {
-
-		@Bean
-		public EnhancedPreZuulFilter enhancedPreZuulFilter(@Lazy EnhancedPluginRunner pluginRunner, Environment environment) {
-			return new EnhancedPreZuulFilter(pluginRunner, environment);
-		}
 
 		@Bean
 		public EnhancedRouteZuulFilter enhancedZuulRouteFilter(@Lazy EnhancedPluginRunner pluginRunner, Environment environment) {

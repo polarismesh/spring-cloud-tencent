@@ -131,7 +131,6 @@ public class PolarisLoadBalancerCompositeRule extends AbstractLoadBalancerRule {
 		}
 
 		PolarisLoadBalancer polarisLoadBalancer = (PolarisLoadBalancer) loadBalancer;
-
 		// 1. get all servers from polaris client
 		List<Server> allServers = polarisLoadBalancer.getReachableServersWithoutCache();
 		if (CollectionUtils.isEmpty(allServers)) {

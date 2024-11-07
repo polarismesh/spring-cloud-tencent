@@ -19,6 +19,7 @@ package com.tencent.cloud.polaris.router.beanprocessor;
 
 import com.tencent.cloud.polaris.router.resttemplate.PolarisLoadBalancerInterceptor;
 import com.tencent.cloud.polaris.router.resttemplate.RouterContextFactory;
+import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginRunner;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
@@ -27,6 +28,7 @@ import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.cloud.client.loadbalancer.LoadBalancerClient;
 import org.springframework.cloud.client.loadbalancer.LoadBalancerInterceptor;
 import org.springframework.cloud.client.loadbalancer.LoadBalancerRequestFactory;
+import org.springframework.core.Ordered;
 import org.springframework.lang.NonNull;
 
 /**
@@ -35,7 +37,11 @@ import org.springframework.lang.NonNull;
  *
  * @author lepdou 2022-05-18
  */
-public class LoadBalancerInterceptorBeanPostProcessor implements BeanPostProcessor, BeanFactoryAware {
+public class LoadBalancerInterceptorBeanPostProcessor implements BeanPostProcessor, BeanFactoryAware, Ordered {
+	/**
+	 * The order of the bean post processor. if user want to wrap it(CustomLoadBalancerInterceptor -> PolarisLoadBalancerInterceptor), CustomLoadBalancerInterceptorBeanPostProcessor's order should be bigger than ${@link POLARIS_LOAD_BALANCER_INTERCEPTOR_POST_PROCESSOR_ORDER}.
+	 */
+	public static final int POLARIS_LOAD_BALANCER_INTERCEPTOR_POST_PROCESSOR_ORDER = 0;
 
 	private BeanFactory factory;
 
@@ -52,9 +58,14 @@ public class LoadBalancerInterceptorBeanPostProcessor implements BeanPostProcess
 			LoadBalancerRequestFactory requestFactory = this.factory.getBean(LoadBalancerRequestFactory.class);
 			LoadBalancerClient loadBalancerClient = this.factory.getBean(LoadBalancerClient.class);
 			RouterContextFactory routerContextFactory = this.factory.getBean(RouterContextFactory.class);
-
-			return new PolarisLoadBalancerInterceptor(loadBalancerClient, requestFactory, routerContextFactory);
+			EnhancedPluginRunner pluginRunner = this.factory.getBean(EnhancedPluginRunner.class);
+			return new PolarisLoadBalancerInterceptor(loadBalancerClient, requestFactory, routerContextFactory, pluginRunner);
 		}
 		return bean;
+	}
+
+	@Override
+	public int getOrder() {
+		return POLARIS_LOAD_BALANCER_INTERCEPTOR_POST_PROCESSOR_ORDER;
 	}
 }

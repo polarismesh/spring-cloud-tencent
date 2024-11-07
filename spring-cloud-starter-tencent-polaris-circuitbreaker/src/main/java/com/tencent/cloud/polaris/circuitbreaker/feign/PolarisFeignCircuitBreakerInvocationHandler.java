@@ -23,20 +23,14 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.function.Function;
-import java.util.function.Supplier;
 
 import com.tencent.cloud.polaris.circuitbreaker.exception.FallbackWrapperException;
 import feign.InvocationHandlerFactory;
 import feign.Target;
 import feign.codec.Decoder;
 
-import org.springframework.cloud.client.circuitbreaker.CircuitBreaker;
-import org.springframework.cloud.client.circuitbreaker.CircuitBreakerFactory;
 import org.springframework.cloud.client.circuitbreaker.NoFallbackAvailableException;
 import org.springframework.cloud.openfeign.FallbackFactory;
-import org.springframework.web.context.request.RequestAttributes;
-import org.springframework.web.context.request.RequestContextHolder;
 
 import static feign.Util.checkNotNull;
 
@@ -47,10 +41,6 @@ import static feign.Util.checkNotNull;
  */
 public class PolarisFeignCircuitBreakerInvocationHandler implements InvocationHandler {
 
-	private final CircuitBreakerFactory factory;
-
-	private final String feignClientName;
-
 	private final Target<?> target;
 
 	private final Map<Method, InvocationHandlerFactory.MethodHandler> dispatch;
@@ -59,39 +49,17 @@ public class PolarisFeignCircuitBreakerInvocationHandler implements InvocationHa
 
 	private final Map<Method, Method> fallbackMethodMap;
 
-	private final PolarisCircuitBreakerNameResolver circuitBreakerNameResolver;
-
 	private final Decoder decoder;
 
-	public PolarisFeignCircuitBreakerInvocationHandler(CircuitBreakerFactory factory, String feignClientName, Target<?> target,
-			Map<Method, InvocationHandlerFactory.MethodHandler> dispatch, FallbackFactory<?> nullableFallbackFactory,
-			PolarisCircuitBreakerNameResolver circuitBreakerNameResolver, Decoder decoder) {
-		this.factory = factory;
-		this.feignClientName = feignClientName;
+	public PolarisFeignCircuitBreakerInvocationHandler(Target<?> target,
+			Map<Method, InvocationHandlerFactory.MethodHandler> dispatch,
+			FallbackFactory<?> nullableFallbackFactory, Decoder decoder) {
+
 		this.target = checkNotNull(target, "target");
 		this.dispatch = checkNotNull(dispatch, "dispatch");
 		this.fallbackMethodMap = toFallbackMethod(dispatch);
 		this.nullableFallbackFactory = nullableFallbackFactory;
-		this.circuitBreakerNameResolver = circuitBreakerNameResolver;
 		this.decoder = decoder;
-	}
-
-	/**
-	 * If the method param of {@link InvocationHandler#invoke(Object, Method, Object[])}
-	 * is not accessible, i.e in a package-private interface, the fallback call will cause
-	 * of access restrictions. But methods in dispatch are copied methods. So setting
-	 * access to dispatch method doesn't take effect to the method in
-	 * InvocationHandler.invoke. Use map to store a copy of method to invoke the fallback
-	 * to bypass this and reducing the count of reflection calls.
-	 * @return cached methods map for fallback invoking
-	 */
-	static Map<Method, Method> toFallbackMethod(Map<Method, InvocationHandlerFactory.MethodHandler> dispatch) {
-		Map<Method, Method> result = new LinkedHashMap<>();
-		for (Method method : dispatch.keySet()) {
-			method.setAccessible(true);
-			result.put(method, method);
-		}
-		return result;
 	}
 
 	@Override
@@ -113,18 +81,12 @@ public class PolarisFeignCircuitBreakerInvocationHandler implements InvocationHa
 		else if ("toString".equals(method.getName())) {
 			return toString();
 		}
-		// disable feign.hystrix
-		if (circuitBreakerNameResolver == null) {
+		try {
 			return this.dispatch.get(method).invoke(args);
 		}
-
-		String circuitName = circuitBreakerNameResolver.resolveCircuitBreakerName(feignClientName, target, method);
-		CircuitBreaker circuitBreaker = factory.create(circuitName);
-		Supplier<Object> supplier = asSupplier(method, args);
-		Function<Throwable, Object> fallbackFunction;
-		if (this.nullableFallbackFactory != null) {
-			fallbackFunction = throwable -> {
-				Object fallback = this.nullableFallbackFactory.create(throwable);
+		catch (Exception e) {
+			if (this.nullableFallbackFactory != null) {
+				Object fallback = this.nullableFallbackFactory.create(e);
 				try {
 					return this.fallbackMethodMap.get(method).invoke(fallback, args);
 				}
@@ -132,21 +94,12 @@ public class PolarisFeignCircuitBreakerInvocationHandler implements InvocationHa
 					unwrapAndRethrow(exception);
 				}
 				return null;
-			};
-		}
-		else {
-			fallbackFunction = throwable -> {
+			}
+			else {
 				PolarisCircuitBreakerFallbackFactory.DefaultFallback fallback =
-						(PolarisCircuitBreakerFallbackFactory.DefaultFallback) new PolarisCircuitBreakerFallbackFactory(this.decoder).create(throwable);
+						(PolarisCircuitBreakerFallbackFactory.DefaultFallback) new PolarisCircuitBreakerFallbackFactory(this.decoder).create(e);
 				return fallback.fallback(method);
-			};
-		}
-		try {
-			return circuitBreaker.run(supplier, fallbackFunction);
-		}
-		catch (FallbackWrapperException e) {
-			// unwrap And Rethrow
-			throw e.getCause();
+			}
 		}
 	}
 
@@ -163,29 +116,22 @@ public class PolarisFeignCircuitBreakerInvocationHandler implements InvocationHa
 		}
 	}
 
-	private Supplier<Object> asSupplier(final Method method, final Object[] args) {
-		final RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
-		final Thread caller = Thread.currentThread();
-		return () -> {
-			boolean isAsync = caller != Thread.currentThread();
-			try {
-				if (isAsync) {
-					RequestContextHolder.setRequestAttributes(requestAttributes);
-				}
-				return dispatch.get(method).invoke(args);
-			}
-			catch (RuntimeException throwable) {
-				throw throwable;
-			}
-			catch (Throwable throwable) {
-				throw new RuntimeException(throwable);
-			}
-			finally {
-				if (isAsync) {
-					RequestContextHolder.resetRequestAttributes();
-				}
-			}
-		};
+	/**
+	 * If the method param of {@link InvocationHandler#invoke(Object, Method, Object[])}
+	 * is not accessible, i.e in a package-private interface, the fallback call will cause
+	 * of access restrictions. But methods in dispatch are copied methods. So setting
+	 * access to dispatch method doesn't take effect to the method in
+	 * InvocationHandler.invoke. Use map to store a copy of method to invoke the fallback
+	 * to bypass this and reducing the count of reflection calls.
+	 * @return cached methods map for fallback invoking
+	 */
+	static Map<Method, Method> toFallbackMethod(Map<Method, InvocationHandlerFactory.MethodHandler> dispatch) {
+		Map<Method, Method> result = new LinkedHashMap<>();
+		for (Method method : dispatch.keySet()) {
+			method.setAccessible(true);
+			result.put(method, method);
+		}
+		return result;
 	}
 
 	@Override

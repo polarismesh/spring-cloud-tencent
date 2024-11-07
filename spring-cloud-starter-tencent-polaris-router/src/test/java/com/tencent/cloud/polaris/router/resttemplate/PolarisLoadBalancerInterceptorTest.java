@@ -30,6 +30,7 @@ import com.tencent.cloud.common.metadata.MetadataContextHolder;
 import com.tencent.cloud.common.util.ApplicationContextAwareUtils;
 import com.tencent.cloud.common.util.JacksonUtils;
 import com.tencent.cloud.polaris.router.PolarisRouterContext;
+import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginRunner;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -69,6 +70,9 @@ public class PolarisLoadBalancerInterceptorTest {
 	private RibbonLoadBalancerClient loadBalancerClient;
 	@Mock
 	private LoadBalancerRequestFactory loadBalancerRequestFactory;
+
+	@Mock
+	private EnhancedPluginRunner enhancedPluginRunner;
 	@Mock
 	private RouterContextFactory routerContextFactory;
 
@@ -90,7 +94,7 @@ public class PolarisLoadBalancerInterceptorTest {
 			mockedApplicationContextAwareUtils.when(() -> ApplicationContextAwareUtils.getProperties(anyString()))
 					.thenReturn(callerService);
 
-			MetadataContext metadataContext = Mockito.mock(MetadataContext.class);
+			MetadataContext metadataContext = new MetadataContext();
 
 			try (MockedStatic<MetadataContextHolder> mockedMetadataContextHolder = Mockito.mockStatic(MetadataContextHolder.class)) {
 				mockedMetadataContextHolder.when(MetadataContextHolder::get).thenReturn(metadataContext);
@@ -100,7 +104,7 @@ public class PolarisLoadBalancerInterceptorTest {
 				when(loadBalancerRequestFactory.createRequest(request, null, null)).thenReturn(loadBalancerRequest);
 
 				PolarisLoadBalancerInterceptor polarisLoadBalancerInterceptor = new PolarisLoadBalancerInterceptor(loadBalancerClient,
-						loadBalancerRequestFactory, routerContextFactory);
+						loadBalancerRequestFactory, routerContextFactory, enhancedPluginRunner);
 
 				ClientHttpResponse mockedResponse = new MockClientHttpResponse(new byte[] {}, HttpStatus.OK);
 				when(loadBalancerClient.execute(eq(calleeService), eq(loadBalancerRequest), any(PolarisRouterContext.class))).thenReturn(mockedResponse);
@@ -133,7 +137,7 @@ public class PolarisLoadBalancerInterceptorTest {
 		when(notRibbonLoadBalancerClient.execute(calleeService, loadBalancerRequest)).thenReturn(mockedResponse);
 
 		PolarisLoadBalancerInterceptor polarisLoadBalancerInterceptor = new PolarisLoadBalancerInterceptor(
-				notRibbonLoadBalancerClient, loadBalancerRequestFactory, routerContextFactory);
+				notRibbonLoadBalancerClient, loadBalancerRequestFactory, routerContextFactory, enhancedPluginRunner);
 
 		ClientHttpResponse response = polarisLoadBalancerInterceptor.intercept(request, null, null);
 

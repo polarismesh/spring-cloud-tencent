@@ -17,9 +17,13 @@
 
 package com.tencent.cloud.polaris.circuitbreaker.reporter;
 
+import java.lang.reflect.Field;
 import java.net.URI;
 
 import com.tencent.cloud.common.metadata.MetadataContext;
+import com.tencent.cloud.common.metadata.MetadataContextHolder;
+import com.tencent.cloud.common.metadata.StaticMetadataManager;
+import com.tencent.cloud.common.metadata.config.MetadataLocalProperties;
 import com.tencent.cloud.common.util.ApplicationContextAwareUtils;
 import com.tencent.cloud.rpc.enhancement.config.RpcEnhancementReporterProperties;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginContext;
@@ -70,8 +74,11 @@ public class SuccessCircuitBreakerReporterTest {
 	@Mock
 	private CircuitBreakAPI circuitBreakAPI;
 
+	@Mock
+	private MetadataLocalProperties metadataLocalProperties;
+
 	@BeforeAll
-	static void beforeAll() {
+	static void beforeAll() throws Exception {
 		mockedApplicationContextAwareUtils = Mockito.mockStatic(ApplicationContextAwareUtils.class);
 		mockedApplicationContextAwareUtils.when(() -> ApplicationContextAwareUtils.getProperties(anyString()))
 				.thenReturn("unit-test");
@@ -81,6 +88,12 @@ public class SuccessCircuitBreakerReporterTest {
 				.when(applicationContext).getBean(RpcEnhancementReporterProperties.class);
 		mockedApplicationContextAwareUtils.when(ApplicationContextAwareUtils::getApplicationContext)
 				.thenReturn(applicationContext);
+
+		StaticMetadataManager metadataManager = new StaticMetadataManager(new MetadataLocalProperties(), null);
+
+		Field field = MetadataContextHolder.class.getDeclaredField("staticMetadataManager");
+		field.setAccessible(true);
+		field.set(null, metadataManager);
 	}
 
 	@AfterAll

@@ -23,6 +23,7 @@ import java.util.List;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import com.tencent.cloud.common.metadata.MetadataContext;
+import com.tencent.polaris.circuitbreak.client.exception.CallAbortedException;
 import com.tencent.polaris.client.api.SDKContext;
 
 import org.springframework.cloud.client.DefaultServiceInstance;
@@ -73,6 +74,9 @@ public class DefaultEnhancedPluginRunner implements EnhancedPluginRunner {
 		for (EnhancedPlugin plugin : pluginMap.get(pluginType)) {
 			try {
 				plugin.run(context);
+			}
+			catch (CallAbortedException callAbortedException) {
+				throw callAbortedException;
 			}
 			catch (Throwable throwable) {
 				plugin.handlerThrowable(context, throwable);

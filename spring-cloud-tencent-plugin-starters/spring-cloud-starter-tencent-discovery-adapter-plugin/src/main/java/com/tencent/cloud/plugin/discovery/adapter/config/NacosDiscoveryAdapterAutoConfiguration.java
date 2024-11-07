@@ -19,11 +19,9 @@ package com.tencent.cloud.plugin.discovery.adapter.config;
 
 import com.tencent.cloud.plugin.discovery.adapter.transformer.NacosInstanceTransformer;
 import com.tencent.cloud.plugin.discovery.adapter.transformer.NacosRegistrationTransformer;
-import com.tencent.cloud.polaris.loadbalancer.config.PolarisLoadBalancerAutoConfiguration;
 import com.tencent.cloud.polaris.loadbalancer.transformer.InstanceTransformer;
 import com.tencent.cloud.rpc.enhancement.transformer.RegistrationTransformer;
 
-import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.cloud.client.ConditionalOnDiscoveryEnabled;
@@ -37,7 +35,6 @@ import org.springframework.context.annotation.Configuration;
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnDiscoveryEnabled
-@AutoConfigureBefore(PolarisLoadBalancerAutoConfiguration.class)
 public class NacosDiscoveryAdapterAutoConfiguration {
 
 	@Bean

@@ -37,6 +37,7 @@ import com.tencent.cloud.polaris.loadbalancer.PolarisLoadBalancer;
 import com.tencent.cloud.polaris.router.PolarisRouterContext;
 import com.tencent.cloud.polaris.router.RouterRuleLabelResolver;
 import com.tencent.cloud.polaris.router.spi.ServletRouterLabelResolver;
+import com.tencent.cloud.rpc.enhancement.zuul.EnhancedZuulPluginRunner;
 import okhttp3.OkHttpClient;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -95,6 +96,9 @@ public class PolarisRibbonRoutingFilterTest {
 	@Mock
 	private PolarisLoadBalancer polarisLoadBalancer;
 
+	@Mock
+	private EnhancedZuulPluginRunner enhancedZuulPluginRunner;
+
 	@BeforeAll
 	static void beforeAll() {
 		mockedApplicationContextAwareUtils = Mockito.mockStatic(ApplicationContextAwareUtils.class);
@@ -123,7 +127,7 @@ public class PolarisRibbonRoutingFilterTest {
 	public void testGenRouterContext() {
 		PolarisRibbonRoutingFilter polarisRibbonRoutingFilter = new PolarisRibbonRoutingFilter(proxyRequestHelper,
 				ribbonCommandFactory, staticMetadataManager, routerRuleLabelResolver,
-				Lists.newArrayList(routerLabelResolver));
+				Lists.newArrayList(routerLabelResolver), enhancedZuulPluginRunner);
 
 		Map<String, String> localMetadata = new HashMap<>();
 		localMetadata.put("env", "blue");
@@ -160,7 +164,7 @@ public class PolarisRibbonRoutingFilterTest {
 
 		PolarisRibbonRoutingFilter polarisRibbonRoutingFilter = new PolarisRibbonRoutingFilter(
 				new ProxyRequestHelper(zuulProperties), ribbonCommandFactory, staticMetadataManager,
-				routerRuleLabelResolver, Lists.newArrayList(routerLabelResolver));
+				routerRuleLabelResolver, Lists.newArrayList(routerLabelResolver), enhancedZuulPluginRunner);
 
 		MockHttpServletRequest request = new MockHttpServletRequest();
 		request.setRequestURI("http://" + calleeService + "/users");
@@ -195,7 +199,7 @@ public class PolarisRibbonRoutingFilterTest {
 
 		PolarisRibbonRoutingFilter polarisRibbonRoutingFilter = new PolarisRibbonRoutingFilter(
 				new ProxyRequestHelper(zuulProperties), ribbonCommandFactory, staticMetadataManager,
-				routerRuleLabelResolver, Lists.newArrayList(routerLabelResolver));
+				routerRuleLabelResolver, Lists.newArrayList(routerLabelResolver), enhancedZuulPluginRunner);
 
 		MockHttpServletRequest request = new MockHttpServletRequest();
 		request.setRequestURI("http://" + calleeService + "/users");
@@ -231,7 +235,7 @@ public class PolarisRibbonRoutingFilterTest {
 
 		PolarisRibbonRoutingFilter polarisRibbonRoutingFilter = new PolarisRibbonRoutingFilter(
 				new ProxyRequestHelper(zuulProperties), ribbonCommandFactory, staticMetadataManager,
-				routerRuleLabelResolver, Lists.newArrayList(routerLabelResolver));
+				routerRuleLabelResolver, Lists.newArrayList(routerLabelResolver), enhancedZuulPluginRunner);
 
 		MockHttpServletRequest request = new MockHttpServletRequest();
 		request.setRequestURI("http://" + calleeService + "/users");
@@ -266,7 +270,7 @@ public class PolarisRibbonRoutingFilterTest {
 
 		PolarisRibbonRoutingFilter polarisRibbonRoutingFilter = new PolarisRibbonRoutingFilter(
 				new ProxyRequestHelper(zuulProperties), ribbonCommandFactory, staticMetadataManager,
-				routerRuleLabelResolver, Lists.newArrayList(routerLabelResolver));
+				routerRuleLabelResolver, Lists.newArrayList(routerLabelResolver), enhancedZuulPluginRunner);
 
 		MockHttpServletRequest request = new MockHttpServletRequest();
 		request.setRequestURI("http://" + calleeService + "/users");
@@ -301,7 +305,7 @@ public class PolarisRibbonRoutingFilterTest {
 
 		PolarisRibbonRoutingFilter polarisRibbonRoutingFilter = new PolarisRibbonRoutingFilter(
 				new ProxyRequestHelper(zuulProperties), ribbonCommandFactory, staticMetadataManager,
-				routerRuleLabelResolver, Lists.newArrayList(routerLabelResolver));
+				routerRuleLabelResolver, Lists.newArrayList(routerLabelResolver), enhancedZuulPluginRunner);
 
 		MockHttpServletRequest request = new MockHttpServletRequest();
 		request.setRequestURI("http://" + calleeService + "/users");
@@ -338,7 +342,7 @@ public class PolarisRibbonRoutingFilterTest {
 
 		PolarisRibbonRoutingFilter polarisRibbonRoutingFilter = new PolarisRibbonRoutingFilter(
 				new ProxyRequestHelper(zuulProperties), ribbonCommandFactory, staticMetadataManager,
-				routerRuleLabelResolver, Lists.newArrayList(routerLabelResolver));
+				routerRuleLabelResolver, Lists.newArrayList(routerLabelResolver), enhancedZuulPluginRunner);
 
 		MockHttpServletRequest request = new MockHttpServletRequest();
 		request.setRequestURI("http://" + calleeService + "/users");

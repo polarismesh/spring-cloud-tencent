@@ -37,6 +37,7 @@ import com.tencent.cloud.common.util.expresstion.ServletExpressionLabelUtils;
 import com.tencent.cloud.polaris.router.PolarisRouterContext;
 import com.tencent.cloud.polaris.router.RouterRuleLabelResolver;
 import com.tencent.cloud.polaris.router.spi.ServletRouterLabelResolver;
+import com.tencent.cloud.rpc.enhancement.zuul.EnhancedZuulPluginRunner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -71,11 +72,14 @@ public class PolarisRibbonRoutingFilter extends RibbonRoutingFilter implements B
 	private BeanFactory factory;
 	private boolean useServlet31 = true;
 
+	private EnhancedZuulPluginRunner enhancedZuulPluginRunner;
+
 	public PolarisRibbonRoutingFilter(ProxyRequestHelper helper,
 			RibbonCommandFactory<?> ribbonCommandFactory,
 			StaticMetadataManager staticMetadataManager,
 			RouterRuleLabelResolver routerRuleLabelResolver,
-			List<ServletRouterLabelResolver> routerLabelResolvers) {
+			List<ServletRouterLabelResolver> routerLabelResolvers,
+			EnhancedZuulPluginRunner enhancedZuulPluginRunner) {
 		super(helper, ribbonCommandFactory, Collections.emptyList());
 		this.staticMetadataManager = staticMetadataManager;
 		this.routerRuleLabelResolver = routerRuleLabelResolver;
@@ -95,6 +99,7 @@ public class PolarisRibbonRoutingFilter extends RibbonRoutingFilter implements B
 		catch (NoSuchMethodException e) {
 			useServlet31 = false;
 		}
+		this.enhancedZuulPluginRunner = enhancedZuulPluginRunner;
 	}
 
 
@@ -187,5 +192,11 @@ public class PolarisRibbonRoutingFilter extends RibbonRoutingFilter implements B
 
 	private void init() {
 		this.requestCustomizers = BeanFactoryUtils.getBeans(factory, RibbonRequestCustomizer.class);
+	}
+
+	@Override
+	public Object run() {
+		enhancedZuulPluginRunner.run();
+		return super.run();
 	}
 }

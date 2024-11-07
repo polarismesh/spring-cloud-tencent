@@ -45,6 +45,9 @@ public @interface ConditionalOnTsfConsulEnabled {
 		@Override
 		public boolean matches(ConditionContext conditionContext, AnnotatedTypeMetadata annotatedTypeMetadata) {
 			Environment environment = conditionContext.getEnvironment();
+			if (Boolean.TRUE.toString().equals(environment.getProperty("tsf_consul_enable"))) {
+				return true;
+			}
 			boolean tsfConsulEnable = false;
 
 			String tsfAppId = environment.getProperty("tsf_app_id");

@@ -21,6 +21,8 @@ import java.io.IOException;
 import java.net.URI;
 
 import com.tencent.cloud.polaris.router.PolarisRouterContext;
+import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginRunner;
+import com.tencent.cloud.rpc.enhancement.resttemplate.EnhancedRestTemplateWrapInterceptor;
 
 import org.springframework.cloud.client.loadbalancer.LoadBalancerClient;
 import org.springframework.cloud.client.loadbalancer.LoadBalancerInterceptor;
@@ -42,15 +44,18 @@ public class PolarisLoadBalancerInterceptor extends LoadBalancerInterceptor {
 	private final LoadBalancerClient loadBalancer;
 	private final LoadBalancerRequestFactory requestFactory;
 	private final RouterContextFactory routerContextFactory;
+
+	private final EnhancedPluginRunner enhancedPluginRunner;
+
 	private final boolean isRibbonLoadBalanceClient;
 
-	public PolarisLoadBalancerInterceptor(LoadBalancerClient loadBalancer,
-			LoadBalancerRequestFactory requestFactory,
-			RouterContextFactory routerContextFactory) {
+	public PolarisLoadBalancerInterceptor(LoadBalancerClient loadBalancer, LoadBalancerRequestFactory requestFactory,
+			RouterContextFactory routerContextFactory, EnhancedPluginRunner enhancedPluginRunner) {
 		super(loadBalancer, requestFactory);
 		this.loadBalancer = loadBalancer;
 		this.requestFactory = requestFactory;
 		this.routerContextFactory = routerContextFactory;
+		this.enhancedPluginRunner = enhancedPluginRunner;
 
 		this.isRibbonLoadBalanceClient = loadBalancer instanceof RibbonLoadBalancerClient;
 	}
@@ -70,9 +75,17 @@ public class PolarisLoadBalancerInterceptor extends LoadBalancerInterceptor {
 			RouterContextHelper.setRouterContextToRequest(request, routerContext);
 
 			//3. do loadbalancer and execute request
-			ClientHttpResponse response = ((RibbonLoadBalancerClient) loadBalancer).execute(peerServiceName,
-					this.requestFactory.createRequest(request, body, execution), routerContext);
-
+			ClientHttpResponse response;
+			if (enhancedPluginRunner != null) {
+				EnhancedRestTemplateWrapInterceptor enhancedRestTemplatePluginRunnerInterceptor =
+						new EnhancedRestTemplateWrapInterceptor(enhancedPluginRunner, (RibbonLoadBalancerClient) loadBalancer);
+				response = enhancedRestTemplatePluginRunnerInterceptor.intercept(
+						request, peerServiceName, this.requestFactory.createRequest(request, body, execution), routerContext);
+			}
+			else {
+				response = ((RibbonLoadBalancerClient) loadBalancer).execute(peerServiceName,
+						this.requestFactory.createRequest(request, body, execution), routerContext);
+			}
 			//4. set router context to response
 			RouterContextHelper.setRouterContextToResponse(routerContext, response);
 			return response;
