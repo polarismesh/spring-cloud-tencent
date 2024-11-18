@@ -137,6 +137,7 @@ public class PolarisSDKContextManager {
 
 	/**
 	 * Used for config data.
+	 * @return configSDKContext
 	 */
 	public static SDKContext innerGetConfigSDKContext() {
 		if (configSDKContext == null) {
@@ -209,6 +210,7 @@ public class PolarisSDKContextManager {
 
 	/**
 	 * Used for config data.
+	 * @param context sdk context
 	 */
 	public static void setConfigSDKContext(SDKContext context) {
 		if (configSDKContext == null) {

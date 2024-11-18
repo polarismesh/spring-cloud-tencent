@@ -48,6 +48,7 @@ public class PolarisAdaptorTsfConfigAutoConfiguration {
 	 * 1、关闭Spring Cloud Consul Config配置开关（如果开启Consul Config配置开关，那么初始化的是tsf自身的类ConfigController）
 	 * 2、开启北极星配置（本类通过注解@ConditionalOnPolarisConfigEnabled开启）
 	 * 3、tsf.config.instance.released-config.lookup.enabled的开关是打开的（默认不配置就是打开的）.
+	 * @return polarisAdaptorTsfConfigController
 	 */
 	@Bean
 	@ConditionalOnMissingBean

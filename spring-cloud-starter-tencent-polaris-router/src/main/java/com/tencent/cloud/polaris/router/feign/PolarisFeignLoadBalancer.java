@@ -37,7 +37,6 @@ import com.tencent.cloud.polaris.router.PolarisRouterContext;
 
 import org.springframework.cloud.netflix.ribbon.ServerIntrospector;
 import org.springframework.cloud.openfeign.ribbon.FeignLoadBalancer;
-import org.springframework.util.CollectionUtils;
 
 import static com.tencent.cloud.common.constant.ContextConstant.UTF_8;
 

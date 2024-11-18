@@ -36,7 +36,7 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 @SpringBootTest(webEnvironment = RANDOM_PORT,
 		classes = PolarisCircuitBreakerFeignIntegrationTest.TestConfig.class,
 		properties = {
-		        "feign.hystrix.enabled=false",
+				"feign.hystrix.enabled=false",
 				"spring.cloud.gateway.enabled=false",
 				"feign.circuitbreaker.enabled=true",
 				"spring.cloud.polaris.namespace=" + NAMESPACE_TEST,

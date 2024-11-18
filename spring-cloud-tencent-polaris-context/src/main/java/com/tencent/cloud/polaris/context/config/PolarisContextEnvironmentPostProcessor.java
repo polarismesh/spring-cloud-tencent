@@ -36,8 +36,10 @@ import org.springframework.core.env.MapPropertySource;
  * @author Haotian Zhang
  */
 public final class PolarisContextEnvironmentPostProcessor implements EnvironmentPostProcessor, Ordered {
-
-	public static final int ORDER = Ordered.HIGHEST_PRECEDENCE + 10 - 2;
+	/**
+	 * order before TsfCoreEnvironmentPostProcessor.
+	 */
+	public static final int ORDER = Ordered.HIGHEST_PRECEDENCE + 8;
 
 	private final Logger LOGGER = LoggerFactory.getLogger(PolarisContextEnvironmentPostProcessor.class);
 
@@ -96,6 +98,7 @@ public final class PolarisContextEnvironmentPostProcessor implements Environment
 			polarisEnvProperties.put("spring.cloud.tencent.metadata.content.zone", zone);
 		}
 
+		LOGGER.debug("polaris-env-properties:{}", polarisEnvProperties);
 		MapPropertySource propertySource = new MapPropertySource("polaris-env-properties", polarisEnvProperties);
 		environment.getPropertySources().addFirst(propertySource);
 	}

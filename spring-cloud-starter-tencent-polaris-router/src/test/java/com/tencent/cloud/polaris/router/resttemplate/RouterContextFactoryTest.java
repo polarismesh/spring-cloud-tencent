@@ -51,7 +51,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 /**
- * Test for {@link RouterContextFactory}
+ * Test for {@link RouterContextFactory}.
  *
  * @author lepdou 2022-10-09
  */

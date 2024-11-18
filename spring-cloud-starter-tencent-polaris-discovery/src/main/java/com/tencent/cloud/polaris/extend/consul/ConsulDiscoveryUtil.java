@@ -157,6 +157,10 @@ public final class ConsulDiscoveryUtil {
 	}
 
 	/**
+	 *
+	 * @param autoServiceRegistrationProperties auto service registration properties
+	 * @param properties consul discovery properties
+	 * @param context application context
 	 * @return if the management service should be registered with the {@link ServiceRegistry}
 	 */
 	public static boolean shouldRegisterManagement(AutoServiceRegistrationProperties autoServiceRegistrationProperties,
@@ -167,6 +171,9 @@ public final class ConsulDiscoveryUtil {
 	}
 
 	/**
+	 *
+	 * @param properties consul discovery properties
+	 * @param context application context
 	 * @return the port of the Management Service
 	 */
 	public static Integer getManagementPort(ConsulDiscoveryProperties properties, ApplicationContext context) {

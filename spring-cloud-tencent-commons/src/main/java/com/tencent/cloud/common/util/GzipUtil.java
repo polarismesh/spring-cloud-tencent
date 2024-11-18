@@ -61,7 +61,9 @@ public final class GzipUtil {
 
 
 	public static byte[] decompress(byte[] zipData) throws IOException {
-		try (ByteArrayInputStream bis = new ByteArrayInputStream(zipData); GZIPInputStream gzip = new GZIPInputStream(bis); ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
+		try (ByteArrayInputStream bis = new ByteArrayInputStream(zipData);
+				GZIPInputStream gzip = new GZIPInputStream(bis);
+				ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
 			byte[] buf = new byte[256];
 			int num;
 			while ((num = gzip.read(buf)) != -1) {

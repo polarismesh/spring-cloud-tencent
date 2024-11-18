@@ -21,7 +21,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.tencent.polaris.api.utils.StringUtils;
-import org.apache.commons.logging.Log;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,8 +36,10 @@ import org.springframework.core.env.MapPropertySource;
  * @author Haotian Zhang
  */
 public final class TsfCoreEnvironmentPostProcessor implements EnvironmentPostProcessor, Ordered {
-
-	public static final int ORDER = Ordered.HIGHEST_PRECEDENCE + 10 - 1;
+	/**
+	 * order after PolarisContextEnvironmentPostProcessor.
+	 */
+	public static final int ORDER = Ordered.HIGHEST_PRECEDENCE + 9;
 
 	private final Logger LOGGER = LoggerFactory.getLogger(TsfCoreEnvironmentPostProcessor.class);
 

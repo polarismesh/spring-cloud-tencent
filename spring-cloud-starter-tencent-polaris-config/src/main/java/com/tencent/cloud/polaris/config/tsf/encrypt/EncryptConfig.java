@@ -56,6 +56,7 @@ public final class EncryptConfig {
 
 	/**
 	 * 是否开启配置，判断 password 是否为空.
+	 * @return true：开启；false：关闭
 	 */
 	public static Boolean getEnabled() {
 		return !StringUtils.isEmpty(password);

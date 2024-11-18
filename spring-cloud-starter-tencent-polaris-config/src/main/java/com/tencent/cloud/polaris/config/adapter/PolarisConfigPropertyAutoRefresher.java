@@ -158,6 +158,7 @@ public abstract class PolarisConfigPropertyAutoRefresher implements ApplicationL
 
 	/**
 	 * Just for junit test.
+	 * @param registered if the polaris config property auto refresh is registered
 	 */
 	public void setRegistered(boolean registered) {
 		this.registered.set(registered);

@@ -53,6 +53,7 @@ public class PolarisAdaptorTsfConfigController {
 
 	/**
 	 * 兼容目前TSF控制台的用法，提供北极星查询当前SDK配置接口.
+	 * @return config map
 	 */
 	@RequestMapping("/tsf/innerApi/config/findAllConfig")
 	public Map<String, Object> findAllConfig() {

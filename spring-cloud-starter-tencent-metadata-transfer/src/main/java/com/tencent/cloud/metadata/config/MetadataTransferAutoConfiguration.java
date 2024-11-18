@@ -18,7 +18,6 @@
 
 package com.tencent.cloud.metadata.config;
 
-import com.netflix.zuul.ZuulFilter;
 import com.tencent.cloud.common.constant.OrderConstant;
 import com.tencent.cloud.metadata.core.DecodeTransferMetadataReactiveFilter;
 import com.tencent.cloud.metadata.core.DecodeTransferMetadataServletFilter;
@@ -27,7 +26,6 @@ import com.tencent.cloud.metadata.core.EncodeTransferMedataRestTemplateEnhancedP
 import com.tencent.cloud.metadata.core.EncodeTransferMedataScgEnhancedPlugin;
 import com.tencent.cloud.metadata.core.EncodeTransferMedataWebClientEnhancedPlugin;
 import com.tencent.cloud.metadata.core.EncodeTransferMetadataZuulEnhancedPlugin;
-import com.tencent.cloud.polaris.context.config.PolarisContextProperties;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;

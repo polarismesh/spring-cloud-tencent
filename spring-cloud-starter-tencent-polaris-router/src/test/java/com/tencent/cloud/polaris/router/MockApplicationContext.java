@@ -39,7 +39,7 @@ import org.springframework.core.ResolvableType;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.Resource;
 
-public class MockApplicationContext implements org.springframework.context.ApplicationContext{
+public class MockApplicationContext implements org.springframework.context.ApplicationContext {
 	@Override
 	public String getId() {
 		return null;
