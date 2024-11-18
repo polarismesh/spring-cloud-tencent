@@ -23,6 +23,7 @@ import com.netflix.loadbalancer.ILoadBalancer;
 import com.tencent.cloud.polaris.router.feign.PolarisFeignLoadBalancer;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClass;
 import org.springframework.cloud.client.ConditionalOnDiscoveryEnabled;
 import org.springframework.cloud.netflix.ribbon.ServerIntrospector;
 import org.springframework.context.annotation.Bean;
@@ -40,6 +41,7 @@ import org.springframework.context.annotation.Configuration;
 public class FeignLoadBalancerConfiguration {
 
 	@Bean
+	@ConditionalOnMissingClass("com.netflix.zuul.http.ZuulServlet")
 	@ConditionalOnMissingBean
 	public PolarisFeignLoadBalancer polarisFeignLoadBalancer(ILoadBalancer lb, IClientConfig clientConfig,
 			ServerIntrospector serverIntrospector) {
