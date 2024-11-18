@@ -79,6 +79,7 @@
 		<!-- Dependencies -->
 		<guava.version>32.0.1-jre</guava.version>
 		<logback.version>1.2.13</logback.version>
+		<commons-lang3.version>3.12.0</commons-lang3.version>
 		<springdoc.version>1.7.0</springdoc.version>
 		<io.swagger.version>1.5.24</io.swagger.version>
 		<mocktio.version>4.5.1</mocktio.version>
@@ -168,6 +169,12 @@
 
 			<dependency>
 				<groupId>com.tencent.cloud</groupId>
+				<artifactId>spring-cloud-starter-tencent-polaris-auth</artifactId>
+				<version>${revision}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>com.tencent.cloud</groupId>
 				<artifactId>spring-cloud-starter-tencent-all</artifactId>
 				<version>${revision}</version>
 			</dependency>
@@ -243,6 +250,13 @@
 			</dependency>
 
 			<dependency>
+				<groupId>org.apache.commons</groupId>
+				<artifactId>commons-lang3</artifactId>
+				<version>${commons-lang3.version}</version>
+				<scope>compile</scope>
+			</dependency>
+
+			<dependency>
 				<groupId>org.springdoc</groupId>
 				<artifactId>springdoc-openapi-ui</artifactId>
 				<version>${springdoc.version}</version>
@@ -265,7 +279,6 @@
 				<artifactId>byte-buddy</artifactId>
 				<version>${byte-buddy.version}</version>
 			</dependency>
-
 
 			<dependency>
 				<groupId>joda-time</groupId>
