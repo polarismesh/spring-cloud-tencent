@@ -98,8 +98,6 @@ public class DecodeTransferMetadataReactiveFilter implements WebFilter, Ordered 
 
 		TransHeadersTransfer.transfer(serverHttpRequest);
 		return webFilterChain.filter(serverWebExchange)
-				.doOnError(throwable -> LOG.error("handle metadata[{}] error.",
-						MetadataContextHolder.get(), throwable))
 				.doFinally((type) -> MetadataContextHolder.remove());
 	}
 

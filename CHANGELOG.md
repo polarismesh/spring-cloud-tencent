@@ -37,3 +37,4 @@
 - [feat: support lossless config from console & support warmup.](https://github.com/Tencent/spring-cloud-tencent/pull/1435)
 - [feat:add admin http handler.](https://github.com/Tencent/spring-cloud-tencent/pull/1448)
 - [feat:support concurrency rate limit.](https://github.com/Tencent/spring-cloud-tencent/pull/1454)
+- [feat:support auth.](https://github.com/Tencent/spring-cloud-tencent/pull/1459)
