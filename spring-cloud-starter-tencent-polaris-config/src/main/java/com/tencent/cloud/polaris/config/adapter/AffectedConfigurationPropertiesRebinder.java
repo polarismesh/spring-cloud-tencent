@@ -43,13 +43,16 @@ import org.springframework.util.StringUtils;
 
 /**
  * Optimize {@link ConfigurationPropertiesRebinder}, only rebuild affected beans.
- * @author weihubeats 2022-7-10
+ *
+ * @author weihubeats
  */
 public class AffectedConfigurationPropertiesRebinder extends ConfigurationPropertiesRebinder {
+
 	private static final Logger LOGGER = LoggerFactory.getLogger(AffectedConfigurationPropertiesRebinder.class);
 
 	private ApplicationContext applicationContext;
 	private Map<String, ConfigurationPropertiesBean> propertiesBeans = new HashMap<>();
+
 	private final Map<String, Map<String, Object>> propertiesBeanDefaultValues = new ConcurrentHashMap<>();
 
 	public AffectedConfigurationPropertiesRebinder(ConfigurationPropertiesBeans beans) {
@@ -125,8 +128,7 @@ public class AffectedConfigurationPropertiesRebinder extends ConfigurationProper
 		for (ConfigurationPropertiesBean propertiesBean : propertiesBeans.values()) {
 			Map<String, Object> defaultValues = new HashMap<>();
 			try {
-				Object instance = propertiesBean.getInstance().getClass().getDeclaredConstructor((Class<?>[]) null)
-						.newInstance();
+				Object instance = propertiesBean.getInstance().getClass().getDeclaredConstructor((Class<?>[]) null).newInstance();
 				ReflectionUtils.doWithFields(instance.getClass(), field -> {
 					try {
 						field.setAccessible(true);

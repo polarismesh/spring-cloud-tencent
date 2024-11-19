@@ -17,10 +17,6 @@
 
 package com.tencent.cloud.polaris.contract.config;
 
-import java.util.Objects;
-
-import javax.annotation.Nullable;
-
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
@@ -31,8 +27,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  */
 @ConfigurationProperties("spring.cloud.polaris.contract")
 public class PolarisContractProperties implements ContractProperties {
-
-	private final ExtendedContractProperties extendContractProperties;
 
 	private boolean enabled = true;
 	/**
@@ -46,7 +40,7 @@ public class PolarisContractProperties implements ContractProperties {
 	/**
 	 * Group to create swagger docket.
 	 */
-	private String group = "default";
+	private String group = "polaris";
 	/**
 	 * Base paths to be scanned. Split by ",".
 	 */
@@ -57,15 +51,10 @@ public class PolarisContractProperties implements ContractProperties {
 	@Value("${spring.cloud.polaris.contract.report.enabled:true}")
 	private boolean reportEnabled = true;
 
-	public PolarisContractProperties(@Nullable ExtendedContractProperties extendContractProperties) {
-		this.extendContractProperties = extendContractProperties;
-	}
+	private String name;
 
 	@Override
 	public boolean isEnabled() {
-		if (Objects.nonNull(extendContractProperties)) {
-			return extendContractProperties.isEnabled();
-		}
 		return enabled;
 	}
 
@@ -76,9 +65,6 @@ public class PolarisContractProperties implements ContractProperties {
 
 	@Override
 	public String getBasePackage() {
-		if (Objects.nonNull(extendContractProperties)) {
-			return extendContractProperties.getBasePackage();
-		}
 		return basePackage;
 	}
 
@@ -89,9 +75,6 @@ public class PolarisContractProperties implements ContractProperties {
 
 	@Override
 	public String getExcludePath() {
-		if (Objects.nonNull(extendContractProperties)) {
-			return extendContractProperties.getExcludePath();
-		}
 		return excludePath;
 	}
 
@@ -102,9 +85,6 @@ public class PolarisContractProperties implements ContractProperties {
 
 	@Override
 	public String getGroup() {
-		if (Objects.nonNull(extendContractProperties)) {
-			return extendContractProperties.getGroup();
-		}
 		return group;
 	}
 
@@ -115,9 +95,6 @@ public class PolarisContractProperties implements ContractProperties {
 
 	@Override
 	public String getBasePath() {
-		if (Objects.nonNull(extendContractProperties)) {
-			return extendContractProperties.getBasePath();
-		}
 		return basePath;
 	}
 
@@ -128,9 +105,6 @@ public class PolarisContractProperties implements ContractProperties {
 
 	@Override
 	public boolean isExposure() {
-		if (Objects.nonNull(extendContractProperties)) {
-			return extendContractProperties.isExposure();
-		}
 		return exposure;
 	}
 
@@ -147,5 +121,14 @@ public class PolarisContractProperties implements ContractProperties {
 	@Override
 	public void setReportEnabled(boolean reportEnabled) {
 		this.reportEnabled = reportEnabled;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	@Override
+	public void setName(String name) {
+		this.name = name;
 	}
 }

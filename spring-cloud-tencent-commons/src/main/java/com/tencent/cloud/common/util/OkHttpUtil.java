@@ -55,7 +55,7 @@ public final class OkHttpUtil {
 	public static boolean get(String path, Map<String, String> headers) {
 		HttpURLConnection conn = null;
 		try {
-			URL url = new java.net.URL(path);
+			URL url = new URL(path);
 			conn = (HttpURLConnection) url.openConnection();
 
 			conn.setRequestMethod("GET");

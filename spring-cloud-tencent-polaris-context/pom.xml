@@ -36,6 +36,10 @@
 				</exclusion>
 				<exclusion>
 					<groupId>com.tencent.polaris</groupId>
+					<artifactId>router-namespace</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>com.tencent.polaris</groupId>
 					<artifactId>router-metadata</artifactId>
 				</exclusion>
 				<exclusion>
@@ -110,6 +114,10 @@
 				</exclusion>
 				<exclusion>
 					<groupId>com.tencent.polaris</groupId>
+					<artifactId>router-namespace</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>com.tencent.polaris</groupId>
 					<artifactId>router-metadata</artifactId>
 				</exclusion>
 				<exclusion>
@@ -177,7 +185,16 @@
 			<groupId>com.tencent.polaris</groupId>
 			<artifactId>polaris-router-factory</artifactId>
 		</dependency>
-		<!-- Discovery depended on base routers -->
+
+		<dependency>
+			<groupId>com.tencent.polaris</groupId>
+			<artifactId>polaris-circuitbreaker-factory</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>com.tencent.polaris</groupId>
+			<artifactId>polaris-ratelimit-factory</artifactId>
+		</dependency>
 
 		<dependency>
 			<groupId>com.tencent.polaris</groupId>
@@ -192,6 +209,11 @@
 		<dependency>
 			<groupId>com.tencent.polaris</groupId>
 			<artifactId>polaris-assembly-factory</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>com.tencent.polaris</groupId>
+			<artifactId>event-tsf</artifactId>
 		</dependency>
 		<!-- Polaris dependencies end -->
 

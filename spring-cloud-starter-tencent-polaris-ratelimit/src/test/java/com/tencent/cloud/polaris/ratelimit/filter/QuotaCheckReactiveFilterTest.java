@@ -27,13 +27,13 @@ import java.util.concurrent.CountDownLatch;
 import java.util.stream.Collectors;
 
 import com.google.protobuf.InvalidProtocolBufferException;
+import com.google.protobuf.StringValue;
 import com.google.protobuf.util.JsonFormat;
+import com.tencent.cloud.common.constant.HeaderConstant;
 import com.tencent.cloud.common.constant.OrderConstant;
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.polaris.context.ServiceRuleManager;
 import com.tencent.cloud.polaris.ratelimit.config.PolarisRateLimitProperties;
-import com.tencent.cloud.polaris.ratelimit.resolver.RateLimitRuleArgumentReactiveResolver;
-import com.tencent.cloud.polaris.ratelimit.spi.PolarisRateLimiterLabelReactiveResolver;
 import com.tencent.cloud.polaris.ratelimit.spi.PolarisRateLimiterLimitedFallback;
 import com.tencent.polaris.api.plugin.ratelimiter.QuotaResult;
 import com.tencent.polaris.ratelimit.api.core.LimitAPI;
@@ -67,15 +67,13 @@ import static org.mockito.Mockito.when;
 /**
  * Test for {@link QuotaCheckReactiveFilter}.
  *
- * @author Haotian Zhang, cheese8, kaiy
+ * @author Haotian Zhang, kaiy
  */
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
 @SpringBootTest(classes = QuotaCheckReactiveFilterTest.TestApplication.class,
 		properties = {"spring.cloud.polaris.namespace=Test", "spring.cloud.polaris.service=TestApp"})
 public class QuotaCheckReactiveFilterTest {
-	private final PolarisRateLimiterLabelReactiveResolver labelResolver =
-			exchange -> Collections.singletonMap("xxx", "xxx");
 	private QuotaCheckReactiveFilter quotaCheckReactiveFilter;
 	private QuotaCheckReactiveFilter quotaCheckWithRateLimiterLimitedFallbackReactiveFilter;
 	private PolarisRateLimiterLimitedFallback polarisRateLimiterLimitedFallback;
@@ -95,11 +93,12 @@ public class QuotaCheckReactiveFilterTest {
 			}
 			else if (serviceName.equals("TestApp3")) {
 				QuotaResponse response = new QuotaResponse(new QuotaResult(QuotaResult.Code.QuotaResultLimited, 0, "QuotaResultLimited"));
-				response.setActiveRule(RateLimitProto.Rule.newBuilder().build());
+				response.setActiveRule(RateLimitProto.Rule.newBuilder()
+						.setName(StringValue.newBuilder().setValue("MOCK_RULE").build()).build());
 				return response;
 			}
 			else {
-				return new QuotaResponse(new QuotaResult(QuotaResult.Code.QuotaResultOk, 0, null));
+				return new QuotaResponse(new QuotaResult(null, 0, null));
 			}
 		});
 
@@ -123,10 +122,10 @@ public class QuotaCheckReactiveFilterTest {
 		RateLimitProto.RateLimit rateLimit = RateLimitProto.RateLimit.newBuilder().addRules(rateLimitRule).build();
 		when(serviceRuleManager.getServiceRateLimitRule(anyString(), anyString())).thenReturn(rateLimit);
 
-		RateLimitRuleArgumentReactiveResolver rateLimitRuleArgumentReactiveResolver = new RateLimitRuleArgumentReactiveResolver(serviceRuleManager, labelResolver);
-		this.quotaCheckReactiveFilter = new QuotaCheckReactiveFilter(limitAPI, polarisRateLimitProperties, rateLimitRuleArgumentReactiveResolver, null);
+		this.quotaCheckReactiveFilter = new QuotaCheckReactiveFilter(limitAPI, null, polarisRateLimitProperties, null);
 		this.polarisRateLimiterLimitedFallback = new JsonPolarisRateLimiterLimitedFallback();
-		this.quotaCheckWithRateLimiterLimitedFallbackReactiveFilter = new QuotaCheckReactiveFilter(limitAPI, polarisRateLimitWithHtmlRejectTipsProperties, rateLimitRuleArgumentReactiveResolver, polarisRateLimiterLimitedFallback);
+		this.quotaCheckWithRateLimiterLimitedFallbackReactiveFilter = new QuotaCheckReactiveFilter(limitAPI, null,
+				polarisRateLimitWithHtmlRejectTipsProperties, polarisRateLimiterLimitedFallback);
 	}
 
 	@Test
@@ -185,6 +184,8 @@ public class QuotaCheckReactiveFilterTest {
 		ServerHttpResponse response = testApp3Exchange.getResponse();
 		assertThat(response.getRawStatusCode()).isEqualTo(419);
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.INSUFFICIENT_SPACE_ON_RESOURCE);
+		assertThat(response.getHeaders()
+				.get(HeaderConstant.INTERNAL_ACTIVE_RULE_NAME)).isEqualTo(Collections.singletonList("MOCK_RULE"));
 
 		// Exception
 		MetadataContext.LOCAL_SERVICE = "TestApp4";

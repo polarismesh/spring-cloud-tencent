@@ -17,6 +17,9 @@
 
 package com.tencent.cloud.quickstart.caller;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import com.tencent.cloud.common.spi.InstanceMetadataProvider;
 
 import org.springframework.stereotype.Component;
@@ -28,7 +31,10 @@ import org.springframework.stereotype.Component;
 public class CustomMetadataProvider implements InstanceMetadataProvider {
 
 	@Override
-	public String getRegion() {
-		return "huadong";
+	public Map<String, String> getMetadata() {
+		Map<String, String> metadata = new HashMap<>();
+		metadata.put("k1", "v1");
+		return metadata;
 	}
+
 }

@@ -29,6 +29,7 @@ import com.tencent.cloud.polaris.config.config.PolarisConfigProperties;
 import com.tencent.cloud.polaris.context.config.PolarisContextProperties;
 import com.tencent.polaris.configuration.api.core.ConfigFileService;
 import com.tencent.polaris.configuration.api.core.ConfigKVFile;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -42,8 +43,7 @@ import static org.mockito.Mockito.when;
 
 /**
  * test for {@link PolarisConfigFileLocator}.
- *
- * @author lepdou 2022-06-11
+ *@author lepdou 2022-06-11
  */
 @ExtendWith(MockitoExtension.class)
 public class PolarisConfigFileLocatorTest {
@@ -57,14 +57,17 @@ public class PolarisConfigFileLocatorTest {
 	@Mock
 	private ConfigFileService configFileService;
 	@Mock
-	private PolarisPropertySourceManager polarisPropertySourceManager;
-	@Mock
 	private Environment environment;
+
+	@BeforeEach
+	public void setUp() {
+		PolarisPropertySourceManager.clearPropertySources();
+	}
 
 	@Test
 	public void testLoadApplicationPropertiesFile() {
 		PolarisConfigFileLocator locator = new PolarisConfigFileLocator(polarisConfigProperties, polarisContextProperties,
-				configFileService, polarisPropertySourceManager, environment);
+				configFileService, environment);
 
 		when(polarisContextProperties.getNamespace()).thenReturn(testNamespace);
 		when(polarisContextProperties.getService()).thenReturn(testServiceName);
@@ -86,7 +89,9 @@ public class PolarisConfigFileLocatorTest {
 		when(configFileService.getConfigYamlFile(testNamespace, testServiceName, "bootstrap.yml")).thenReturn(emptyConfigFile);
 		when(configFileService.getConfigYamlFile(testNamespace, testServiceName, "bootstrap.yaml")).thenReturn(emptyConfigFile);
 
+		when(polarisConfigProperties.isEnabled()).thenReturn(true);
 		when(polarisConfigProperties.getGroups()).thenReturn(null);
+		when(polarisConfigProperties.isInternalEnabled()).thenReturn(true);
 		when(environment.getActiveProfiles()).thenReturn(new String[] {});
 
 		PropertySource<?> propertySource = locator.locate(environment);
@@ -99,7 +104,7 @@ public class PolarisConfigFileLocatorTest {
 	@Test
 	public void testActiveProfileFilesPriorityBiggerThanDefault() {
 		PolarisConfigFileLocator locator = new PolarisConfigFileLocator(polarisConfigProperties, polarisContextProperties,
-				configFileService, polarisPropertySourceManager, environment);
+				configFileService, environment);
 
 		when(polarisContextProperties.getNamespace()).thenReturn(testNamespace);
 		when(polarisContextProperties.getService()).thenReturn(testServiceName);
@@ -133,7 +138,9 @@ public class PolarisConfigFileLocatorTest {
 		when(configFileService.getConfigYamlFile(testNamespace, testServiceName, "bootstrap-dev.yml")).thenReturn(emptyConfigFile);
 		when(configFileService.getConfigYamlFile(testNamespace, testServiceName, "bootstrap-dev.yaml")).thenReturn(emptyConfigFile);
 
+		when(polarisConfigProperties.isEnabled()).thenReturn(true);
 		when(polarisConfigProperties.getGroups()).thenReturn(null);
+		when(polarisConfigProperties.isInternalEnabled()).thenReturn(true);
 		when(environment.getActiveProfiles()).thenReturn(new String[] {"dev"});
 
 		PropertySource<?> propertySource = locator.locate(environment);
@@ -146,7 +153,7 @@ public class PolarisConfigFileLocatorTest {
 	@Test
 	public void testGetCustomFiles() {
 		PolarisConfigFileLocator locator = new PolarisConfigFileLocator(polarisConfigProperties, polarisContextProperties,
-				configFileService, polarisPropertySourceManager, environment);
+				configFileService, environment);
 
 		when(polarisContextProperties.getNamespace()).thenReturn(testNamespace);
 		when(polarisContextProperties.getService()).thenReturn(testServiceName);
@@ -170,7 +177,9 @@ public class PolarisConfigFileLocatorTest {
 		configFileGroup.setFiles(Lists.newArrayList(customFile1, customFile2));
 		customFiles.add(configFileGroup);
 
+		when(polarisConfigProperties.isEnabled()).thenReturn(true);
 		when(polarisConfigProperties.getGroups()).thenReturn(customFiles);
+		when(polarisConfigProperties.isInternalEnabled()).thenReturn(true);
 		when(environment.getActiveProfiles()).thenReturn(new String[] {});
 
 		// file1.properties

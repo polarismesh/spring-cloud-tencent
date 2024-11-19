@@ -20,6 +20,7 @@ package com.tencent.cloud.polaris.router.feign;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -36,7 +37,6 @@ import com.tencent.cloud.polaris.router.PolarisRouterContext;
 
 import org.springframework.cloud.netflix.ribbon.ServerIntrospector;
 import org.springframework.cloud.openfeign.ribbon.FeignLoadBalancer;
-import org.springframework.util.CollectionUtils;
 
 import static com.tencent.cloud.common.constant.ContextConstant.UTF_8;
 
@@ -65,8 +65,8 @@ public class PolarisFeignLoadBalancer extends FeignLoadBalancer {
 	PolarisRouterContext buildRouterContext(Map<String, Collection<String>> headers) {
 		Collection<String> labelHeaderValues = headers.get(RouterConstant.ROUTER_LABEL_HEADER);
 
-		if (CollectionUtils.isEmpty(labelHeaderValues)) {
-			return null;
+		if (labelHeaderValues == null) {
+			labelHeaderValues = new ArrayList<>(0);
 		}
 
 		PolarisRouterContext routerContext = new PolarisRouterContext();

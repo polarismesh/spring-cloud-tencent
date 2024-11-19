@@ -17,7 +17,6 @@
  */
 
 package com.tencent.cloud.metadata.provider;
-
 import javax.servlet.http.HttpServletRequest;
 
 import com.tencent.cloud.common.util.UrlUtils;
@@ -25,6 +24,7 @@ import com.tencent.cloud.common.util.expresstion.ExpressionLabelUtils;
 import com.tencent.cloud.common.util.expresstion.ServletExpressionLabelUtils;
 import com.tencent.polaris.metadata.core.MessageMetadataContainer;
 import com.tencent.polaris.metadata.core.MetadataProvider;
+
 
 /**
  * MetadataProvider used for Servlet.

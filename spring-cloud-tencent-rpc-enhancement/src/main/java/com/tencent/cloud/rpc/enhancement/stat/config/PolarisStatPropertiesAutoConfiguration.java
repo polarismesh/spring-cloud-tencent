@@ -23,7 +23,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.env.Environment;
 
 /**
  * Autoconfiguration of stat reporter.
@@ -37,7 +36,7 @@ public class PolarisStatPropertiesAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public StatConfigModifier statReporterConfigModifier(PolarisStatProperties polarisStatProperties, Environment environment) {
-		return new StatConfigModifier(polarisStatProperties, environment);
+	public StatConfigModifier statReporterConfigModifier(PolarisStatProperties polarisStatProperties) {
+		return new StatConfigModifier(polarisStatProperties);
 	}
 }

@@ -20,7 +20,7 @@ package com.tencent.cloud.plugin.threadlocal;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicReference;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 

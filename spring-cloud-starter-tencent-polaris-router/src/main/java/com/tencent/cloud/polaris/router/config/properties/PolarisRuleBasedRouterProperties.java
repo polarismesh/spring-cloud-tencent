@@ -13,10 +13,11 @@
  * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
- *
  */
 
 package com.tencent.cloud.polaris.router.config.properties;
+
+import com.tencent.polaris.api.rpc.RuleBasedRouterFailoverType;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
@@ -30,6 +31,8 @@ public class PolarisRuleBasedRouterProperties {
 
 	private boolean enabled = true;
 
+	private RuleBasedRouterFailoverType failOver = RuleBasedRouterFailoverType.all;
+
 	public boolean isEnabled() {
 		return enabled;
 	}
@@ -38,11 +41,19 @@ public class PolarisRuleBasedRouterProperties {
 		this.enabled = enabled;
 	}
 
-	@Override
-	public String toString() {
-		return "PolarisNearByRouterProperties{" +
-				"enabled=" + enabled +
-				'}';
+	public RuleBasedRouterFailoverType getFailOver() {
+		return failOver;
 	}
 
+	public void setFailOver(RuleBasedRouterFailoverType failOver) {
+		this.failOver = failOver;
+	}
+
+	@Override
+	public String toString() {
+		return "PolarisRuleBasedRouterProperties{" +
+				"enabled=" + enabled +
+				", failOver=" + failOver +
+				'}';
+	}
 }

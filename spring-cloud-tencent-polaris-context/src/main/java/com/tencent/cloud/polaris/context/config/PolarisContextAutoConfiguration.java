@@ -25,6 +25,11 @@ import com.tencent.cloud.polaris.context.ModifyAddress;
 import com.tencent.cloud.polaris.context.PolarisConfigModifier;
 import com.tencent.cloud.polaris.context.PolarisSDKContextManager;
 import com.tencent.cloud.polaris.context.ServiceRuleManager;
+import com.tencent.cloud.polaris.context.admin.PolarisAdminConfigModifier;
+import com.tencent.cloud.polaris.context.admin.PolarisAdminProperties;
+import com.tencent.cloud.polaris.context.config.extend.consul.ConsulProperties;
+import com.tencent.cloud.polaris.context.config.extend.tsf.TsfCoreProperties;
+import com.tencent.cloud.polaris.context.config.extend.tsf.TsfInstanceMetadataProvider;
 import com.tencent.cloud.polaris.context.listener.PolarisContextApplicationEventListener;
 import com.tencent.polaris.api.exception.PolarisException;
 import com.tencent.polaris.client.api.SDKContext;
@@ -63,5 +68,35 @@ public class PolarisContextAutoConfiguration {
 	@Bean
 	public PolarisContextApplicationEventListener contextApplicationEventListener(PolarisSDKContextManager polarisSDKContextManager) {
 		return new PolarisContextApplicationEventListener(polarisSDKContextManager);
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	public PolarisAdminProperties polarisAdminProperties() {
+		return new PolarisAdminProperties();
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	public PolarisAdminConfigModifier polarisAdminConfigModifier(PolarisAdminProperties polarisAdminProperties) {
+		return new PolarisAdminConfigModifier(polarisAdminProperties);
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	public ConsulProperties consulProperties() {
+		return new ConsulProperties();
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	public TsfCoreProperties tsfCoreProperties() {
+		return new TsfCoreProperties();
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	public TsfInstanceMetadataProvider tsfInstanceMetadataProvider(TsfCoreProperties tsfCoreProperties) {
+		return new TsfInstanceMetadataProvider(tsfCoreProperties);
 	}
 }

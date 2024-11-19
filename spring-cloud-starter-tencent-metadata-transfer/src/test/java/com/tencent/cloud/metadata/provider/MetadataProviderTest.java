@@ -20,7 +20,7 @@ package com.tencent.cloud.metadata.provider;
 
 import com.tencent.cloud.common.util.UrlUtils;
 import com.tencent.polaris.metadata.core.MessageMetadataContainer;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.http.HttpCookie;
 import org.springframework.http.HttpMethod;

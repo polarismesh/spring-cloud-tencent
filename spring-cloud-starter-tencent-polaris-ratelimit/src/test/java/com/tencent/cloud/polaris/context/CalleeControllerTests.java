@@ -17,15 +17,16 @@
 
 package com.tencent.cloud.polaris.context;
 
+import com.google.protobuf.StringValue;
 import com.tencent.cloud.polaris.ratelimit.config.PolarisRateLimitProperties;
 import com.tencent.cloud.polaris.ratelimit.filter.QuotaCheckServletFilter;
-import com.tencent.cloud.polaris.ratelimit.resolver.RateLimitRuleArgumentServletResolver;
 import com.tencent.cloud.polaris.ratelimit.spi.PolarisRateLimiterLimitedFallback;
 import com.tencent.polaris.api.pojo.ServiceKey;
 import com.tencent.polaris.ratelimit.api.core.LimitAPI;
 import com.tencent.polaris.ratelimit.api.rpc.QuotaResponse;
 import com.tencent.polaris.ratelimit.api.rpc.QuotaResultCode;
 import com.tencent.polaris.ratelimit.factory.LimitAPIFactory;
+import com.tencent.polaris.specification.api.v1.traffic.manage.RateLimitProto;
 import com.tencent.polaris.test.mock.discovery.NamingServer;
 import com.tencent.polaris.test.mock.discovery.NamingService;
 import org.junit.jupiter.api.AfterAll;
@@ -63,10 +64,9 @@ import static org.mockito.Mockito.when;
  */
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
-		classes = { CalleeControllerTests.Config.class, TestController.class },
-		properties = { "spring.application.name=java_provider_test",
-				"spring.cloud.polaris.discovery.namespace=Test",
-				"spring.cloud.polaris.address=grpc://127.0.0.1:10081" })
+		classes = {CalleeControllerTests.Config.class, TestController.class},
+		properties = {"spring.application.name=java_provider_test", "spring.cloud.polaris.discovery.namespace=Test",
+				"spring.cloud.polaris.address=grpc://127.0.0.1:10081"})
 public class CalleeControllerTests {
 
 	private static NamingServer namingServer;
@@ -90,8 +90,7 @@ public class CalleeControllerTests {
 		instanceParameter.setIsolated(false);
 		instanceParameter.setWeight(100);
 		ServiceKey serviceKey = new ServiceKey(NAMESPACE_TEST, SERVICE_PROVIDER);
-		namingServer.getNamingService().batchAddInstances(serviceKey, PORT, 3,
-				instanceParameter);
+		namingServer.getNamingService().batchAddInstances(serviceKey, PORT, 3, instanceParameter);
 	}
 
 	@AfterAll
@@ -120,6 +119,13 @@ public class CalleeControllerTests {
 					QuotaResponse quotaResponse = mock(QuotaResponse.class);
 					when(quotaResponse.getCode()).thenReturn(QuotaResultCode.QuotaResultLimited);
 					when(quotaResponse.getInfo()).thenReturn("Testing rate limit after 10 times success.");
+					RateLimitProto.Rule rule = mock(RateLimitProto.Rule.class);
+					when(rule.getId()).thenReturn(StringValue.of("rate-test"));
+					RateLimitProto.CustomResponse customResponse = mock(RateLimitProto.CustomResponse.class);
+					when(customResponse.getBody()).thenReturn("limited");
+					when(rule.getCustomResponse()).thenReturn(customResponse);
+					when(quotaResponse.getActiveRule()).thenReturn(rule);
+					when(quotaResponse.getActiveRuleName()).thenReturn("rate-test");
 					when(limitAPI.getQuota(any())).thenReturn(quotaResponse);
 				}
 				String result = restTemplate.getForObject(url, String.class);
@@ -128,7 +134,7 @@ public class CalleeControllerTests {
 			}
 			catch (RestClientException e) {
 				if (e instanceof TooManyRequests) {
-					System.out.println(((TooManyRequests) e).getResponseBodyAsString());
+					assertThat(((TooManyRequests) e).getResponseBodyAsString()).isEqualTo("limited");
 					hasLimited = true;
 				}
 				else {
@@ -159,10 +165,8 @@ public class CalleeControllerTests {
 		@Primary
 		public QuotaCheckServletFilter quotaCheckFilter(LimitAPI limitAPI,
 				PolarisRateLimitProperties polarisRateLimitProperties,
-				RateLimitRuleArgumentServletResolver rateLimitRuleArgumentResolver,
 				@Autowired(required = false) PolarisRateLimiterLimitedFallback polarisRateLimiterLimitedFallback) {
-			return new QuotaCheckServletFilter(limitAPI, polarisRateLimitProperties,
-					rateLimitRuleArgumentResolver, polarisRateLimiterLimitedFallback);
+			return new QuotaCheckServletFilter(limitAPI, null, polarisRateLimitProperties, polarisRateLimiterLimitedFallback);
 		}
 	}
 }

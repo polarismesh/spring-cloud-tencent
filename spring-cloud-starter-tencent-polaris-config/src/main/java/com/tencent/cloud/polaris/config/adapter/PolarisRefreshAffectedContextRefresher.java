@@ -59,9 +59,8 @@ public class PolarisRefreshAffectedContextRefresher extends PolarisConfigPropert
 	private TypeConverter typeConverter;
 
 	public PolarisRefreshAffectedContextRefresher(PolarisConfigProperties polarisConfigProperties,
-			PolarisPropertySourceManager polarisPropertySourceManager, SpringValueRegistry springValueRegistry,
-			PlaceholderHelper placeholderHelper) {
-		super(polarisConfigProperties, polarisPropertySourceManager);
+			SpringValueRegistry springValueRegistry, PlaceholderHelper placeholderHelper) {
+		super(polarisConfigProperties);
 		this.springValueRegistry = springValueRegistry;
 		this.placeholderHelper = placeholderHelper;
 	}
@@ -100,7 +99,7 @@ public class PolarisRefreshAffectedContextRefresher extends PolarisConfigPropert
 	 * Logic transplanted from DefaultListableBeanFactory.
 	 *
 	 * @see org.springframework.beans.factory.support.DefaultListableBeanFactory#doResolveDependency(org.springframework.beans.factory.config.DependencyDescriptor,
-	 * java.lang.String, java.util.Set, org.springframework.beans.TypeConverter)
+	 * String, Set, TypeConverter)
 	 */
 	private Object resolvePropertyValue(SpringValue springValue) {
 		// value will never be null

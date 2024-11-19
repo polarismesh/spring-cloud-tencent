@@ -50,7 +50,7 @@
 		</dependency>
 		<dependency>
 			<groupId>com.tencent.polaris</groupId>
-			<artifactId>router-lane</artifactId>
+			<artifactId>router-namespace</artifactId>
 		</dependency>
 		<!-- Polaris dependencies end -->
 

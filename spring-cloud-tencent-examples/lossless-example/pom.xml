@@ -15,4 +15,5 @@
 	<artifactId>lossless-example</artifactId>
 	<packaging>pom</packaging>
 	<name>Spring Cloud Starter Tencent Lossless Example</name>
+
 </project>

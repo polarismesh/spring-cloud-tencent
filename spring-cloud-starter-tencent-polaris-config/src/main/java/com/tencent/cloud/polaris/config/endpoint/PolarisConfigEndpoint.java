@@ -33,15 +33,13 @@ import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
  *
  * @author shuiqingliu
  **/
-@Endpoint(id = "polaris-config")
+@Endpoint(id = "polarisconfig")
 public class PolarisConfigEndpoint {
 
 	private final PolarisConfigProperties polarisConfigProperties;
-	private final PolarisPropertySourceManager polarisPropertySourceManager;
 
-	public PolarisConfigEndpoint(PolarisConfigProperties polarisConfigProperties, PolarisPropertySourceManager polarisPropertySourceManager) {
+	public PolarisConfigEndpoint(PolarisConfigProperties polarisConfigProperties) {
 		this.polarisConfigProperties = polarisConfigProperties;
-		this.polarisPropertySourceManager = polarisPropertySourceManager;
 	}
 
 	@ReadOperation
@@ -49,7 +47,7 @@ public class PolarisConfigEndpoint {
 		Map<String, Object> configInfo = new HashMap<>();
 		configInfo.put("PolarisConfigProperties", polarisConfigProperties);
 
-		List<PolarisPropertySource> propertySourceList = polarisPropertySourceManager.getAllPropertySources();
+		List<PolarisPropertySource> propertySourceList = PolarisPropertySourceManager.getAllPropertySources();
 		configInfo.put("PolarisPropertySource", propertySourceList);
 
 		return configInfo;

@@ -35,10 +35,14 @@ public class PolarisRefreshEntireContextRefresher extends PolarisConfigPropertyA
 	private final ContextRefresher contextRefresher;
 
 	public PolarisRefreshEntireContextRefresher(PolarisConfigProperties polarisConfigProperties,
-			PolarisPropertySourceManager polarisPropertySourceManager,
 			ContextRefresher contextRefresher) {
-		super(polarisConfigProperties, polarisPropertySourceManager);
+		super(polarisConfigProperties);
 		this.contextRefresher = contextRefresher;
+	}
+
+	@Override
+	public void refreshSpringValue(String changedKey) {
+		// do nothing,all config will be refreshed by contextRefresher.refresh
 	}
 
 	@Override

@@ -17,6 +17,7 @@
 
 package com.tencent.cloud.quickstart.caller.circuitbreaker;
 
+import com.tencent.cloud.common.metadata.MetadataContext;
 import reactor.core.publisher.Mono;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +29,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.reactive.function.client.WebClient;
 
@@ -110,10 +113,30 @@ public class CircuitBreakerController {
 	@GetMapping("/rest")
 	public String circuitBreakRestTemplate() {
 		return circuitBreakerFactory
-				.create("QuickstartCalleeService#/quickstart/callee/circuitBreak")
+				.create(MetadataContext.LOCAL_NAMESPACE + "#QuickstartCalleeService#/quickstart/callee/circuitBreak#http#GET")
 				.run(() -> defaultRestTemplate.getForObject("/quickstart/callee/circuitBreak", String.class),
 						throwable -> "trigger the refuse for service callee."
 				);
+	}
+
+	/**
+	 * RestTemplate wildcard circuit breaker with fallback from Polaris.
+	 * @return circuit breaker information of callee
+	 */
+	@GetMapping("/rest/fallbackFromPolaris/wildcard/{uid}")
+	public ResponseEntity<String> circuitBreakRestTemplateFallbackFromPolarisWildcard(@PathVariable String uid) {
+		String path = String.format("/quickstart/callee/circuitBreak/wildcard/%s", uid);
+		return restTemplateFallbackFromPolaris.getForEntity(path, String.class);
+	}
+
+	/**
+	 * RestTemplate wildcard circuit breaker with fallback from code.
+	 * @return circuit breaker information of callee
+	 */
+	@GetMapping("/rest/fallbackFromCode/wildcard/{uid}")
+	public ResponseEntity<String> circuitBreakRestTemplateFallbackFromCodeWildcard(@PathVariable String uid) {
+		String path = String.format("/quickstart/callee/circuitBreak/wildcard/%s", uid);
+		return restTemplateFallbackFromCode.getForEntity(path, String.class);
 	}
 
 	/**
@@ -122,7 +145,12 @@ public class CircuitBreakerController {
 	 */
 	@GetMapping("/rest/fallbackFromPolaris")
 	public ResponseEntity<String> circuitBreakRestTemplateFallbackFromPolaris() {
-		return restTemplateFallbackFromPolaris.getForEntity("/quickstart/callee/circuitBreak", String.class);
+		try {
+			return restTemplateFallbackFromPolaris.getForEntity("/quickstart/callee/circuitBreak", String.class);
+		}
+		catch (HttpClientErrorException | HttpServerErrorException httpClientErrorException) {
+			return new ResponseEntity<>(httpClientErrorException.getResponseBodyAsString(), httpClientErrorException.getStatusCode());
+		}
 	}
 
 	/**
@@ -131,7 +159,12 @@ public class CircuitBreakerController {
 	 */
 	@GetMapping("/rest/fallbackFromCode")
 	public ResponseEntity<String> circuitBreakRestTemplateFallbackFromCode() {
-		return restTemplateFallbackFromCode.getForEntity("/quickstart/callee/circuitBreak", String.class);
+		try {
+			return restTemplateFallbackFromCode.getForEntity("/quickstart/callee/circuitBreak", String.class);
+		}
+		catch (HttpClientErrorException | HttpServerErrorException httpClientErrorException) {
+			return new ResponseEntity<>(httpClientErrorException.getResponseBodyAsString(), httpClientErrorException.getStatusCode());
+		}
 	}
 
 	/**
@@ -148,7 +181,7 @@ public class CircuitBreakerController {
 				.bodyToMono(String.class)
 				.transform(it ->
 						reactiveCircuitBreakerFactory
-								.create("QuickstartCalleeService#/quickstart/callee/circuitBreak")
+								.create(MetadataContext.LOCAL_NAMESPACE + "QuickstartCalleeService#/quickstart/callee/circuitBreak#http#GET")
 								.run(it, throwable -> Mono.just("fallback: trigger the refuse for service callee"))
 				);
 	}

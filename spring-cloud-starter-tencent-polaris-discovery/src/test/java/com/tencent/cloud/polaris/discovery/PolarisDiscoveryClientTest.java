@@ -51,6 +51,7 @@ public class PolarisDiscoveryClientTest {
 
 	@Test
 	public void testGetInstances() {
+
 		when(polarisServiceDiscovery.getInstances(anyString()))
 				.thenReturn(singletonList(mock(PolarisServiceInstance.class)));
 

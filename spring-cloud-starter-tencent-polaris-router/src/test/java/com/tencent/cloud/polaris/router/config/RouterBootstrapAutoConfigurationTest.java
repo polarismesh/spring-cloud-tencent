@@ -61,7 +61,7 @@ public class RouterBootstrapAutoConfigurationTest {
 			routerConfigModifier.modify((ConfigurationImpl) configuration);
 			NearbyRouterConfig nearbyRouterConfig = configuration.getConsumer().getServiceRouter().getPluginConfig(
 					ServiceRouterConfig.DEFAULT_ROUTER_NEARBY, NearbyRouterConfig.class);
-			Assertions.assertEquals("campus", nearbyRouterConfig.getMatchLevel().name());
+			Assertions.assertEquals("CAMPUS", nearbyRouterConfig.getMatchLevel().name());
 		});
 	}
 }

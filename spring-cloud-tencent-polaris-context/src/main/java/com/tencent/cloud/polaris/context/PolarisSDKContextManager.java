@@ -17,14 +17,17 @@
 
 package com.tencent.cloud.polaris.context;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 import com.tencent.cloud.polaris.context.config.PolarisContextProperties;
+import com.tencent.polaris.api.config.Configuration;
 import com.tencent.polaris.api.control.Destroyable;
 import com.tencent.polaris.api.core.ConsumerAPI;
 import com.tencent.polaris.api.core.LosslessAPI;
 import com.tencent.polaris.api.core.ProviderAPI;
+import com.tencent.polaris.api.utils.CollectionUtils;
 import com.tencent.polaris.assembly.api.AssemblyAPI;
 import com.tencent.polaris.assembly.factory.AssemblyAPIFactory;
 import com.tencent.polaris.circuitbreak.api.CircuitBreakAPI;
@@ -53,7 +56,8 @@ public class PolarisSDKContextManager {
 	 * Constant for checking before destroy SDK context.
 	 */
 	public volatile static boolean isRegistered = false;
-	private volatile static SDKContext sdkContext;
+	private volatile static SDKContext configSDKContext;
+	private volatile static SDKContext serviceSdkContext;
 	private volatile static ProviderAPI providerAPI;
 	private volatile static ConsumerAPI consumerAPI;
 	private volatile static LosslessAPI losslessAPI;
@@ -75,7 +79,7 @@ public class PolarisSDKContextManager {
 	 * Don't call this method directly.
 	 */
 	public static void innerDestroy() {
-		if (Objects.nonNull(sdkContext)) {
+		if (Objects.nonNull(serviceSdkContext)) {
 			try {
 				// destroy ProviderAPI
 				if (Objects.nonNull(providerAPI)) {
@@ -119,9 +123,9 @@ public class PolarisSDKContextManager {
 					assemblyAPI = null;
 				}
 
-				if (Objects.nonNull(sdkContext)) {
-					sdkContext.destroy();
-					sdkContext = null;
+				if (Objects.nonNull(serviceSdkContext)) {
+					serviceSdkContext.destroy();
+					serviceSdkContext = null;
 				}
 				LOG.info("Polaris SDK context is destroyed.");
 			}
@@ -131,35 +135,129 @@ public class PolarisSDKContextManager {
 		}
 	}
 
+	/**
+	 * Used for config data.
+	 * @return configSDKContext
+	 */
+	public static SDKContext innerGetConfigSDKContext() {
+		if (configSDKContext == null) {
+			throw new IllegalArgumentException("configSDKContext is not initialized.");
+		}
+		return configSDKContext;
+	}
+
+	public static void innerConfigDestroy() {
+		try {
+			if (Objects.nonNull(configSDKContext)) {
+				configSDKContext.destroy();
+				configSDKContext = null;
+			}
+			LOG.info("Polaris SDK config context is destroyed.");
+		}
+		catch (Throwable throwable) {
+			LOG.info("Polaris SDK config context is destroyed failed.", throwable);
+		}
+	}
+
 	public void init() {
-		if (null == sdkContext) {
+		initService();
+		initConfig();
+	}
+
+	public SDKContext getSDKContext() {
+		initService();
+		return serviceSdkContext;
+	}
+
+	public ProviderAPI getProviderAPI() {
+		initService();
+		return providerAPI;
+	}
+
+	public LosslessAPI getLosslessAPI() {
+		initService();
+		return losslessAPI;
+	}
+
+	public ConsumerAPI getConsumerAPI() {
+		initService();
+		return consumerAPI;
+	}
+
+	public RouterAPI getRouterAPI() {
+		initService();
+		return routerAPI;
+	}
+
+	public CircuitBreakAPI getCircuitBreakAPI() {
+		initService();
+		return circuitBreakAPI;
+	}
+
+	public LimitAPI getLimitAPI() {
+		initService();
+		return limitAPI;
+	}
+
+	public AssemblyAPI getAssemblyAPI() {
+		return assemblyAPI;
+	}
+
+	public SDKContext getConfigSDKContext() {
+		initConfig();
+		return configSDKContext;
+	}
+
+	/**
+	 * Used for config data.
+	 * @param context sdk context
+	 */
+	public static void setConfigSDKContext(SDKContext context) {
+		if (configSDKContext == null) {
+			configSDKContext = context;
+			// add shutdown hook
+			Runtime.getRuntime().addShutdownHook(new Thread(PolarisSDKContextManager::innerConfigDestroy));
+			LOG.info("create Polaris config SDK context successfully.");
+		}
+	}
+
+	public void initService() {
+		if (null == serviceSdkContext) {
 			try {
+				// get modifiers for service.
+				List<PolarisConfigModifier> serviceModifierList = new ArrayList<>();
+				for (PolarisConfigModifier modifier : modifierList) {
+					if (!(modifier instanceof PolarisConfigurationConfigModifier)) {
+						serviceModifierList.add(modifier);
+					}
+				}
 				// init SDKContext
-				sdkContext = SDKContext.initContextByConfig(properties.configuration(modifierList,
+				Configuration configuration = properties.configuration(serviceModifierList,
 						() -> environment.getProperty("spring.cloud.client.ip-address"),
-						() -> environment.getProperty("spring.cloud.polaris.local-port", Integer.class, 0)));
-				sdkContext.init();
+						() -> environment.getProperty("spring.cloud.polaris.local-port", Integer.class, 0));
+				serviceSdkContext = SDKContext.initContextByConfig(configuration);
+				serviceSdkContext.init();
 
 				// init ProviderAPI
-				providerAPI = DiscoveryAPIFactory.createProviderAPIByContext(sdkContext);
+				providerAPI = DiscoveryAPIFactory.createProviderAPIByContext(serviceSdkContext);
 
 				// init losslessAPI
-				losslessAPI = DiscoveryAPIFactory.createLosslessAPIByContext(sdkContext);
+				losslessAPI = DiscoveryAPIFactory.createLosslessAPIByContext(serviceSdkContext);
 
 				// init ConsumerAPI
-				consumerAPI = DiscoveryAPIFactory.createConsumerAPIByContext(sdkContext);
+				consumerAPI = DiscoveryAPIFactory.createConsumerAPIByContext(serviceSdkContext);
 
 				// init RouterAPI
-				routerAPI = RouterAPIFactory.createRouterAPIByContext(sdkContext);
+				routerAPI = RouterAPIFactory.createRouterAPIByContext(serviceSdkContext);
 
 				// init CircuitBreakAPI
-				circuitBreakAPI = CircuitBreakAPIFactory.createCircuitBreakAPIByContext(sdkContext);
+				circuitBreakAPI = CircuitBreakAPIFactory.createCircuitBreakAPIByContext(serviceSdkContext);
 
 				// init LimitAPI
-				limitAPI = LimitAPIFactory.createLimitAPIByContext(sdkContext);
+				limitAPI = LimitAPIFactory.createLimitAPIByContext(serviceSdkContext);
 
 				// init AssemblyAPI
-				assemblyAPI = AssemblyAPIFactory.createAssemblyAPIByContext(sdkContext);
+				assemblyAPI = AssemblyAPIFactory.createAssemblyAPIByContext(serviceSdkContext);
 
 				// add shutdown hook
 				Runtime.getRuntime().addShutdownHook(new Thread(() -> {
@@ -175,51 +273,40 @@ public class PolarisSDKContextManager {
 						}
 					}
 				}));
-				LOG.info("create Polaris SDK context successfully. properties: {}", properties);
+				LOG.info("create Polaris SDK context successfully. properties: {}, configuration: {}", properties, configuration);
 			}
 			catch (Throwable throwable) {
-				LOG.error("create Polaris SDK context failed. properties: {}", properties, throwable);
+				LOG.error("create Polaris SDK context failed. properties: {}, ", properties, throwable);
 				throw throwable;
 			}
 		}
 	}
 
-	public SDKContext getSDKContext() {
-		init();
-		return sdkContext;
-	}
+	public void initConfig() {
+		// get modifiers for configuration.
+		List<PolarisConfigModifier> configModifierList = new ArrayList<>();
+		for (PolarisConfigModifier modifier : modifierList) {
+			if (modifier instanceof PolarisConfigurationConfigModifier) {
+				configModifierList.add(modifier);
+			}
+		}
+		if (null == configSDKContext && CollectionUtils.isNotEmpty(configModifierList)) {
+			try {
+				// init config SDKContext
+				Configuration configuration = properties.configuration(configModifierList,
+						() -> environment.getProperty("spring.cloud.client.ip-address"),
+						() -> environment.getProperty("spring.cloud.polaris.local-port", Integer.class, 0));
+				configSDKContext = SDKContext.initContextByConfig(configuration);
+				configSDKContext.init();
 
-	public ProviderAPI getProviderAPI() {
-		init();
-		return providerAPI;
-	}
-
-	public LosslessAPI getLosslessAPI() {
-		init();
-		return losslessAPI;
-	}
-
-	public ConsumerAPI getConsumerAPI() {
-		init();
-		return consumerAPI;
-	}
-
-	public RouterAPI getRouterAPI() {
-		init();
-		return routerAPI;
-	}
-
-	public CircuitBreakAPI getCircuitBreakAPI() {
-		init();
-		return circuitBreakAPI;
-	}
-
-	public LimitAPI getLimitAPI() {
-		init();
-		return limitAPI;
-	}
-
-	public AssemblyAPI getAssemblyAPI() {
-		return assemblyAPI;
+				// add shutdown hook
+				Runtime.getRuntime().addShutdownHook(new Thread(PolarisSDKContextManager::innerConfigDestroy));
+				LOG.info("create Polaris config SDK context successfully. properties: {}, configuration: {}", properties, configuration);
+			}
+			catch (Throwable throwable) {
+				LOG.error("create Polaris config SDK context failed. properties: {}, ", properties, throwable);
+				throw throwable;
+			}
+		}
 	}
 }

@@ -28,6 +28,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.polaris.api.pojo.CircuitBreakerStatus;
 import com.tencent.polaris.circuitbreak.client.exception.CallAbortedException;
 import reactor.core.publisher.Flux;
@@ -186,20 +187,21 @@ public class PolarisCircuitBreakerFilterFactory extends SpringCloudCircuitBreake
 					serviceName = route.getUri().getHost();
 				}
 				String path = exchange.getRequest().getPath().value();
-				ReactiveCircuitBreaker cb = reactiveCircuitBreakerFactory.create(serviceName + "#" + path);
+				String method = exchange.getRequest().getMethod() == null ?
+						"GET" : exchange.getRequest().getMethod().name();
+				ReactiveCircuitBreaker cb = reactiveCircuitBreakerFactory.create(MetadataContext.LOCAL_NAMESPACE + "#" + serviceName + "#" + path + "#http#" + method);
 				return cb.run(
-								chain.filter(exchange)
-										.doOnSuccess(v -> {
-											// throw CircuitBreakerStatusCodeException by default for all need checking status
-											// so polaris can report right error status
-											Set<HttpStatus> statusNeedToCheck = new HashSet<>();
-											statusNeedToCheck.addAll(statuses);
-											statusNeedToCheck.addAll(getDefaultStatus());
-											HttpStatus status = exchange.getResponse().getStatusCode();
-											if (statusNeedToCheck.contains(status)) {
-												throw new CircuitBreakerStatusCodeException(status);
-											}
-										}),
+								chain.filter(exchange).doOnSuccess(v -> {
+									// throw CircuitBreakerStatusCodeException by default for all need checking status
+									// so polaris can report right error status
+									Set<HttpStatus> statusNeedToCheck = new HashSet<>();
+									statusNeedToCheck.addAll(statuses);
+									statusNeedToCheck.addAll(getDefaultStatus());
+									HttpStatus status = exchange.getResponse().getStatusCode();
+									if (statusNeedToCheck.contains(status)) {
+										throw new CircuitBreakerStatusCodeException(status);
+									}
+								}),
 								t -> {
 									// pre-check CircuitBreakerStatusCodeException's status matches input status
 									if (t instanceof CircuitBreakerStatusCodeException) {

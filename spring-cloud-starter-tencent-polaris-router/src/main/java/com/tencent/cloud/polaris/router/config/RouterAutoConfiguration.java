@@ -18,6 +18,8 @@
 
 package com.tencent.cloud.polaris.router.config;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import com.tencent.cloud.common.metadata.StaticMetadataManager;
@@ -28,16 +30,24 @@ import com.tencent.cloud.polaris.router.beanprocessor.LoadBalancerClientFilterBe
 import com.tencent.cloud.polaris.router.beanprocessor.LoadBalancerInterceptorBeanPostProcessor;
 import com.tencent.cloud.polaris.router.beanprocessor.RetryLoadBalancerInterceptorBeanPostProcessor;
 import com.tencent.cloud.polaris.router.config.properties.PolarisMetadataRouterProperties;
+import com.tencent.cloud.polaris.router.config.properties.PolarisNamespaceRouterProperties;
 import com.tencent.cloud.polaris.router.config.properties.PolarisNearByRouterProperties;
 import com.tencent.cloud.polaris.router.config.properties.PolarisRuleBasedRouterProperties;
 import com.tencent.cloud.polaris.router.interceptor.MetadataRouterRequestInterceptor;
+import com.tencent.cloud.polaris.router.interceptor.NamespaceRouterRequestInterceptor;
 import com.tencent.cloud.polaris.router.interceptor.NearbyRouterRequestInterceptor;
 import com.tencent.cloud.polaris.router.interceptor.RuleBasedRouterRequestInterceptor;
 import com.tencent.cloud.polaris.router.resttemplate.RouterContextFactory;
+import com.tencent.cloud.polaris.router.resttemplate.RouterLabelRestTemplateInterceptor;
+import com.tencent.cloud.polaris.router.scg.RouterLabelGlobalFilter;
 import com.tencent.cloud.polaris.router.spi.ServletRouterLabelResolver;
 import com.tencent.cloud.polaris.router.spi.SpringWebRouterLabelResolver;
 import com.tencent.cloud.polaris.router.zuul.PolarisRibbonRoutingFilter;
+import com.tencent.cloud.polaris.router.zuul.RouterLabelZuulFilter;
+import com.tencent.cloud.rpc.enhancement.resttemplate.EnhancedRestTemplateInterceptor;
 
+import org.springframework.beans.factory.SmartInitializingSingleton;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -47,8 +57,9 @@ import org.springframework.cloud.netflix.zuul.filters.ProxyRequestHelper;
 import org.springframework.cloud.netflix.zuul.filters.route.RibbonCommandFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 import org.springframework.core.annotation.Order;
+import org.springframework.http.client.ClientHttpRequestInterceptor;
+import org.springframework.web.client.RestTemplate;
 
 import static org.springframework.core.Ordered.HIGHEST_PRECEDENCE;
 
@@ -60,7 +71,6 @@ import static org.springframework.core.Ordered.HIGHEST_PRECEDENCE;
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnPolarisRouterEnabled
 @RibbonClients(defaultConfiguration = {RibbonConfiguration.class})
-@Import({PolarisNearByRouterProperties.class, PolarisMetadataRouterProperties.class, PolarisRuleBasedRouterProperties.class})
 public class RouterAutoConfiguration {
 
 	@Bean
@@ -93,9 +103,30 @@ public class RouterAutoConfiguration {
 		return new RuleBasedRouterRequestInterceptor(polarisRuleBasedRouterProperties);
 	}
 
+	@Bean
+	@ConditionalOnProperty(value = "spring.cloud.polaris.router.namespace-router.enabled", matchIfMissing = true)
+	public NamespaceRouterRequestInterceptor namespaceRouterRequestInterceptor(PolarisNamespaceRouterProperties polarisNamespaceRouterProperties) {
+		return new NamespaceRouterRequestInterceptor(polarisNamespaceRouterProperties);
+	}
+
+	/**
+	 * Create when gateway application is SCG.
+	 */
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnClass(name = "org.springframework.cloud.gateway.filter.GlobalFilter")
+	protected static class RouterLabelScgFilterConfig {
+
+		@Bean
+		public RouterLabelGlobalFilter routerLabelGlobalFilter() {
+			return new RouterLabelGlobalFilter();
+		}
+
+	}
+
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(name = "org.springframework.web.client.RestTemplate")
 	public static class RestTemplateAutoConfiguration {
+
 		@Bean
 		@Order(HIGHEST_PRECEDENCE)
 		@ConditionalOnClass(name = "org.springframework.cloud.client.loadbalancer.LoadBalancerInterceptor")
@@ -125,6 +156,7 @@ public class RouterAutoConfiguration {
 	 * AutoConfiguration for router module integrate for zuul.
 	 */
 	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnProperty(value = "spring.cloud.polaris.router.zuul.enabled", matchIfMissing = true)
 	@ConditionalOnClass(name = "org.springframework.cloud.netflix.zuul.filters.route.RibbonRoutingFilter")
 	@AutoConfigureAfter(ZuulServerAutoConfiguration.class)
 	public static class ZuulRouterAutoConfiguration {
@@ -137,6 +169,45 @@ public class RouterAutoConfiguration {
 				List<ServletRouterLabelResolver> routerLabelResolvers) {
 			return new PolarisRibbonRoutingFilter(helper, ribbonCommandFactory, staticMetadataManager,
 					routerRuleLabelResolver, routerLabelResolvers);
+		}
+
+		@Bean
+		public RouterLabelZuulFilter routerLabelZuulFilter() {
+			return new RouterLabelZuulFilter();
+		}
+	}
+
+
+	/**
+	 * Create when RestTemplate exists.
+	 * @author liuye 2022-09-14
+	 */
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnClass(name = "org.springframework.web.client.RestTemplate")
+	@ConditionalOnProperty(value = "spring.cloud.polaris.router.rule-router.enabled", matchIfMissing = true)
+	protected static class RouterLabelRestTemplateConfig {
+
+		@Autowired(required = false)
+		private List<RestTemplate> restTemplates = Collections.emptyList();
+
+		@Bean
+		public RouterLabelRestTemplateInterceptor routerLabelRestTemplateInterceptor() {
+			return new RouterLabelRestTemplateInterceptor();
+		}
+
+		@Bean
+		public SmartInitializingSingleton addRouterLabelInterceptorForRestTemplate(RouterLabelRestTemplateInterceptor interceptor) {
+			return () -> restTemplates.forEach(restTemplate -> {
+				List<ClientHttpRequestInterceptor> list = new ArrayList<>(restTemplate.getInterceptors());
+				int addIndex = list.size();
+				for (int i = 0; i < list.size(); i++) {
+					if (list.get(i) instanceof EnhancedRestTemplateInterceptor) {
+						addIndex = i;
+					}
+				}
+				list.add(addIndex, interceptor);
+				restTemplate.setInterceptors(list);
+			});
 		}
 	}
 }

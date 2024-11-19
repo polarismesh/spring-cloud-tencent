@@ -1,22 +1,15 @@
 spring:
+  main:
+    web-application-type: reactive
   application:
     name: GatewayScgService
   cloud:
-    tencent:
-      plugin:
-        scg:
-          staining:
-            enabled: true
-            rule-staining:
-              enabled: true
-        router:
-          feature-env:
-            enabled: true
     polaris:
       address: grpc://127.0.0.1:10081
-      namespace: default
+      namespace: Test
       enabled: true
     gateway:
+      enabled: true
       routes:
         - id: cb-test
           uri: http://localhost:${server.port}/hello/1

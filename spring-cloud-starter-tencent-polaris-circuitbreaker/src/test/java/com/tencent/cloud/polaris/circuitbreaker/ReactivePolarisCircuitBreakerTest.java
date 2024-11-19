@@ -17,15 +17,20 @@
 
 package com.tencent.cloud.polaris.circuitbreaker;
 
+import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Map;
 
 import com.tencent.cloud.common.util.ApplicationContextAwareUtils;
+import com.tencent.cloud.common.util.ReflectionUtils;
 import com.tencent.cloud.polaris.circuitbreaker.common.PolarisCircuitBreakerConfigBuilder;
 import com.tencent.cloud.polaris.circuitbreaker.config.ReactivePolarisCircuitBreakerAutoConfiguration;
 import com.tencent.cloud.polaris.context.config.PolarisContextAutoConfiguration;
 import com.tencent.cloud.rpc.enhancement.config.RpcEnhancementAutoConfiguration;
+import com.tencent.polaris.client.util.Utils;
 import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -58,7 +63,8 @@ public class ReactivePolarisCircuitBreakerTest {
 					RpcEnhancementAutoConfiguration.class,
 					LoadBalancerAutoConfiguration.class,
 					ReactivePolarisCircuitBreakerAutoConfiguration.class))
-			.withPropertyValues("spring.cloud.polaris.circuitbreaker.enabled=true");
+			.withPropertyValues("spring.cloud.polaris.circuitbreaker.enabled=true")
+			.withPropertyValues("spring.cloud.polaris.circuitbreaker.configuration-cleanup-interval=5000");
 
 	private static MockedStatic<ApplicationContextAwareUtils> mockedApplicationContextAwareUtils;
 
@@ -97,6 +103,18 @@ public class ReactivePolarisCircuitBreakerTest {
 
 			assertThat(Flux.error(new RuntimeException("boom")).transform(it -> cb.run(it, t -> Flux.just("fallback")))
 					.collectList().block()).isEqualTo(Collections.singletonList("fallback"));
+
+			Method getConfigurationsMethod = ReflectionUtils.findMethod(PolarisCircuitBreakerFactory.class,
+					"getConfigurations");
+			Assertions.assertNotNull(getConfigurationsMethod);
+			ReflectionUtils.makeAccessible(getConfigurationsMethod);
+			Map<?, ?> values = (Map<?, ?>) ReflectionUtils.invokeMethod(getConfigurationsMethod, polarisCircuitBreakerFactory);
+			Assertions.assertNotNull(values);
+			Assertions.assertTrue(values.size() >= 0);
+
+			Utils.sleepUninterrupted(10 * 1000);
+			// clear by cleanupService in ReactivePolarisCircuitBreakerFactory
+			Assertions.assertEquals(0, values.size());
 		});
 	}
 

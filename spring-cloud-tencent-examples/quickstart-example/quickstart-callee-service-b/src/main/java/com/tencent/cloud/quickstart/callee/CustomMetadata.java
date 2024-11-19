@@ -36,11 +36,7 @@ public class CustomMetadata implements InstanceMetadataProvider {
 	public Map<String, String> getMetadata() {
 		Map<String, String> metadata = new HashMap<>();
 		metadata.put("k1", "v2");
+		metadata.put("lane", "lane2");
 		return metadata;
-	}
-
-	@Override
-	public String getZone() {
-		return "shenzhen-zone-2";
 	}
 }

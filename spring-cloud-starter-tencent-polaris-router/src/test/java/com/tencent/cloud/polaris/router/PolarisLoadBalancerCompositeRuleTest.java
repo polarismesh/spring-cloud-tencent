@@ -23,7 +23,6 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import com.netflix.client.config.DefaultClientConfigImpl;
@@ -54,9 +53,11 @@ import com.tencent.cloud.polaris.router.spi.RouterRequestInterceptor;
 import com.tencent.polaris.api.pojo.DefaultInstance;
 import com.tencent.polaris.api.pojo.DefaultServiceInstances;
 import com.tencent.polaris.api.pojo.Instance;
-import com.tencent.polaris.api.pojo.RouteArgument;
 import com.tencent.polaris.api.pojo.ServiceInstances;
 import com.tencent.polaris.api.pojo.ServiceKey;
+import com.tencent.polaris.metadata.core.MetadataContainer;
+import com.tencent.polaris.metadata.core.MetadataType;
+import com.tencent.polaris.metadata.core.TransitiveType;
 import com.tencent.polaris.plugins.router.metadata.MetadataRouter;
 import com.tencent.polaris.plugins.router.nearby.NearbyRouter;
 import com.tencent.polaris.plugins.router.rule.RuleBasedRouter;
@@ -218,35 +219,25 @@ public class PolarisLoadBalancerCompositeRuleTest {
 		try (MockedStatic<ApplicationContextAwareUtils> mockedApplicationContextAwareUtils = Mockito.mockStatic(ApplicationContextAwareUtils.class)) {
 			mockedApplicationContextAwareUtils.when(() -> ApplicationContextAwareUtils.getProperties(anyString()))
 					.thenReturn(testCallerService);
+			mockedApplicationContextAwareUtils.when(() -> ApplicationContextAwareUtils.getApplicationContext()).thenReturn(new MockApplicationContext());
 
 			setTransitiveMetadata();
 
 			PolarisLoadBalancerCompositeRule compositeRule = new PolarisLoadBalancerCompositeRule(routerAPI,
 					polarisLoadBalancerProperties, config, requestInterceptors, null, null);
 
+			MetadataContainer metadataContainer = MetadataContextHolder.get()
+					.getMetadataContainer(MetadataType.CUSTOM, false);
+			metadataContainer.putMetadataStringValue("system-metadata-router-keys", "k2", TransitiveType.NONE);
+
 			ServiceInstances serviceInstances = assembleServiceInstances();
 			PolarisRouterContext routerContext = assembleRouterContext();
-
-			Map<String, String> oldRouterLabels = routerContext.getLabels(RouterConstant.ROUTER_LABELS);
-			Map<String, String> newRouterLabels = new HashMap<>(oldRouterLabels);
-			newRouterLabels.put("system-metadata-router-keys", "k2");
-			routerContext.putLabels(RouterConstant.ROUTER_LABELS, newRouterLabels);
 
 			ProcessRoutersRequest request = compositeRule.buildProcessRoutersBaseRequest(serviceInstances);
 			compositeRule.processRouterRequestInterceptors(request, routerContext);
 
-			Set<RouteArgument> routerMetadata = request.getRouterArguments(MetadataRouter.ROUTER_TYPE_METADATA);
-
-			AssertionsForClassTypes.assertThat(routerMetadata.size()).isEqualTo(1);
-			AssertionsForClassTypes.assertThat(request.getRouterArguments(NearbyRouter.ROUTER_TYPE_NEAR_BY).size())
-					.isEqualTo(0);
-			AssertionsForClassTypes.assertThat(request.getRouterArguments(RuleBasedRouter.ROUTER_TYPE_RULE_BASED)
-					.size()).isEqualTo(1);
-
-			for (RouteArgument routeArgument : request.getRouterArguments(RuleBasedRouter.ROUTER_TYPE_RULE_BASED)) {
-				AssertionsForClassTypes.assertThat(routeArgument.getKey()).isEqualTo(RuleBasedRouter.ROUTER_ENABLED);
-				AssertionsForClassTypes.assertThat(routeArgument.getValue()).isEqualTo("false");
-			}
+			String result = metadataContainer.getRawMetadataMapValue(MetadataRouter.ROUTER_TYPE_METADATA, MetadataRouter.KEY_METADATA_KEYS);
+			AssertionsForClassTypes.assertThat(result).isEqualTo("k2");
 		}
 	}
 
@@ -258,6 +249,7 @@ public class PolarisLoadBalancerCompositeRuleTest {
 		try (MockedStatic<ApplicationContextAwareUtils> mockedApplicationContextAwareUtils = Mockito.mockStatic(ApplicationContextAwareUtils.class)) {
 			mockedApplicationContextAwareUtils.when(() -> ApplicationContextAwareUtils.getProperties(anyString()))
 					.thenReturn(testCallerService);
+			mockedApplicationContextAwareUtils.when(() -> ApplicationContextAwareUtils.getApplicationContext()).thenReturn(new MockApplicationContext());
 
 			setTransitiveMetadata();
 
@@ -270,24 +262,10 @@ public class PolarisLoadBalancerCompositeRuleTest {
 			ProcessRoutersRequest request = compositeRule.buildProcessRoutersBaseRequest(serviceInstances);
 			compositeRule.processRouterRequestInterceptors(request, routerContext);
 
-			Set<RouteArgument> routerMetadata = request.getRouterArguments(NearbyRouter.ROUTER_TYPE_NEAR_BY);
-
-			AssertionsForClassTypes.assertThat(request.getRouterArguments(MetadataRouter.ROUTER_TYPE_METADATA).size())
-					.isEqualTo(0);
-			AssertionsForClassTypes.assertThat(routerMetadata.size()).isEqualTo(1);
-
-			for (RouteArgument routeArgument : routerMetadata) {
-				AssertionsForClassTypes.assertThat(routeArgument.getKey()).isEqualTo(RuleBasedRouter.ROUTER_ENABLED);
-				AssertionsForClassTypes.assertThat(routeArgument.getValue()).isEqualTo("true");
-			}
-
-			AssertionsForClassTypes.assertThat(request.getRouterArguments(RuleBasedRouter.ROUTER_TYPE_RULE_BASED)
-					.size()).isEqualTo(1);
-
-			for (RouteArgument routeArgument : request.getRouterArguments(RuleBasedRouter.ROUTER_TYPE_RULE_BASED)) {
-				AssertionsForClassTypes.assertThat(routeArgument.getKey()).isEqualTo(RuleBasedRouter.ROUTER_ENABLED);
-				AssertionsForClassTypes.assertThat(routeArgument.getValue()).isEqualTo("false");
-			}
+			MetadataContainer metadataContainer = MetadataContextHolder.get()
+					.getMetadataContainer(MetadataType.CUSTOM, false);
+			String result = metadataContainer.getRawMetadataMapValue(NearbyRouter.ROUTER_TYPE_NEAR_BY, NearbyRouter.ROUTER_ENABLED);
+			AssertionsForClassTypes.assertThat(result).isEqualTo("true");
 		}
 	}
 
@@ -299,6 +277,7 @@ public class PolarisLoadBalancerCompositeRuleTest {
 		try (MockedStatic<ApplicationContextAwareUtils> mockedApplicationContextAwareUtils = Mockito.mockStatic(ApplicationContextAwareUtils.class)) {
 			mockedApplicationContextAwareUtils.when(() -> ApplicationContextAwareUtils.getProperties(anyString())).
 					thenReturn(testCallerService);
+			mockedApplicationContextAwareUtils.when(() -> ApplicationContextAwareUtils.getApplicationContext()).thenReturn(new MockApplicationContext());
 
 			setTransitiveMetadata();
 
@@ -311,13 +290,10 @@ public class PolarisLoadBalancerCompositeRuleTest {
 			ProcessRoutersRequest request = compositeRule.buildProcessRoutersBaseRequest(serviceInstances);
 			compositeRule.processRouterRequestInterceptors(request, routerContext);
 
-			Set<RouteArgument> routerMetadata = request.getRouterArguments(RuleBasedRouter.ROUTER_TYPE_RULE_BASED);
-
-			AssertionsForClassTypes.assertThat(routerMetadata.size()).isEqualTo(3);
-			AssertionsForClassTypes.assertThat(request.getRouterArguments(MetadataRouter.ROUTER_TYPE_METADATA).size())
-					.isEqualTo(0);
-			AssertionsForClassTypes.assertThat(request.getRouterArguments(NearbyRouter.ROUTER_TYPE_NEAR_BY).size())
-					.isEqualTo(0);
+			MetadataContainer metadataContainer = MetadataContextHolder.get()
+					.getMetadataContainer(MetadataType.CUSTOM, false);
+			String result = metadataContainer.getRawMetadataMapValue(RuleBasedRouter.ROUTER_TYPE_RULE_BASED, RuleBasedRouter.ROUTER_ENABLED);
+			AssertionsForClassTypes.assertThat(result).isEqualTo("true");
 		}
 	}
 

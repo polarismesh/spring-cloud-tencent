@@ -76,7 +76,7 @@ public class PolarisLoadBalancer extends DynamicServerListLoadBalancer<Server> {
 
 	@Override
 	public List<Server> getReachableServers() {
-		// Get servers first from the thread context. When routers filter all instances, getReachableServersWithoutCache function cannot be executed.
+		// Get servers first from the thread context
 		if (THREAD_CACHE_SERVERS.get() != null) {
 			return THREAD_CACHE_SERVERS.get();
 		}

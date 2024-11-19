@@ -18,9 +18,10 @@
 
 package com.tencent.cloud.metadata.core;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.Map;
 
-import com.google.common.collect.ImmutableMap;
 import com.netflix.zuul.context.RequestContext;
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.common.metadata.MetadataContextHolder;
@@ -35,15 +36,14 @@ import com.tencent.polaris.metadata.core.MetadataType;
 
 import org.springframework.util.CollectionUtils;
 
+import static com.tencent.cloud.common.constant.ContextConstant.UTF_8;
+import static com.tencent.cloud.common.constant.MetadataConstant.HeaderName.APPLICATION_METADATA;
 import static com.tencent.cloud.common.constant.MetadataConstant.HeaderName.CUSTOM_DISPOSABLE_METADATA;
 import static com.tencent.cloud.common.constant.MetadataConstant.HeaderName.CUSTOM_METADATA;
 
-/**
- * Pre EnhancedPlugin for zuul to encode transfer metadata.
- *
- * @author Shedfree Wu
- */
+
 public class EncodeTransferMetadataZuulEnhancedPlugin implements EnhancedPlugin {
+
 	@Override
 	public EnhancedPluginType getType() {
 		return EnhancedPluginType.Client.PRE;
@@ -54,6 +54,8 @@ public class EncodeTransferMetadataZuulEnhancedPlugin implements EnhancedPlugin 
 		if (!(context.getOriginRequest() instanceof RequestContext)) {
 			return;
 		}
+
+		// get request context
 		RequestContext requestContext = (RequestContext) context.getOriginRequest();
 
 		// get metadata of current thread
@@ -61,21 +63,26 @@ public class EncodeTransferMetadataZuulEnhancedPlugin implements EnhancedPlugin 
 
 		Map<String, String> customMetadata = metadataContext.getCustomMetadata();
 		Map<String, String> disposableMetadata = metadataContext.getDisposableMetadata();
+		Map<String, String> applicationMetadata = metadataContext.getApplicationMetadata();
+
 		MessageMetadataContainer calleeMessageMetadataContainer = metadataContext.getMetadataContainer(MetadataType.MESSAGE, false);
 		Map<String, String> calleeTransitiveHeaders = calleeMessageMetadataContainer.getTransitiveHeaders();
 
 		// currently only support transitive header from calleeMessageMetadataContainer
 		this.buildHeaderMap(requestContext, calleeTransitiveHeaders);
+
 		// Rebuild Metadata Header
 		this.buildMetadataHeader(requestContext, customMetadata, CUSTOM_METADATA);
 		this.buildMetadataHeader(requestContext, disposableMetadata, CUSTOM_DISPOSABLE_METADATA);
+		this.buildMetadataHeader(requestContext, applicationMetadata, APPLICATION_METADATA);
 
 		TransHeadersTransfer.transfer(requestContext.getRequest());
+
 	}
 
-	private void buildHeaderMap(RequestContext context, Map<String, String> headerMap) {
+	private void buildHeaderMap(RequestContext requestContext, Map<String, String> headerMap) {
 		if (!CollectionUtils.isEmpty(headerMap)) {
-			headerMap.forEach((key, value) -> context.addZuulRequestHeader(key, UrlUtils.encode(value)));
+			headerMap.forEach((key, value) -> requestContext.addZuulRequestHeader(key, UrlUtils.encode(value)));
 		}
 	}
 
@@ -88,7 +95,13 @@ public class EncodeTransferMetadataZuulEnhancedPlugin implements EnhancedPlugin 
 	 */
 	private void buildMetadataHeader(RequestContext context, Map<String, String> metadata, String headerName) {
 		if (!CollectionUtils.isEmpty(metadata)) {
-			buildHeaderMap(context, ImmutableMap.of(headerName, JacksonUtils.serialize2Json(metadata)));
+			String encodedMetadata = JacksonUtils.serialize2Json(metadata);
+			try {
+				context.addZuulRequestHeader(headerName, URLEncoder.encode(encodedMetadata, UTF_8));
+			}
+			catch (UnsupportedEncodingException e) {
+				context.addZuulRequestHeader(headerName, encodedMetadata);
+			}
 		}
 	}
 

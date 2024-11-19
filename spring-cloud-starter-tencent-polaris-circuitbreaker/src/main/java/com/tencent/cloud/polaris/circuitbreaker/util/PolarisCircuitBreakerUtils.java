@@ -45,29 +45,36 @@ public final class PolarisCircuitBreakerUtils {
 	}
 
 	/**
+	 * Format:
+	 * 0. namespace#service#path#protocol#method
+	 * 1. namespace#service#method
+	 * 2. service#method
+	 * 3. service
+	 * namespace set as default spring.cloud.polaris.namespace if absent.
 	 *
 	 * @param id CircuitBreakerId
-	 *              Format: namespace#service#method or service#method or service ,
-	 *              namespace set as default spring.cloud.polaris.namespace if absent
 	 * @return String[]{namespace, service, method}
 	 */
 	public static String[] resolveCircuitBreakerId(String id) {
 		Assert.hasText(id, "A CircuitBreaker must have an id. Id could be : namespace#service#method or service#method or service");
 		String[] polarisCircuitBreakerMetaData = id.split("#");
 		if (polarisCircuitBreakerMetaData.length == 2) {
-			return new String[]{MetadataContext.LOCAL_NAMESPACE, polarisCircuitBreakerMetaData[0], polarisCircuitBreakerMetaData[1]};
+			return new String[] {MetadataContext.LOCAL_NAMESPACE, polarisCircuitBreakerMetaData[0], polarisCircuitBreakerMetaData[1], "http", ""};
 		}
 		if (polarisCircuitBreakerMetaData.length == 3) {
-			return new String[]{polarisCircuitBreakerMetaData[0], polarisCircuitBreakerMetaData[1], polarisCircuitBreakerMetaData[2]};
+			return new String[] {polarisCircuitBreakerMetaData[0], polarisCircuitBreakerMetaData[1], polarisCircuitBreakerMetaData[2], "http", ""};
 		}
-		return new String[]{MetadataContext.LOCAL_NAMESPACE, id, ""};
+		if (polarisCircuitBreakerMetaData.length == 5) {
+			return new String[] {polarisCircuitBreakerMetaData[0], polarisCircuitBreakerMetaData[1], polarisCircuitBreakerMetaData[2], polarisCircuitBreakerMetaData[3], polarisCircuitBreakerMetaData[4]};
+		}
+		return new String[] {MetadataContext.LOCAL_NAMESPACE, id, "", "http", ""};
 	}
 
 	public static void reportStatus(ConsumerAPI consumerAPI,
 			PolarisCircuitBreakerConfigBuilder.PolarisCircuitBreakerConfiguration conf, CallAbortedException e) {
 		try {
 			ServiceCallResult result = new ServiceCallResult();
-			result.setMethod(conf.getMethod());
+			result.setMethod(conf.getPath());
 			result.setNamespace(conf.getNamespace());
 			result.setService(conf.getService());
 			result.setRuleName(e.getRuleName());

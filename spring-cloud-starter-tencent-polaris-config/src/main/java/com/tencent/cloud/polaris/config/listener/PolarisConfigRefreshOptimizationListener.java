@@ -21,7 +21,6 @@ package com.tencent.cloud.polaris.config.listener;
 import java.util.Collections;
 
 import com.tencent.cloud.polaris.config.adapter.PolarisConfigRefreshScopeAnnotationDetector;
-import com.tencent.cloud.polaris.config.adapter.PolarisPropertySourceManager;
 import com.tencent.cloud.polaris.config.adapter.PolarisRefreshEntireContextRefresher;
 import com.tencent.cloud.polaris.config.config.PolarisConfigProperties;
 import com.tencent.cloud.polaris.config.enums.RefreshType;
@@ -44,7 +43,7 @@ import org.springframework.lang.NonNull;
 import static com.tencent.cloud.polaris.config.condition.ReflectRefreshTypeCondition.POLARIS_CONFIG_REFRESH_TYPE;
 
 /**
- * When {@link com.tencent.cloud.polaris.config.adapter.PolarisConfigRefreshScopeAnnotationDetector} detects that
+ * When {@link PolarisConfigRefreshScopeAnnotationDetector} detects that
  * the annotation {@code @RefreshScope} exists and is used, but the config refresh type
  * {@code spring.cloud.polaris.config.refresh-type} is still {@code RefreshType.REFLECT}, then the framework will
  * automatically switch the config refresh type to {@code RefreshType.REFRESH_CONTEXT}.
@@ -112,7 +111,7 @@ public class PolarisConfigRefreshOptimizationListener implements ApplicationList
 			beanFactory.removeBeanDefinition(REFLECT_REBINDER_BEAN_NAME);
 		}
 		catch (BeansException e) {
-		    // If there is a removeBean exception in this code, do not affect the main process startup. Some user usage may cause the polarisReflectPropertySourceAutoRefresher to not load, and the removeBeanDefinition will report an error
+			// If there is a removeBean exception in this code, do not affect the main process startup. Some user usage may cause the polarisReflectPropertySourceAutoRefresher to not load, and the removeBeanDefinition will report an error
 			LOGGER.debug("removeRelatedBeansOfReflect occur error:", e);
 		}
 	}
@@ -122,12 +121,10 @@ public class PolarisConfigRefreshOptimizationListener implements ApplicationList
 		AbstractBeanDefinition beanDefinition = BeanDefinitionBuilder.genericBeanDefinition().getBeanDefinition();
 		beanDefinition.setBeanClass(PolarisRefreshEntireContextRefresher.class);
 		PolarisConfigProperties polarisConfigProperties = beanFactory.getBean(PolarisConfigProperties.class);
-		PolarisPropertySourceManager polarisPropertySourceManager = beanFactory.getBean(PolarisPropertySourceManager.class);
 		ContextRefresher contextRefresher = beanFactory.getBean(ContextRefresher.class);
 		ConstructorArgumentValues constructorArgumentValues = beanDefinition.getConstructorArgumentValues();
 		constructorArgumentValues.addIndexedArgumentValue(0, polarisConfigProperties);
-		constructorArgumentValues.addIndexedArgumentValue(1, polarisPropertySourceManager);
-		constructorArgumentValues.addIndexedArgumentValue(2, contextRefresher);
+		constructorArgumentValues.addIndexedArgumentValue(1, contextRefresher);
 		beanFactory.registerBeanDefinition(REFRESH_CONTEXT_REFRESHER_BEAN_NAME, beanDefinition);
 	}
 

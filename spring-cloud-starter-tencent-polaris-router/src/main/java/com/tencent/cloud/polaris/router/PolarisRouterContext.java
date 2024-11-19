@@ -13,14 +13,13 @@
  * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
+ *
  */
 
 package com.tencent.cloud.polaris.router;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -28,11 +27,12 @@ import com.tencent.cloud.common.constant.RouterConstant;
 import org.apache.commons.lang.StringUtils;
 
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.LinkedCaseInsensitiveMap;
 
 /**
  * the context for router.
  *
- * @author lepdou 2022-05-17
+ * @author lepdou, Hoatian Zhang
  */
 public class PolarisRouterContext {
 
@@ -77,37 +77,19 @@ public class PolarisRouterContext {
 		return routerLabels.get(labelKey);
 	}
 
-	public Set<String> getLabelAsSet(String labelKey) {
-		Map<String, String> routerLabels = labels.get(RouterConstant.ROUTER_LABELS);
-		if (CollectionUtils.isEmpty(routerLabels)) {
-			return Collections.emptySet();
-		}
-
-		for (Map.Entry<String, String> entry : routerLabels.entrySet()) {
-			if (StringUtils.equalsIgnoreCase(labelKey, entry.getKey())) {
-				String keysStr = entry.getValue();
-				if (StringUtils.isNotBlank(keysStr)) {
-					String[] keysArr = StringUtils.split(keysStr, ",");
-					return new HashSet<>(Arrays.asList(keysArr));
-				}
-			}
-		}
-
-		return Collections.emptySet();
-	}
-
 	public void putLabels(String labelType, Map<String, String> subLabels) {
 		if (this.labels == null) {
 			this.labels = new HashMap<>();
 		}
-		labels.put(labelType, subLabels);
+
+		Map<String, String> subLabelMap = new LinkedCaseInsensitiveMap<>();
+		if (!CollectionUtils.isEmpty(subLabels)) {
+			subLabelMap.putAll(subLabels);
+		}
+		labels.put(labelType, subLabelMap);
 	}
 
 	public Map<String, Map<String, String>> getLabels() {
 		return labels;
-	}
-
-	public void setLabels(Map<String, Map<String, String>> labels) {
-		this.labels = labels;
 	}
 }

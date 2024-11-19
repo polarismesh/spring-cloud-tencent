@@ -44,7 +44,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 /**
  * test for {@link ExpressionLabelUtils}.
  *
- * @author lepdou 2022-05-27, cheese8
+ * @author lepdou, cheese8
  */
 @ExtendWith(MockitoExtension.class)
 public class ExpressionLabelUtilsTest {

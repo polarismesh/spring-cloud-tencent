@@ -74,8 +74,7 @@ public class PolarisReactiveDiscoveryClientConfigurationTest {
 
 	@Test
 	public void testDefaultInitialization() {
-		this.contextRunner.run(context -> assertThat(context)
-				.hasSingleBean(PolarisReactiveDiscoveryClient.class));
+		this.contextRunner.run(context -> assertThat(context).hasSingleBean(PolarisReactiveDiscoveryClient.class));
 	}
 
 	@Test

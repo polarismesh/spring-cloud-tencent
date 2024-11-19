@@ -23,9 +23,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties("spring.cloud.polaris.lossless")
 public class LosslessProperties {
 
-	private boolean enabled = true;
-
-	private int port = 28080;
+	private boolean enabled = false;
 
 	private String healthCheckPath;
 
@@ -39,14 +37,6 @@ public class LosslessProperties {
 
 	public void setEnabled(boolean enabled) {
 		this.enabled = enabled;
-	}
-
-	public int getPort() {
-		return port;
-	}
-
-	public void setPort(int port) {
-		this.port = port;
 	}
 
 	public String getHealthCheckPath() {

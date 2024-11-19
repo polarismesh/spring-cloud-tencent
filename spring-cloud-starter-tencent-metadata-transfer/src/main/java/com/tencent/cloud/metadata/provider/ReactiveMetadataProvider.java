@@ -45,7 +45,7 @@ public class ReactiveMetadataProvider implements MetadataProvider {
 	public String getRawMetadataStringValue(String key) {
 		switch (key) {
 		case MessageMetadataContainer.LABEL_KEY_METHOD:
-			return serverHttpRequest.getMethodValue();
+			return serverHttpRequest.getMethod().name();
 		case MessageMetadataContainer.LABEL_KEY_PATH:
 			return UrlUtils.decode(serverHttpRequest.getPath().toString());
 		case MessageMetadataContainer.LABEL_KEY_CALLER_IP:

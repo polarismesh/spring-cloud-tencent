@@ -6,6 +6,8 @@ spring:
       - org.springframework.cloud.gateway.config.GatewayAutoConfiguration
       - org.springframework.cloud.netflix.zuul.ZuulServerAutoConfiguration
   cloud:
+    gateway:
+      enabled: false
     tencent:
       metadata:
         content:

@@ -30,7 +30,7 @@ import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
  *
  * @author shuiqingliu
  **/
-@Endpoint(id = "polaris-metadata")
+@Endpoint(id = "polarismetadata")
 public class PolarisMetadataEndpoint {
 
 	private final StaticMetadataManager staticMetadataManager;
@@ -41,7 +41,7 @@ public class PolarisMetadataEndpoint {
 
 	@ReadOperation
 	public Map<String, Object> metadata() {
-		Map<String, Object>  result = new HashMap<>();
+		Map<String, Object> result = new HashMap<>();
 		result.put("Env", staticMetadataManager.getAllEnvMetadata());
 		result.put("EnvTransitive", staticMetadataManager.getEnvTransitiveMetadata());
 		result.put("ConfigTransitive", staticMetadataManager.getConfigTransitiveMetadata());

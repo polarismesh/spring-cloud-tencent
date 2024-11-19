@@ -18,7 +18,6 @@
 package com.tencent.cloud.polaris.config.endpoint;
 
 import com.tencent.cloud.polaris.config.ConditionalOnPolarisConfigEnabled;
-import com.tencent.cloud.polaris.config.adapter.PolarisPropertySourceManager;
 import com.tencent.cloud.polaris.config.config.PolarisConfigProperties;
 
 import org.springframework.boot.actuate.autoconfigure.endpoint.condition.ConditionalOnAvailableEndpoint;
@@ -41,8 +40,7 @@ public class PolarisConfigEndpointAutoConfiguration {
 	@Bean
 	@ConditionalOnAvailableEndpoint
 	@ConditionalOnMissingBean
-	public PolarisConfigEndpoint polarisConfigEndpoint(PolarisConfigProperties polarisConfigProperties,
-			PolarisPropertySourceManager polarisPropertySourceManager) {
-		return new PolarisConfigEndpoint(polarisConfigProperties, polarisPropertySourceManager);
+	public PolarisConfigEndpoint polarisConfigEndpoint(PolarisConfigProperties polarisConfigProperties) {
+		return new PolarisConfigEndpoint(polarisConfigProperties);
 	}
 }

@@ -29,7 +29,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -83,26 +82,6 @@ public class QuickstartCalleeController {
 	}
 
 	/**
-	 * Mock post save value.
-	 * @return true
-	 */
-	@PostMapping("/saveValue")
-	public Boolean saveValue(@RequestParam int value) {
-		LOG.info("Quickstart [{}] Service [{}:{}] is called. Mock save value = [{}].", appName, ip, port, value);
-		return true;
-	}
-
-	/**
-	 * Get path echo of callee.
-	 * @return information of callee
-	 */
-	@GetMapping("/path/echo/{param}")
-	public String pathEcho(@PathVariable String param) {
-		LOG.info("Quickstart [{}] Service [{}:{}] is called. param = [{}].", appName, ip, port, param);
-		return String.format("Quickstart [%s] Service [%s:%s] is called. datasource = [%s].", appName, ip, port, param);
-	}
-
-	/**
 	 * Get metadata in HTTP header.
 	 *
 	 * @param metadataStr metadata string
@@ -143,5 +122,11 @@ public class QuickstartCalleeController {
 	public String health() {
 		LOG.info("Quickstart Callee Service [{}:{}] is detected right.", ip, port);
 		return String.format("Quickstart Callee Service [%s:%s] is detected right.", ip, port);
+	}
+
+	@GetMapping("/test/{num}/echo")
+	public String test(@PathVariable int num) {
+		LOG.info("Quickstart Callee Service [%s] is detected right.", num);
+		return String.format("Quickstart Callee Service [%s] is detected right.", num);
 	}
 }

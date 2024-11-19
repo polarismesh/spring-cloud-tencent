@@ -101,6 +101,8 @@ public class PolarisDiscoveryPropertiesTest {
 						+ ", registerEnabled=true"
 						+ ", heartbeatInterval=20"
 						+ ", healthCheckUrl='/health'"
-						+ ", serviceListRefreshInterval=1000}");
+						+ ", serviceListRefreshInterval=1000"
+						+ ", zeroProtectionEnabled=false"
+						+ ", zeroProtectionNeedTestConnectivity=false}");
 	}
 }

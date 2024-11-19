@@ -32,7 +32,7 @@ import org.springframework.context.ApplicationListener;
 public class PolarisConfigLoggerApplicationListener implements ApplicationListener<ApplicationEvent> {
 	private static final Logger LOGGER = LoggerFactory.getLogger(PolarisConfigLoggerApplicationListener.class);
 	/**
-	 * @see org.springframework.context.ApplicationListener#onApplicationEvent(org.springframework.context.ApplicationEvent)
+	 * @see ApplicationListener#onApplicationEvent(ApplicationEvent)
 	 */
 	@Override
 	public void onApplicationEvent(ApplicationEvent event) {

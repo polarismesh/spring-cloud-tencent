@@ -20,8 +20,6 @@ package com.tencent.cloud.polaris.ratelimit.config;
 import com.tencent.cloud.polaris.context.config.PolarisContextAutoConfiguration;
 import com.tencent.cloud.polaris.ratelimit.filter.QuotaCheckReactiveFilter;
 import com.tencent.cloud.polaris.ratelimit.filter.QuotaCheckServletFilter;
-import com.tencent.cloud.polaris.ratelimit.resolver.RateLimitRuleArgumentReactiveResolver;
-import com.tencent.cloud.polaris.ratelimit.resolver.RateLimitRuleArgumentServletResolver;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -43,8 +41,7 @@ public class PolarisRateLimitAutoConfigurationTest {
 
 	private final WebApplicationContextRunner webApplicationContextRunner = new WebApplicationContextRunner();
 
-	private final ReactiveWebApplicationContextRunner reactiveWebApplicationContextRunner =
-			new ReactiveWebApplicationContextRunner();
+	private final ReactiveWebApplicationContextRunner reactiveWebApplicationContextRunner = new ReactiveWebApplicationContextRunner();
 
 	@Test
 	public void testNoWebApplication() {
@@ -54,12 +51,10 @@ public class PolarisRateLimitAutoConfigurationTest {
 						PolarisRateLimitProperties.class,
 						PolarisRateLimitAutoConfiguration.class))
 				.run(context -> {
-					assertThat(context).doesNotHaveBean(RateLimitRuleArgumentServletResolver.class);
-					assertThat(context).doesNotHaveBean(RateLimitRuleArgumentReactiveResolver.class);
 					assertThat(context).doesNotHaveBean(PolarisRateLimitAutoConfiguration.QuotaCheckFilterConfig.class);
 					assertThat(context).doesNotHaveBean(QuotaCheckServletFilter.class);
 					assertThat(context).doesNotHaveBean(FilterRegistrationBean.class);
-					assertThat(context).doesNotHaveBean(PolarisRateLimitAutoConfiguration.MetadataReactiveFilterConfig.class);
+					assertThat(context).doesNotHaveBean(PolarisRateLimitAutoConfiguration.QuotaCheckReactiveFilterConfig.class);
 					assertThat(context).doesNotHaveBean(QuotaCheckReactiveFilter.class);
 				});
 	}
@@ -67,33 +62,31 @@ public class PolarisRateLimitAutoConfigurationTest {
 	@Test
 	public void testServletWebApplication() {
 		this.webApplicationContextRunner
-				.withConfiguration(AutoConfigurations.of(PolarisContextAutoConfiguration.class,
+				.withConfiguration(AutoConfigurations.of(
+						PolarisContextAutoConfiguration.class,
 						PolarisRateLimitProperties.class,
 						PolarisRateLimitAutoConfiguration.class))
 				.run(context -> {
-					assertThat(context).hasSingleBean(RateLimitRuleArgumentServletResolver.class);
 					assertThat(context).hasSingleBean(PolarisRateLimitAutoConfiguration.QuotaCheckFilterConfig.class);
 					assertThat(context).hasSingleBean(QuotaCheckServletFilter.class);
 					assertThat(context).hasSingleBean(FilterRegistrationBean.class);
-					assertThat(context).doesNotHaveBean(PolarisRateLimitAutoConfiguration.MetadataReactiveFilterConfig.class);
+					assertThat(context).doesNotHaveBean(PolarisRateLimitAutoConfiguration.QuotaCheckReactiveFilterConfig.class);
 					assertThat(context).doesNotHaveBean(QuotaCheckReactiveFilter.class);
-					assertThat(context).doesNotHaveBean(RateLimitRuleArgumentReactiveResolver.class);
 				});
 	}
 
 	@Test
 	public void testReactiveWebApplication() {
 		this.reactiveWebApplicationContextRunner
-				.withConfiguration(AutoConfigurations.of(PolarisContextAutoConfiguration.class,
+				.withConfiguration(AutoConfigurations.of(
+						PolarisContextAutoConfiguration.class,
 						PolarisRateLimitProperties.class,
 						PolarisRateLimitAutoConfiguration.class))
 				.run(context -> {
-					assertThat(context).doesNotHaveBean(RateLimitRuleArgumentServletResolver.class);
-					assertThat(context).hasSingleBean(RateLimitRuleArgumentReactiveResolver.class);
 					assertThat(context).doesNotHaveBean(PolarisRateLimitAutoConfiguration.QuotaCheckFilterConfig.class);
 					assertThat(context).doesNotHaveBean(QuotaCheckServletFilter.class);
 					assertThat(context).doesNotHaveBean(FilterRegistrationBean.class);
-					assertThat(context).hasSingleBean(PolarisRateLimitAutoConfiguration.MetadataReactiveFilterConfig.class);
+					assertThat(context).hasSingleBean(PolarisRateLimitAutoConfiguration.QuotaCheckReactiveFilterConfig.class);
 					assertThat(context).hasSingleBean(QuotaCheckReactiveFilter.class);
 				});
 	}

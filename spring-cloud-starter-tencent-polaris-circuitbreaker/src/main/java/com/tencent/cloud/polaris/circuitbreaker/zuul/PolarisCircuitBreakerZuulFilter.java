@@ -97,11 +97,12 @@ public class PolarisCircuitBreakerZuulFilter extends ZuulFilter {
 	@Override
 	public Object run() throws ZuulException {
 		RequestContext context = RequestContext.getCurrentContext();
+
 		String serviceId = ZuulFilterUtils.getServiceId(context);
 		String path = ZuulFilterUtils.getPath(context);
-		String circuitName = "".equals(path) ?
+		String circuitName = com.tencent.polaris.api.utils.StringUtils.isBlank(path) ?
 				MetadataContext.LOCAL_NAMESPACE + "#" + serviceId :
-				MetadataContext.LOCAL_NAMESPACE + "#" + serviceId + "#" + path;
+				MetadataContext.LOCAL_NAMESPACE + "#" + serviceId + "#" + path + "#http#" + context.getRequest().getMethod();
 		CircuitBreaker circuitBreaker = circuitBreakerFactory.create(circuitName);
 		if (circuitBreaker instanceof PolarisCircuitBreaker) {
 			PolarisCircuitBreaker polarisCircuitBreaker = (PolarisCircuitBreaker) circuitBreaker;

@@ -53,7 +53,7 @@ public class PolarisDiscoveryEndpointTest {
 
 	private static NamingServer namingServer;
 
-	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
+	private WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(
 					PolarisPropertiesConfiguration.class,
 					PolarisDiscoveryClientConfiguration.class,

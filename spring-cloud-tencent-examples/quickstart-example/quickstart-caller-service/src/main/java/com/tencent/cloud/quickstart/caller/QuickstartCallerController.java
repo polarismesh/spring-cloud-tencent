@@ -17,20 +17,30 @@
 
 package com.tencent.cloud.quickstart.caller;
 
+import java.util.Collections;
+import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import com.tencent.cloud.common.metadata.MetadataContext;
+import com.tencent.cloud.common.metadata.MetadataContextHolder;
+import com.tencent.polaris.api.utils.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import reactor.core.publisher.Mono;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -63,6 +73,8 @@ public class QuickstartCallerController {
 	 */
 	@GetMapping("/feign")
 	public String feign(@RequestParam int value1, @RequestParam int value2) {
+		MetadataContext metadataContext = MetadataContextHolder.get();
+		metadataContext.setTransitiveMetadata(Collections.singletonMap("feign-trace", String.format("%d+%d", value1, value2)));
 		return quickstartCalleeService.sum(value1, value2);
 	}
 
@@ -71,8 +83,30 @@ public class QuickstartCallerController {
 	 * @return information of callee
 	 */
 	@GetMapping("/rest")
-	public String rest() {
-		return restTemplate.getForObject("http://QuickstartCalleeService/quickstart/callee/info", String.class);
+	public ResponseEntity<String> rest(@RequestHeader Map<String, String> headerMap) {
+		String url = "http://QuickstartCalleeService/quickstart/callee/info";
+
+		HttpHeaders headers = new HttpHeaders();
+		for (Map.Entry<String, String> entry : headerMap.entrySet()) {
+			if (StringUtils.isNotBlank(entry.getKey()) && StringUtils.isNotBlank(entry.getValue())
+					&& !entry.getKey().contains("sct-")
+					&& !entry.getKey().contains("SCT-")
+					&& !entry.getKey().contains("polaris-")
+					&& !entry.getKey().contains("POLARIS-")) {
+				headers.add(entry.getKey(), entry.getValue());
+			}
+		}
+
+		// 创建 HttpEntity 实例并传入 HttpHeaders
+		HttpEntity<String> entity = new HttpEntity<>(headers);
+
+		// 使用 exchange 方法发送 GET 请求，并获取响应
+		try {
+			return restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
+		}
+		catch (HttpClientErrorException | HttpServerErrorException httpClientErrorException) {
+			return new ResponseEntity<>(httpClientErrorException.getResponseBodyAsString(), httpClientErrorException.getStatusCode());
+		}
 	}
 
 	/**
@@ -93,32 +127,33 @@ public class QuickstartCallerController {
 	 * Get information 30 times per 1 second.
 	 *
 	 * @return result of 30 calls.
-	 * @throws InterruptedException exception
 	 */
 	@GetMapping("/ratelimit")
-	public String invokeInfo() throws InterruptedException {
-		StringBuffer builder = new StringBuffer();
-		CountDownLatch count = new CountDownLatch(30);
+	public String invokeInfo() {
+		StringBuilder builder = new StringBuilder();
 		AtomicInteger index = new AtomicInteger(0);
 		for (int i = 0; i < 30; i++) {
-			new Thread(() -> {
+			try {
+				ResponseEntity<String> entity = restTemplate.getForEntity(
+						"http://QuickstartCalleeService/quickstart/callee/info", String.class);
+				builder.append(entity.getBody() + "\n");
 				try {
-					ResponseEntity<String> entity = restTemplate.getForEntity(
-							"http://QuickstartCalleeService/quickstart/callee/info", String.class);
-					builder.append(entity.getBody() + "\n");
+					Thread.sleep(30);
 				}
-				catch (RestClientException e) {
-					if (e instanceof HttpClientErrorException.TooManyRequests) {
-						builder.append("TooManyRequests " + index.incrementAndGet() + "\n");
-					}
-					else {
-						throw e;
-					}
+				catch (InterruptedException e) {
+					throw new RuntimeException(e);
 				}
-				count.countDown();
-			}).start();
+			}
+			catch (RestClientException e) {
+				if (e instanceof HttpClientErrorException.TooManyRequests) {
+					builder.append("TooManyRequests " + index.incrementAndGet() + "\n");
+				}
+				else {
+					throw e;
+				}
+			}
 		}
-		count.await();
+
 		return builder.toString();
 	}
 

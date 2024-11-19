@@ -23,7 +23,6 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.Objects;
-import java.util.Set;
 
 import javax.annotation.PostConstruct;
 
@@ -31,13 +30,13 @@ import com.tencent.cloud.common.constant.HeaderConstant;
 import com.tencent.cloud.common.constant.OrderConstant;
 import com.tencent.cloud.common.metadata.MetadataContext;
 import com.tencent.cloud.polaris.ratelimit.config.PolarisRateLimitProperties;
-import com.tencent.cloud.polaris.ratelimit.resolver.RateLimitRuleArgumentReactiveResolver;
 import com.tencent.cloud.polaris.ratelimit.spi.PolarisRateLimiterLimitedFallback;
 import com.tencent.cloud.polaris.ratelimit.utils.QuotaCheckUtils;
 import com.tencent.cloud.polaris.ratelimit.utils.RateLimitUtils;
 import com.tencent.polaris.api.pojo.RetStatus;
+import com.tencent.polaris.api.utils.StringUtils;
+import com.tencent.polaris.assembly.api.AssemblyAPI;
 import com.tencent.polaris.ratelimit.api.core.LimitAPI;
-import com.tencent.polaris.ratelimit.api.rpc.Argument;
 import com.tencent.polaris.ratelimit.api.rpc.QuotaResponse;
 import com.tencent.polaris.ratelimit.api.rpc.QuotaResultCode;
 import org.slf4j.Logger;
@@ -54,11 +53,12 @@ import org.springframework.web.server.WebFilter;
 import org.springframework.web.server.WebFilterChain;
 
 import static com.tencent.cloud.common.constant.ContextConstant.UTF_8;
+import static org.springframework.core.io.buffer.DefaultDataBufferFactory.DEFAULT_INITIAL_CAPACITY;
 
 /**
  * Reactive filter to check quota.
  *
- * @author Haotian Zhang, lepdou, cheese8, kaiy
+ * @author Haotian Zhang, lepdou, kaiy, cheese8
  */
 public class QuotaCheckReactiveFilter implements WebFilter, Ordered {
 
@@ -66,22 +66,20 @@ public class QuotaCheckReactiveFilter implements WebFilter, Ordered {
 
 	private final LimitAPI limitAPI;
 
-	private final PolarisRateLimitProperties polarisRateLimitProperties;
+	private final AssemblyAPI assemblyAPI;
 
-	private final RateLimitRuleArgumentReactiveResolver rateLimitRuleArgumentResolver;
+	private final PolarisRateLimitProperties polarisRateLimitProperties;
 
 	private final PolarisRateLimiterLimitedFallback polarisRateLimiterLimitedFallback;
 
-
 	private String rejectTips;
 
-	public QuotaCheckReactiveFilter(LimitAPI limitAPI,
+	public QuotaCheckReactiveFilter(LimitAPI limitAPI, AssemblyAPI assemblyAPI,
 			PolarisRateLimitProperties polarisRateLimitProperties,
-			RateLimitRuleArgumentReactiveResolver rateLimitRuleArgumentResolver,
 			@Nullable PolarisRateLimiterLimitedFallback polarisRateLimiterLimitedFallback) {
 		this.limitAPI = limitAPI;
+		this.assemblyAPI = assemblyAPI;
 		this.polarisRateLimitProperties = polarisRateLimitProperties;
-		this.rateLimitRuleArgumentResolver = rateLimitRuleArgumentResolver;
 		this.polarisRateLimiterLimitedFallback = polarisRateLimiterLimitedFallback;
 	}
 
@@ -100,31 +98,41 @@ public class QuotaCheckReactiveFilter implements WebFilter, Ordered {
 		String localNamespace = MetadataContext.LOCAL_NAMESPACE;
 		String localService = MetadataContext.LOCAL_SERVICE;
 
-		Set<Argument> arguments = rateLimitRuleArgumentResolver.getArguments(exchange, localNamespace, localService);
 		long waitMs = -1;
+		QuotaResponse quotaResponse = null;
 		try {
 			String path = exchange.getRequest().getURI().getPath();
-			QuotaResponse quotaResponse = QuotaCheckUtils.getQuota(
-					limitAPI, localNamespace, localService, 1, arguments, path);
+			quotaResponse = QuotaCheckUtils.getQuota(limitAPI, localNamespace, localService, 1, path);
 
 			if (quotaResponse.getCode() == QuotaResultCode.QuotaResultLimited) {
 				ServerHttpResponse response = exchange.getResponse();
 				DataBuffer dataBuffer;
-				if (!Objects.isNull(polarisRateLimiterLimitedFallback)) {
+				if (Objects.nonNull(quotaResponse.getActiveRule())
+						&& StringUtils.isNotBlank(quotaResponse.getActiveRule().getCustomResponse().getBody())) {
+					response.setRawStatusCode(polarisRateLimitProperties.getRejectHttpCode());
+					response.getHeaders().setContentType(MediaType.TEXT_PLAIN);
+					dataBuffer = response.bufferFactory().allocateBuffer(DEFAULT_INITIAL_CAPACITY)
+							.write(quotaResponse.getActiveRule().getCustomResponse().getBody()
+									.getBytes(StandardCharsets.UTF_8));
+				}
+				else if (!Objects.isNull(polarisRateLimiterLimitedFallback)) {
 					response.setRawStatusCode(polarisRateLimiterLimitedFallback.rejectHttpCode());
 					response.getHeaders().setContentType(polarisRateLimiterLimitedFallback.mediaType());
-					dataBuffer = response.bufferFactory().allocateBuffer()
+					dataBuffer = response.bufferFactory().allocateBuffer(DEFAULT_INITIAL_CAPACITY)
 							.write(polarisRateLimiterLimitedFallback.rejectTips()
 									.getBytes(polarisRateLimiterLimitedFallback.charset()));
 				}
 				else {
 					response.setRawStatusCode(polarisRateLimitProperties.getRejectHttpCode());
 					response.getHeaders().setContentType(MediaType.TEXT_HTML);
-					dataBuffer = response.bufferFactory().allocateBuffer()
+					dataBuffer = response.bufferFactory().allocateBuffer(DEFAULT_INITIAL_CAPACITY)
 							.write(rejectTips.getBytes(StandardCharsets.UTF_8));
 				}
+				// set flow control to header
 				response.getHeaders()
 						.add(HeaderConstant.INTERNAL_CALLEE_RET_STATUS, RetStatus.RetFlowControl.getDesc());
+				// set trace span
+				RateLimitUtils.reportTrace(assemblyAPI, quotaResponse.getActiveRule().getId().getValue());
 				if (Objects.nonNull(quotaResponse.getActiveRule())) {
 					try {
 						String encodedActiveRuleName = URLEncoder.encode(
@@ -136,6 +144,7 @@ public class QuotaCheckReactiveFilter implements WebFilter, Ordered {
 								quotaResponse.getActiveRuleName(), e);
 					}
 				}
+				RateLimitUtils.release(quotaResponse);
 				return response.writeWith(Mono.just(dataBuffer));
 			}
 			// Unirate
@@ -150,11 +159,13 @@ public class QuotaCheckReactiveFilter implements WebFilter, Ordered {
 			LOG.error("fail to invoke getQuota, service is " + localService, t);
 		}
 
+		QuotaResponse finalQuotaResponse = quotaResponse;
 		if (waitMs > 0) {
-			return Mono.delay(Duration.ofMillis(waitMs)).flatMap(e -> chain.filter(exchange));
+			return Mono.delay(Duration.ofMillis(waitMs))
+					.flatMap(e -> chain.filter(exchange).doFinally((v) -> RateLimitUtils.release(finalQuotaResponse)));
 		}
 		else {
-			return chain.filter(exchange);
+			return chain.filter(exchange).doFinally((v) -> RateLimitUtils.release(finalQuotaResponse));
 		}
 	}
 

@@ -44,6 +44,9 @@ import com.tencent.polaris.api.rpc.InstanceRegisterResponse;
 import com.tencent.polaris.api.rpc.InstancesResponse;
 import com.tencent.polaris.client.util.NamedThreadFactory;
 import com.tencent.polaris.factory.config.provider.ServiceConfigImpl;
+import com.tencent.polaris.metadata.core.TransitiveType;
+import com.tencent.polaris.metadata.core.constant.MetadataConstants;
+import com.tencent.polaris.metadata.core.manager.CalleeMetadataContainerGroup;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -96,7 +99,8 @@ public class PolarisServiceRegistry implements ServiceRegistry<PolarisRegistrati
 
 	@Override
 	public void register(PolarisRegistration registration) {
-		if (StringUtils.isEmpty(registration.getServiceId())) {
+
+		if (StringUtils.isBlank(registration.getServiceId())) {
 			LOGGER.warn("No service to register for polaris client...");
 			return;
 		}
@@ -116,9 +120,18 @@ public class PolarisServiceRegistry implements ServiceRegistry<PolarisRegistrati
 		instanceRegisterRequest.setCampus(staticMetadataManager.getCampus());
 		instanceRegisterRequest.setTtl(polarisDiscoveryProperties.getHeartbeatInterval());
 		instanceRegisterRequest.setMetadata(registration.getMetadata());
+		instanceRegisterRequest.setExtendedMetadata(registration.getExtendedMetadata());
 		instanceRegisterRequest.setProtocol(polarisDiscoveryProperties.getProtocol());
 		instanceRegisterRequest.setVersion(polarisDiscoveryProperties.getVersion());
 		instanceRegisterRequest.setInstanceId(polarisDiscoveryProperties.getInstanceId());
+		CalleeMetadataContainerGroup.getStaticApplicationMetadataContainer()
+				.putMetadataStringValue(MetadataConstants.LOCAL_NAMESPACE, polarisDiscoveryProperties.getNamespace(), TransitiveType.DISPOSABLE);
+		CalleeMetadataContainerGroup.getStaticApplicationMetadataContainer()
+				.putMetadataStringValue(MetadataConstants.LOCAL_SERVICE, serviceId, TransitiveType.DISPOSABLE);
+		CalleeMetadataContainerGroup.getStaticApplicationMetadataContainer()
+				.putMetadataStringValue(MetadataConstants.LOCAL_IP, registration.getHost(), TransitiveType.DISPOSABLE);
+		CalleeMetadataContainerGroup.getStaticApplicationMetadataContainer()
+				.putMetadataStringValue(MetadataConstants.LOCAL_PORT, String.valueOf(registration.getPort()), TransitiveType.DISPOSABLE);
 		try {
 			ProviderAPI providerClient = polarisSDKContextManager.getProviderAPI();
 			InstanceRegisterResponse instanceRegisterResponse;
@@ -129,12 +142,14 @@ public class PolarisServiceRegistry implements ServiceRegistry<PolarisRegistrati
 				instanceRegisterResponse = providerClient.register(instanceRegisterRequest);
 				InstanceHeartbeatRequest heartbeatRequest = new InstanceHeartbeatRequest();
 				BeanUtils.copyProperties(instanceRegisterRequest, heartbeatRequest);
+				heartbeatRequest.setInstanceID(instanceRegisterResponse.getInstanceId());
 				// Start the heartbeat thread after the registration is successful.
 				heartbeat(heartbeatRequest);
 			}
 			registration.setInstanceId(instanceRegisterResponse.getInstanceId());
-			LOGGER.info("polaris registry, {} {} {}:{} {} register finished", polarisDiscoveryProperties.getNamespace(),
-					registration.getServiceId(), registration.getHost(), registration.getPort(),
+			LOGGER.info("polaris registry, {} {} {} {}:{} {} {} {} {} register finished", polarisDiscoveryProperties.getNamespace(),
+					registration.getServiceId(), registration.getInstanceId(), registration.getHost(), registration.getPort(),
+					staticMetadataManager.getRegion(), staticMetadataManager.getZone(), staticMetadataManager.getCampus(),
 					staticMetadataManager.getMergedStaticMetadata());
 			if (Objects.nonNull(polarisStatProperties) && polarisStatProperties.isEnabled()) {
 				try {

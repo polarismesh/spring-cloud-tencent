@@ -26,7 +26,6 @@ import com.tencent.cloud.metadata.core.EncodeTransferMedataRestTemplateEnhancedP
 import com.tencent.cloud.metadata.core.EncodeTransferMedataScgEnhancedPlugin;
 import com.tencent.cloud.metadata.core.EncodeTransferMedataWebClientEnhancedPlugin;
 import com.tencent.cloud.metadata.core.EncodeTransferMetadataZuulEnhancedPlugin;
-import com.tencent.cloud.polaris.context.config.PolarisContextProperties;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -67,8 +66,8 @@ public class MetadataTransferAutoConfiguration {
 		}
 
 		@Bean
-		public DecodeTransferMetadataServletFilter metadataServletFilter(PolarisContextProperties polarisContextProperties) {
-			return new DecodeTransferMetadataServletFilter(polarisContextProperties);
+		public DecodeTransferMetadataServletFilter metadataServletFilter() {
+			return new DecodeTransferMetadataServletFilter();
 		}
 	}
 
@@ -80,8 +79,8 @@ public class MetadataTransferAutoConfiguration {
 	protected static class MetadataReactiveFilterConfig {
 
 		@Bean
-		public DecodeTransferMetadataReactiveFilter metadataReactiveFilter(PolarisContextProperties polarisContextProperties) {
-			return new DecodeTransferMetadataReactiveFilter(polarisContextProperties);
+		public DecodeTransferMetadataReactiveFilter metadataReactiveFilter() {
+			return new DecodeTransferMetadataReactiveFilter();
 		}
 
 	}
@@ -91,11 +90,10 @@ public class MetadataTransferAutoConfiguration {
 	 */
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(name = "com.netflix.zuul.http.ZuulServlet")
-	@ConditionalOnProperty(value = "spring.cloud.tencent.rpc-enhancement.enabled", havingValue = "true", matchIfMissing = true)
 	protected static class MetadataTransferZuulFilterConfig {
 
 		@Bean
-		public EncodeTransferMetadataZuulEnhancedPlugin encodeTransferMedataZuulEnhancedPlugin() {
+		public EncodeTransferMetadataZuulEnhancedPlugin encodeTransferMetadataZuulEnhancedPlugin() {
 			return new EncodeTransferMetadataZuulEnhancedPlugin();
 		}
 

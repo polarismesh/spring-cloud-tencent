@@ -70,21 +70,19 @@
 	</developers>
 
 	<properties>
-		<!-- Project revision -->
-		<revision>1.14.0-Hoxton.SR12-RC3</revision>
-
-		<!-- Polaris SDK version -->
-		<polaris.version>2.0.0.0-SNAPSHOT</polaris.version>
+		<revision>2.0.0.0-Hoxton.SR12-SNAPSHOT</revision>
 
 		<!-- Dependencies -->
+		<polaris.version>2.0.0.0-SNAPSHOT</polaris.version>
 		<guava.version>32.0.1-jre</guava.version>
 		<logback.version>1.2.13</logback.version>
-		<springfox.swagger2.version>3.0.0</springfox.swagger2.version>
+		<springdoc.version>1.7.0</springdoc.version>
 		<io.swagger.version>1.5.24</io.swagger.version>
 		<mocktio.version>4.5.1</mocktio.version>
 		<byte-buddy.version>1.12.10</byte-buddy.version>
 		<jackson.version>2.12.7</jackson.version>
 		<protobuf-java.version>3.21.7</protobuf-java.version>
+		<joda-time.version>2.9.9</joda-time.version>
 		<system-stubs-jupiter.version>2.0.2</system-stubs-jupiter.version>
 
 		<!-- Maven Plugin Versions -->
@@ -104,7 +102,14 @@
 				<scope>import</scope>
 			</dependency>
 
-			<!-- polaris starter -->
+			<dependency>
+				<artifactId>polaris-dependencies</artifactId>
+				<groupId>com.tencent.polaris</groupId>
+				<version>${polaris.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+
 			<dependency>
 				<groupId>com.tencent.cloud</groupId>
 				<artifactId>spring-cloud-tencent-commons</artifactId>
@@ -135,6 +140,7 @@
 				<version>${revision}</version>
 			</dependency>
 
+			<!--	polaris starter-->
 			<dependency>
 				<groupId>com.tencent.cloud</groupId>
 				<artifactId>spring-cloud-starter-tencent-polaris-ratelimit</artifactId>
@@ -208,6 +214,12 @@
 				<version>${revision}</version>
 			</dependency>
 
+			<dependency>
+				<groupId>com.tencent.cloud</groupId>
+				<artifactId>spring-cloud-starter-tencent-trace-plugin</artifactId>
+				<version>${revision}</version>
+			</dependency>
+
 			<!-- third part framework dependencies -->
 			<dependency>
 				<groupId>com.google.guava</groupId>
@@ -242,21 +254,15 @@
 			</dependency>
 
 			<dependency>
-				<groupId>io.springfox</groupId>
-				<artifactId>springfox-boot-starter</artifactId>
-				<version>${springfox.swagger2.version}</version>
+				<groupId>org.springdoc</groupId>
+				<artifactId>springdoc-openapi-ui</artifactId>
+				<version>${springdoc.version}</version>
 			</dependency>
 
 			<dependency>
-				<groupId>io.swagger</groupId>
-				<artifactId>swagger-models</artifactId>
-				<version>${io.swagger.version}</version>
-			</dependency>
-
-			<dependency>
-				<groupId>io.swagger</groupId>
-				<artifactId>swagger-annotations</artifactId>
-				<version>${io.swagger.version}</version>
+				<groupId>org.springdoc</groupId>
+				<artifactId>springdoc-openapi-webflux-ui</artifactId>
+				<version>${springdoc.version}</version>
 			</dependency>
 
 			<dependency>
@@ -269,6 +275,13 @@
 				<groupId>net.bytebuddy</groupId>
 				<artifactId>byte-buddy</artifactId>
 				<version>${byte-buddy.version}</version>
+			</dependency>
+
+
+			<dependency>
+				<groupId>joda-time</groupId>
+				<artifactId>joda-time</artifactId>
+				<version>${joda-time.version}</version>
 			</dependency>
 
 			<dependency>
@@ -292,14 +305,6 @@
 				<scope>test</scope>
 			</dependency>
 
-			<!-- polaris SDK-->
-			<dependency>
-				<artifactId>polaris-dependencies</artifactId>
-				<groupId>com.tencent.polaris</groupId>
-				<version>${polaris.version}</version>
-				<type>pom</type>
-				<scope>import</scope>
-			</dependency>
 		</dependencies>
 	</dependencyManagement>
 

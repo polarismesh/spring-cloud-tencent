@@ -30,12 +30,14 @@ import java.util.stream.Collectors;
 
 import com.google.protobuf.util.JsonFormat;
 import com.tencent.cloud.common.util.ApplicationContextAwareUtils;
+import com.tencent.cloud.polaris.circuitbreaker.config.PolarisCircuitBreakerProperties;
 import com.tencent.cloud.polaris.context.PolarisSDKContextManager;
 import com.tencent.polaris.api.config.Configuration;
 import com.tencent.polaris.api.core.ConsumerAPI;
 import com.tencent.polaris.api.pojo.ServiceKey;
 import com.tencent.polaris.circuitbreak.api.CircuitBreakAPI;
 import com.tencent.polaris.circuitbreak.factory.CircuitBreakAPIFactory;
+import com.tencent.polaris.client.api.SDKContext;
 import com.tencent.polaris.client.util.Utils;
 import com.tencent.polaris.factory.api.DiscoveryAPIFactory;
 import com.tencent.polaris.specification.api.v1.fault.tolerance.CircuitBreakerProto;
@@ -70,6 +72,8 @@ public class PolarisCircuitBreakerMockServerTest {
 	private static MockedStatic<ApplicationContextAwareUtils> mockedApplicationContextAwareUtils;
 	private static NamingServer namingServer;
 
+	private static SDKContext context;
+
 	@BeforeAll
 	public static void beforeAll() throws IOException {
 		mockedApplicationContextAwareUtils = Mockito.mockStatic(ApplicationContextAwareUtils.class);
@@ -78,11 +82,10 @@ public class PolarisCircuitBreakerMockServerTest {
 		mockedApplicationContextAwareUtils.when(() -> ApplicationContextAwareUtils.getProperties("spring.cloud.polaris.service"))
 				.thenReturn(SERVICE_CIRCUIT_BREAKER);
 		PolarisSDKContextManager.innerDestroy();
+
 		namingServer = NamingServer.startNamingServer(-1);
 		System.setProperty(SERVER_ADDRESS_ENV, String.format("127.0.0.1:%d", namingServer.getPort()));
-
 		ServiceKey serviceKey = new ServiceKey(NAMESPACE_TEST, SERVICE_CIRCUIT_BREAKER);
-
 		CircuitBreakerProto.CircuitBreakerRule.Builder circuitBreakerRuleBuilder = CircuitBreakerProto.CircuitBreakerRule.newBuilder();
 		InputStream inputStream = PolarisCircuitBreakerMockServerTest.class.getClassLoader()
 				.getResourceAsStream("circuitBreakerRule.json");
@@ -93,6 +96,9 @@ public class PolarisCircuitBreakerMockServerTest {
 		CircuitBreakerProto.CircuitBreaker circuitBreaker = CircuitBreakerProto.CircuitBreaker.newBuilder()
 				.addRules(circuitBreakerRule).build();
 		namingServer.getNamingService().setCircuitBreaker(serviceKey, circuitBreaker);
+
+		Configuration configuration = TestUtils.configWithEnvAddress();
+		context = SDKContext.initContextByConfig(configuration);
 	}
 
 	@AfterAll
@@ -103,15 +109,17 @@ public class PolarisCircuitBreakerMockServerTest {
 		if (null != mockedApplicationContextAwareUtils) {
 			mockedApplicationContextAwareUtils.close();
 		}
+		if (null != context) {
+			context.close();
+		}
 	}
 
 	@Test
 	public void testCircuitBreaker() {
-		Configuration configuration = TestUtils.configWithEnvAddress();
-		CircuitBreakAPI circuitBreakAPI = CircuitBreakAPIFactory.createCircuitBreakAPIByConfig(configuration);
-
-		ConsumerAPI consumerAPI = DiscoveryAPIFactory.createConsumerAPIByConfig(configuration);
-		PolarisCircuitBreakerFactory polarisCircuitBreakerFactory = new PolarisCircuitBreakerFactory(circuitBreakAPI, consumerAPI);
+		CircuitBreakAPI circuitBreakAPI = CircuitBreakAPIFactory.createCircuitBreakAPIByContext(context);
+		ConsumerAPI consumerAPI = DiscoveryAPIFactory.createConsumerAPIByContext(context);
+		PolarisCircuitBreakerProperties polarisCircuitBreakerProperties = new PolarisCircuitBreakerProperties();
+		PolarisCircuitBreakerFactory polarisCircuitBreakerFactory = new PolarisCircuitBreakerFactory(circuitBreakAPI, consumerAPI, polarisCircuitBreakerProperties);
 		CircuitBreaker cb = polarisCircuitBreakerFactory.create(SERVICE_CIRCUIT_BREAKER);
 
 		// trigger fallback for 5 times
@@ -132,7 +140,7 @@ public class PolarisCircuitBreakerMockServerTest {
 		assertThat(resList).isEqualTo(Arrays.asList("invoke success", "fallback", "fallback", "fallback", "fallback"));
 
 		// always fallback
-		ReactivePolarisCircuitBreakerFactory reactivePolarisCircuitBreakerFactory = new ReactivePolarisCircuitBreakerFactory(circuitBreakAPI, consumerAPI);
+		ReactivePolarisCircuitBreakerFactory reactivePolarisCircuitBreakerFactory = new ReactivePolarisCircuitBreakerFactory(circuitBreakAPI, consumerAPI, polarisCircuitBreakerProperties);
 		ReactiveCircuitBreaker rcb = reactivePolarisCircuitBreakerFactory.create(SERVICE_CIRCUIT_BREAKER);
 
 		assertThat(Mono.just("foobar").transform(it -> rcb.run(it, t -> Mono.just("fallback")))

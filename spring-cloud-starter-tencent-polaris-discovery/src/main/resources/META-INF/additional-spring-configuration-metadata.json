@@ -67,6 +67,18 @@
       "description": "Millis interval of refresh of service info list. Default: 60000."
     },
     {
+      "name": "spring.cloud.polaris.discovery.zero-protection.enabled",
+      "type": "java.lang.Boolean",
+      "defaultValue": false,
+      "description": "Zero protection switch. Default: false."
+    },
+    {
+      "name": "spring.cloud.polaris.discovery.zero-protection.is-need-test-connectivity",
+      "type": "java.lang.Boolean",
+      "defaultValue": false,
+      "description": "Zero protection test connectivity switch. Default: false."
+    },
+    {
       "name": "spring.cloud.nacos.discovery.enabled",
       "type": "java.lang.Boolean",
       "sourceType": "com.tencent.cloud.polaris.extend.nacos.NacosContextProperties",
