@@ -130,7 +130,7 @@ public class SpringValueProcessor extends PolarisProcessor implements BeanDefini
 		}
 
 		if (method.getAnnotation(RefreshScope.class) != null) {
-			processMethodRefreshScope(bean, beanName, method);
+			processMethodRefreshScope(bean, method);
 		}
 	}
 
@@ -147,7 +147,12 @@ public class SpringValueProcessor extends PolarisProcessor implements BeanDefini
 		doRegister(bean, beanName, method, value, isRefreshScope);
 	}
 
-	private void processMethodRefreshScope(Object bean, String beanName, Method method) {
+	/**
+	 * @RefreshScope on method.
+	 * @param bean spring bean.
+	 * @param method method.
+	 */
+	private void processMethodRefreshScope(Object bean, Method method) {
 		// must have @Bean annotation
 		if (method.getAnnotation(Bean.class) == null) {
 			return;
@@ -156,27 +161,38 @@ public class SpringValueProcessor extends PolarisProcessor implements BeanDefini
 		for (Parameter parameter : method.getParameters()) {
 			Value value = parameter.getAnnotation(Value.class);
 			if (value != null) {
+				// method parameter with @Value
 				Set<String> keys = placeholderHelper.extractPlaceholderKeys(value.value());
 				springValueRegistry.putRefreshScopeKeys(keys);
 			}
+			// method parameter class with @ConfigurationProperties
 			ConfigurationProperties configurationProperties = parameter.getType().getAnnotation(ConfigurationProperties.class);
 			parseConfigurationPropertiesKeys(configurationProperties, parameter.getType());
 		}
 
+		// analyze all fields of the class containing the method.
 		for (Field field : findAllField(bean.getClass())) {
 			Value value = field.getAnnotation(Value.class);
 			if (value != null) {
+				// field with @Value
 				Set<String> keys = placeholderHelper.extractPlaceholderKeys(value.value());
 				springValueRegistry.putRefreshScopeKeys(keys);
 				continue;
 			}
+			// field class with @ConfigurationProperties
 			ConfigurationProperties configurationProperties = field.getType().getAnnotation(ConfigurationProperties.class);
 			parseConfigurationPropertiesKeys(configurationProperties, field.getType());
 		}
 	}
 
+	/**
+	 * parse refresh scope keys from @ConfigurationProperties.
+	 * @param configurationProperties @ConfigurationProperties annotation object.
+	 * @param clazz class of @ConfigurationProperties bean.
+	 */
 	private void parseConfigurationPropertiesKeys(ConfigurationProperties configurationProperties, Class<?> clazz) {
 		if (configurationProperties != null) {
+			// get prefix from @ConfigurationProperties prefix or value.
 			String prefix = configurationProperties.value();
 			if (StringUtils.isEmpty(prefix)) {
 				prefix = configurationProperties.prefix();
@@ -188,12 +204,17 @@ public class SpringValueProcessor extends PolarisProcessor implements BeanDefini
 		}
 	}
 
+	/**
+	 * parse refresh scope keys from @ConfigurationProperties and prefix.
+	 * @param configClazz class of @ConfigurationProperties bean.
+	 * @param prefix config prefix.
+	 */
 	private void parseConfigKeys(Class<?> configClazz, String prefix) {
 		for (Field field : findAllField(configClazz)) {
 			if (isPrimitiveOrWrapper(field.getType())) {
-				// lowerCamel
+				// lowerCamel format
 				springValueRegistry.putRefreshScopeKey(prefix + field.getName());
-				// lower-hyphen
+				// lower-hyphen format
 				springValueRegistry.putRefreshScopeKey(
 						prefix + CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_HYPHEN, field.getName()));
 			}
@@ -203,6 +224,7 @@ public class SpringValueProcessor extends PolarisProcessor implements BeanDefini
 						prefix + CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_HYPHEN, field.getName()));
 			}
 			else {
+				// complex type, recursive parse
 				parseConfigKeys(field.getType(), prefix + field.getName() + ".");
 				parseConfigKeys(field.getType(),
 						prefix + CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_HYPHEN, field.getName()) + ".");
@@ -210,6 +232,11 @@ public class SpringValueProcessor extends PolarisProcessor implements BeanDefini
 		}
 	}
 
+	/**
+	 * whether the class is primitive or wrapper.
+	 * @param clazz the class under analysis.
+	 * @return true if the class is primitive or wrapper, otherwise false.
+	 */
 	private static boolean isPrimitiveOrWrapper(Class<?> clazz) {
 		return clazz.isPrimitive() ||
 				clazz == String.class ||
@@ -223,6 +250,11 @@ public class SpringValueProcessor extends PolarisProcessor implements BeanDefini
 				clazz == Double.class;
 	}
 
+	/**
+	 * whether the class is collection(array, collection, map).
+	 * @param clazz the class under analysis.
+	 * @return true if the class is collection(array, collection, map), otherwise false.
+	 */
 	private static boolean isCollection(Class<?> clazz) {
 		return clazz.isArray() || Collection.class.isAssignableFrom(clazz) || Map.class.isAssignableFrom(clazz);
 	}

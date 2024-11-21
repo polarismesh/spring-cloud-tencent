@@ -272,19 +272,7 @@ public class PolarisConfigFileLocator implements PropertySourceLocator {
 	}
 
 	public static PolarisPropertySource loadPolarisPropertySource(ConfigFileService configFileService, String namespace, String group, String fileName) {
-		ConfigKVFile configKVFile;
-		// unknown extension is resolved as yaml file
-		if (ConfigFileFormat.isYamlFile(fileName) || ConfigFileFormat.isUnknownFile(fileName)) {
-			configKVFile = configFileService.getConfigYamlFile(namespace, group, fileName);
-		}
-		else if (ConfigFileFormat.isPropertyFile(fileName)) {
-			configKVFile = configFileService.getConfigPropertiesFile(namespace, group, fileName);
-		}
-		else {
-			LOGGER.warn("[SCT Config] Unsupported config file. namespace = {}, group = {}, fileName = {}", namespace, group, fileName);
-
-			throw new IllegalStateException("Only configuration files in the format of properties / yaml / yaml" + " can be injected into the spring context");
-		}
+		ConfigKVFile configKVFile = loadConfigKVFile(configFileService, namespace, group, fileName);
 
 		Map<String, Object> map = new ConcurrentHashMap<>();
 		for (String key : configKVFile.getPropertyNames()) {
@@ -304,19 +292,7 @@ public class PolarisConfigFileLocator implements PropertySourceLocator {
 
 		for (ConfigFileMetadata configFile : remoteGroup.getConfigFileMetadataList()) {
 			String fileName = configFile.getFileName();
-			ConfigKVFile configKVFile;
-			// unknown extension is resolved as properties file
-			if (ConfigFileFormat.isPropertyFile(fileName) || ConfigFileFormat.isUnknownFile(fileName)) {
-				configKVFile = configFileService.getConfigPropertiesFile(namespace, group, fileName);
-			}
-			else if (ConfigFileFormat.isYamlFile(fileName)) {
-				configKVFile = configFileService.getConfigYamlFile(namespace, group, fileName);
-			}
-			else {
-				LOGGER.warn("[SCT Config] Unsupported config file. namespace = {}, group = {}, fileName = {}", namespace, group, fileName);
-
-				throw new IllegalStateException("Only configuration files in the format of properties / yaml / yaml" + " can be injected into the spring context");
-			}
+			ConfigKVFile configKVFile = loadConfigKVFile(configFileService, namespace, group, fileName);
 			configKVFiles.add(configKVFile);
 		}
 
@@ -335,5 +311,22 @@ public class PolarisConfigFileLocator implements PropertySourceLocator {
 		}
 
 		return new PolarisPropertySource(namespace, group, "", compositeConfigFile, map);
+	}
+
+	public static ConfigKVFile loadConfigKVFile(ConfigFileService configFileService, String namespace, String group, String fileName) {
+		ConfigKVFile configKVFile;
+		// unknown extension is resolved as properties file
+		if (ConfigFileFormat.isPropertyFile(fileName) || ConfigFileFormat.isUnknownFile(fileName)) {
+			configKVFile = configFileService.getConfigPropertiesFile(namespace, group, fileName);
+		}
+		else if (ConfigFileFormat.isYamlFile(fileName)) {
+			configKVFile = configFileService.getConfigYamlFile(namespace, group, fileName);
+		}
+		else {
+			LOGGER.warn("[SCT Config] Unsupported config file. namespace = {}, group = {}, fileName = {}", namespace, group, fileName);
+
+			throw new IllegalStateException("Only configuration files in the format of properties / yaml / yaml" + " can be injected into the spring context");
+		}
+		return configKVFile;
 	}
 }
