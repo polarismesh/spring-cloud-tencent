@@ -21,8 +21,15 @@ package com.tencent.cloud.polaris.config.adapter;
 import java.util.Set;
 
 import com.tencent.cloud.polaris.config.config.PolarisConfigProperties;
+import com.tencent.cloud.polaris.config.spring.property.SpringValueRegistry;
+import com.tencent.polaris.configuration.api.core.ConfigFileService;
 
+import org.springframework.beans.BeansException;
+import org.springframework.cloud.context.environment.EnvironmentChangeEvent;
 import org.springframework.cloud.context.refresh.ContextRefresher;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.ConfigurableApplicationContext;
 
 /**
  * The default implement of Spring Cloud refreshes the entire Spring Context.
@@ -30,13 +37,19 @@ import org.springframework.cloud.context.refresh.ContextRefresher;
  *
  * @author lingxiao.wlx
  */
-public class PolarisRefreshEntireContextRefresher extends PolarisConfigPropertyAutoRefresher {
+public class PolarisRefreshEntireContextRefresher extends PolarisConfigPropertyAutoRefresher implements ApplicationContextAware {
 
 	private final ContextRefresher contextRefresher;
 
+	private final SpringValueRegistry springValueRegistry;
+
+	private ConfigurableApplicationContext context;
+
 	public PolarisRefreshEntireContextRefresher(PolarisConfigProperties polarisConfigProperties,
-			ContextRefresher contextRefresher) {
-		super(polarisConfigProperties);
+			SpringValueRegistry springValueRegistry, ConfigFileService configFileService, ContextRefresher contextRefresher) {
+
+		super(polarisConfigProperties, configFileService);
+		this.springValueRegistry = springValueRegistry;
 		this.contextRefresher = contextRefresher;
 	}
 
@@ -47,6 +60,24 @@ public class PolarisRefreshEntireContextRefresher extends PolarisConfigPropertyA
 
 	@Override
 	public void refreshConfigurationProperties(Set<String> changeKeys) {
-		contextRefresher.refresh();
+		boolean needRefreshContext = false;
+		for (String changedKey : changeKeys) {
+			boolean inRefreshScope = springValueRegistry.isRefreshScopeKey(changedKey);
+			if (inRefreshScope) {
+				needRefreshContext = true;
+				break;
+			}
+		}
+		if (needRefreshContext) {
+			contextRefresher.refresh();
+		}
+		else {
+			context.publishEvent(new EnvironmentChangeEvent(context, changeKeys));
+		}
+	}
+
+	@Override
+	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+		this.context = (ConfigurableApplicationContext) applicationContext;
 	}
 }

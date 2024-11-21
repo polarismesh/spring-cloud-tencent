@@ -104,8 +104,9 @@ public class ConfigurationModifier implements PolarisConfigurationConfigModifier
 			throw new RuntimeException("Config server address is blank. Please check your config in bootstrap.yml"
 					+ " with spring.cloud.polaris.address or spring.cloud.polaris.config.address");
 		}
-
-		checkAddressAccessible(configAddresses);
+		if (polarisConfigProperties.isCheckAddress()) {
+			checkAddressAccessible(configAddresses);
+		}
 
 		configuration.getConfigFile().getServerConnector().setAddresses(configAddresses);
 

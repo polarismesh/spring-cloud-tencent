@@ -70,7 +70,7 @@ public class PolarisConfigProperties {
 	/**
 	 * Attribute refresh type.
 	 */
-	private RefreshType refreshType = RefreshType.REFLECT;
+	private RefreshType refreshType = RefreshType.REFRESH_CONTEXT;
 
 	/**
 	 * List of injected configuration files.
@@ -95,6 +95,8 @@ public class PolarisConfigProperties {
 	 * If internal config file enabled.
 	 */
 	private boolean internalEnabled = true;
+
+	private boolean checkAddress = true;
 
 	public boolean isEnabled() {
 		return enabled;
@@ -192,6 +194,14 @@ public class PolarisConfigProperties {
 		this.internalEnabled = internalEnabled;
 	}
 
+	public boolean isCheckAddress() {
+		return checkAddress;
+	}
+
+	public void setCheckAddress(boolean checkAddress) {
+		this.checkAddress = checkAddress;
+	}
+
 	@Override
 	public String toString() {
 		return "PolarisConfigProperties{" +
@@ -207,6 +217,7 @@ public class PolarisConfigProperties {
 				", dataSource='" + dataSource + '\'' +
 				", localFileRootPath='" + localFileRootPath + '\'' +
 				", internalEnabled=" + internalEnabled +
+				", checkAddress=" + checkAddress +
 				'}';
 	}
 }

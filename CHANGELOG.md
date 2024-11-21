@@ -17,3 +17,4 @@
 - [fix:fix no registry when lossless is disabled.](https://github.com/Tencent/spring-cloud-tencent/pull/1313)
 - [fix: memory not released while using wildcard api call with circuitbreaker enabled](https://github.com/Tencent/spring-cloud-tencent/pull/1335)
 - [feat: support 2.0.0](https://github.com/Tencent/spring-cloud-tencent/pull/1458)
+- [feat: support 2.0.0 config](https://github.com/Tencent/spring-cloud-tencent/pull/1463)
