@@ -211,7 +211,9 @@ public class RefreshScopeSpringProcessorTest {
 		@Bean
 		@RefreshScope
 		public TestBean testBean5() {
-			return new TestBean();
+			TestBean testBean = new TestBean();
+			testBean.setName(testBeanProperties2.getName());
+			return testBean;
 		}
 	}
 

@@ -149,6 +149,9 @@ public class SpringValueProcessor extends PolarisProcessor implements BeanDefini
 
 	/**
 	 * @RefreshScope on method.
+	 * method parameter with @Value ${@link com.tencent.cloud.polaris.config.spring.annotation.RefreshScopeSpringProcessorTest.TestConfig3#testBean3}.
+	 * method parameter class with @ConfigurationProperties ${@link com.tencent.cloud.polaris.config.spring.annotation.RefreshScopeSpringProcessorTest.TestConfig4#testBean4}.
+	 * @ConfigurationProperties outside method may effect @RefreshScope bean${@link com.tencent.cloud.polaris.config.spring.annotation.RefreshScopeSpringProcessorTest.TestConfig5#testBean5()}.
 	 * @param bean spring bean.
 	 * @param method method.
 	 */
@@ -205,9 +208,15 @@ public class SpringValueProcessor extends PolarisProcessor implements BeanDefini
 	}
 
 	/**
-	 * parse refresh scope keys from @ConfigurationProperties and prefix.
-	 * @param configClazz class of @ConfigurationProperties bean.
-	 * @param prefix config prefix.
+	 * parse all fields of the configClazz.
+	 * if the field is primitive or wrapper, add it to refresh scope key map.
+	 * ${@link com.tencent.cloud.polaris.config.spring.annotation.RefreshScopeSpringProcessorTest.TestBeanProperties2#name}
+	 * if the field is collection, add it to refresh scope prefix trie node.
+	 * ${@link com.tencent.cloud.polaris.config.spring.annotation.RefreshScopeSpringProcessorTest.TestBeanProperties2#list}
+	 * if the field is complex type, recursive parse.
+	 * ${@link com.tencent.cloud.polaris.config.spring.annotation.RefreshScopeSpringProcessorTest.TestBeanProperties2#inner}
+	 * @param configClazz class or subclass of @ConfigurationProperties bean.
+	 * @param prefix prefix or subclass's prefix of @ConfigurationProperties bean.
 	 */
 	private void parseConfigKeys(Class<?> configClazz, String prefix) {
 		for (Field field : findAllField(configClazz)) {

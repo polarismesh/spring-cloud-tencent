@@ -131,6 +131,11 @@ public class SpringValueRegistry implements DisposableBean {
 		refreshScopeKeys.addAll(keys);
 	}
 
+	/**
+	 * first check if the key is in refreshScopeKeys, if not, check the key by TrieUtil.
+	 * @param key changed key.
+	 * @return true if the key is refresh scope key, otherwise false.
+	 */
 	public boolean isRefreshScopeKey(String key) {
 		if (refreshScopeKeys.contains(key)) {
 			return true;
