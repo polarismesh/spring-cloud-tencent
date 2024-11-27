@@ -71,10 +71,10 @@
 
 	<properties>
 		<!-- Project revision -->
-		<revision>2.0.0.0-2022.0.5-SNAPSHOT</revision>
+		<revision>2.0.0.0-2022.0.5-RC4</revision>
 
 		<!-- Polaris SDK version -->
-		<polaris.version>2.0.0.0-SNAPSHOT</polaris.version>
+		<polaris.version>2.0.0.0-RC5</polaris.version>
 
 		<!-- Dependencies -->
 		<guava.version>32.0.1-jre</guava.version>
