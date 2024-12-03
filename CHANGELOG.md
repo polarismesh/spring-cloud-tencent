@@ -35,3 +35,4 @@
 - [feat:support concurrency rate limit.](https://github.com/Tencent/spring-cloud-tencent/pull/1457)
 - [feat:support auth.](https://github.com/Tencent/spring-cloud-tencent/pull/1461)
 - [fix:fix auth not effected bug.](https://github.com/Tencent/spring-cloud-tencent/pull/1465)
+- [feat:upgrade trace plugin.](https://github.com/Tencent/spring-cloud-tencent/pull/1469)
