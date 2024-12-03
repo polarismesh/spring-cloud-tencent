@@ -19,7 +19,9 @@ package com.tencent.cloud.rpc.enhancement.plugin;
 
 
 import java.net.URI;
+import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,19 +37,13 @@ import org.springframework.cloud.client.ServiceInstance;
 public class EnhancedPluginContext {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(EnhancedPluginContext.class);
-
+	private final Map<String, Object> extraData = new ConcurrentHashMap<>();
 	private Object originRequest;
-
 	private EnhancedRequestContext request;
-
 	private EnhancedResponseContext response;
-
 	private Throwable throwable;
-
 	private long delay;
-
 	private ServiceInstance localServiceInstance;
-
 	/**
 	 * targetServiceInstance only exist in a client runner type.
 	 */
@@ -124,6 +120,10 @@ public class EnhancedPluginContext {
 			this.targetServiceInstance = new DefaultServiceInstance();
 			LOGGER.warn("TargetServiceInstance is empty.");
 		}
+	}
+
+	public Map<String, Object> getExtraData() {
+		return extraData;
 	}
 
 	@Override
