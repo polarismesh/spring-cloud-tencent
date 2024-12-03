@@ -13,24 +13,27 @@
  * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
- *
  */
 
-package com.tencent.cloud.plugin.trace.tsf;
+package com.tencent.cloud.plugin.trace.attribute;
 
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import java.util.HashMap;
+import java.util.Map;
 
-@Configuration(proxyBeanMethods = false)
-@ConditionalOnProperty(value = "spring.cloud.polaris.trace.enabled", matchIfMissing = true)
-public class TsfTracePropertiesAutoConfiguration {
+import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginContext;
 
-	@Bean
-	@ConditionalOnMissingBean
-	public TsfSpanAttributesProvider tsfClientSpanAttributesProvider() {
-		return new TsfSpanAttributesProvider();
+public interface SpanAttributesProvider {
+
+	/**
+	 * Key of OT scope object to save in EnhancedPluginContext.
+	 */
+	String OT_SCOPE_KEY = "OT_SCOPE_KEY";
+
+	default Map<String, String> getServerSpanAttributes(EnhancedPluginContext context) {
+		return new HashMap<>();
 	}
 
+	default Map<String, String> getClientBaggageAttributes(EnhancedPluginContext context) {
+		return new HashMap<>();
+	}
 }

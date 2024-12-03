@@ -58,6 +58,12 @@ public final class TsfCoreEnvironmentPostProcessor implements EnvironmentPostPro
 		if (StringUtils.isNotBlank(tsfAppId)) {
 			Map<String, Object> defaultProperties = new HashMap<>();
 
+			// enabled
+			String polarisEnabled = environment.getProperty("spring.cloud.polaris.enabled");
+			if (StringUtils.isBlank(polarisEnabled)) {
+				defaultProperties.put("spring.cloud.polaris.enabled", true);
+			}
+
 			// lossless
 			String polarisAdminPort = environment.getProperty("polaris_admin_port");
 			if (StringUtils.isNotBlank(polarisAdminPort)) {
