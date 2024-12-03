@@ -1,3 +1,2 @@
 com.tencent.cloud.plugin.trace.config.TraceConfigModifierAutoConfiguration
 com.tencent.cloud.plugin.trace.config.TraceEnhancedPluginAutoConfiguration
-com.tencent.cloud.plugin.trace.tsf.TsfTracePropertiesAutoConfiguration
