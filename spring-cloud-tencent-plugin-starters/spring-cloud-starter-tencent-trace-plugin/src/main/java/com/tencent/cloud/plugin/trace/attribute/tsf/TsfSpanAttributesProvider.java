@@ -15,12 +15,12 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package com.tencent.cloud.plugin.trace.tsf;
+package com.tencent.cloud.plugin.trace.attribute.tsf;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import com.tencent.cloud.plugin.trace.SpanAttributesProvider;
+import com.tencent.cloud.plugin.trace.attribute.SpanAttributesProvider;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginContext;
 import com.tencent.polaris.api.utils.CollectionUtils;
 import com.tencent.polaris.api.utils.StringUtils;
@@ -31,7 +31,7 @@ import org.springframework.cloud.client.ServiceInstance;
 public class TsfSpanAttributesProvider implements SpanAttributesProvider {
 
 	@Override
-	public Map<String, String> getConsumerSpanAttributes(EnhancedPluginContext context) {
+	public Map<String, String> getClientBaggageAttributes(EnhancedPluginContext context) {
 		Map<String, String> attributes = new HashMap<>();
 		if (null != context.getRequest().getUrl()) {
 			attributes.put("remoteInterface", context.getRequest().getUrl().getPath());
@@ -53,5 +53,4 @@ public class TsfSpanAttributesProvider implements SpanAttributesProvider {
 		}
 		return attributes;
 	}
-
 }
