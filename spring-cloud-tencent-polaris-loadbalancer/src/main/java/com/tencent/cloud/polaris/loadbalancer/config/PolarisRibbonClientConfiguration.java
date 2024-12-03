@@ -29,6 +29,7 @@ import com.netflix.loadbalancer.ServerList;
 import com.tencent.cloud.polaris.context.PolarisSDKContextManager;
 import com.tencent.cloud.polaris.loadbalancer.PolarisLoadBalancer;
 import com.tencent.cloud.polaris.loadbalancer.PolarisRingHashRule;
+import com.tencent.cloud.polaris.loadbalancer.PolarisServerIntrospector;
 import com.tencent.cloud.polaris.loadbalancer.PolarisWeightedRandomRule;
 import com.tencent.cloud.polaris.loadbalancer.PolarisWeightedRoundRobinRule;
 import com.tencent.cloud.polaris.loadbalancer.transformer.InstanceTransformer;
@@ -52,6 +53,11 @@ public class PolarisRibbonClientConfiguration {
 			@Autowired(required = false) InstanceTransformer instanceTransformer) {
 		return new PolarisLoadBalancer(iClientConfig, iRule, iPing, serverList,
 				polarisSDKContextManager.getConsumerAPI(), polarisLoadBalancerProperties, instanceTransformer);
+	}
+
+	@Bean
+	public PolarisServerIntrospector polarisServerIntrospector() {
+		return new PolarisServerIntrospector();
 	}
 
 	@Bean
