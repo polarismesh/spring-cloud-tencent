@@ -70,7 +70,7 @@ public class CircuitBreakerPlugin implements EnhancedPlugin {
 		EnhancedRequestContext request = context.getRequest();
 		EnhancedResponseContext response = context.getResponse();
 
-		String governanceNamespace = MetadataContextHolder.get().getDisposableMetadata().get(ContextConstant.POLARIS_GOVERNANCE_TARGET_NAMESPACE);
+		String governanceNamespace = MetadataContextHolder.get().getDisposableMetadata().get(ContextConstant.POLARIS_GOVERNANCE_NAMESPACE);
 		if (StringUtils.isEmpty(governanceNamespace)) {
 			governanceNamespace = MetadataContext.LOCAL_NAMESPACE;
 		}

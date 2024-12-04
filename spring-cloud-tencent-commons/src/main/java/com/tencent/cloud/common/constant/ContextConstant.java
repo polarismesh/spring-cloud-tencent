@@ -33,7 +33,7 @@ public final class ContextConstant {
 	/**
 	 * Metadata key for target governance namespace.
 	 */
-	public static final String POLARIS_GOVERNANCE_TARGET_NAMESPACE = "POLARIS_GOVERNANCE_TARGET_NAMESPACE";
+	public static final String POLARIS_GOVERNANCE_NAMESPACE = "POLARIS_GOVERNANCE_NAMESPACE";
 
 	/**
 	 * SCT Default Charset .

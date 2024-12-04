@@ -82,7 +82,7 @@ public class ExceptionCircuitBreakerReporter implements EnhancedPlugin {
 				.orElse(new DefaultServiceInstance());
 
 		if (LOG.isDebugEnabled()) {
-			String governanceNamespace = MetadataContextHolder.get().getDisposableMetadata().get(ContextConstant.POLARIS_GOVERNANCE_TARGET_NAMESPACE);
+			String governanceNamespace = MetadataContextHolder.get().getDisposableMetadata().get(ContextConstant.POLARIS_GOVERNANCE_NAMESPACE);
 			LOG.debug("governanceNamespace={}, serviceInstance:{}", governanceNamespace, serviceInstance);
 		}
 		ResourceStat resourceStat = PolarisEnhancedPluginUtils.createInstanceResourceStat(

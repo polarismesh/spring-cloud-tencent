@@ -33,6 +33,7 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.config.BeanPostProcessor;
+import org.springframework.core.Ordered;
 import org.springframework.lang.NonNull;
 
 /**
@@ -40,7 +41,12 @@ import org.springframework.lang.NonNull;
  *
  * @author derekyi 2022-08-01
  */
-public class PolarisLoadBalancerCompositeRuleBeanPostProcessor implements BeanPostProcessor, BeanFactoryAware {
+public class PolarisLoadBalancerCompositeRuleBeanPostProcessor implements BeanPostProcessor, BeanFactoryAware, Ordered {
+
+	/**
+	 * The order of the bean post processor. if user want to wrap it(CustomRule -> PolarisLoadBalancerCompositeRule), CustomRuleBeanPostProcessor's order should be bigger than ${@link POLARIS_LOAD_BALANCER_COMPOSITE_RULE_POST_PROCESSOR_ORDER}.
+	 */
+	public static final int POLARIS_LOAD_BALANCER_COMPOSITE_RULE_POST_PROCESSOR_ORDER = 0;
 
 	private BeanFactory beanFactory;
 
@@ -63,5 +69,10 @@ public class PolarisLoadBalancerCompositeRuleBeanPostProcessor implements BeanPo
 	@Override
 	public void setBeanFactory(@NonNull BeanFactory beanFactory) throws BeansException {
 		this.beanFactory = beanFactory;
+	}
+
+	@Override
+	public int getOrder() {
+		return POLARIS_LOAD_BALANCER_COMPOSITE_RULE_POST_PROCESSOR_ORDER;
 	}
 }

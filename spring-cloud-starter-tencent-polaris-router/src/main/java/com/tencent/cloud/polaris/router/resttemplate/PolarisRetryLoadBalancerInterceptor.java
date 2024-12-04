@@ -21,6 +21,8 @@ import java.io.IOException;
 import java.net.URI;
 
 import com.tencent.cloud.polaris.router.PolarisRouterContext;
+import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginRunner;
+import com.tencent.cloud.rpc.enhancement.resttemplate.EnhancedRestTemplateWrapInterceptor;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -34,6 +36,7 @@ import org.springframework.cloud.client.loadbalancer.LoadBalancerClient;
 import org.springframework.cloud.client.loadbalancer.LoadBalancerRequestFactory;
 import org.springframework.cloud.client.loadbalancer.LoadBalancerRetryProperties;
 import org.springframework.cloud.client.loadbalancer.RetryLoadBalancerInterceptor;
+import org.springframework.cloud.netflix.ribbon.RibbonLoadBalancerClient;
 import org.springframework.http.HttpRequest;
 import org.springframework.http.client.ClientHttpRequestExecution;
 import org.springframework.http.client.ClientHttpResponse;
@@ -64,14 +67,18 @@ public class PolarisRetryLoadBalancerInterceptor extends RetryLoadBalancerInterc
 
 	private final RouterContextFactory routerContextFactory;
 
+	private final EnhancedPluginRunner enhancedPluginRunner;
+
 	public PolarisRetryLoadBalancerInterceptor(LoadBalancerClient loadBalancer, LoadBalancerRetryProperties lbProperties,
-			LoadBalancerRequestFactory requestFactory, LoadBalancedRetryFactory lbRetryFactory, RouterContextFactory routerContextFactory) {
+			LoadBalancerRequestFactory requestFactory, LoadBalancedRetryFactory lbRetryFactory,
+			RouterContextFactory routerContextFactory, EnhancedPluginRunner enhancedPluginRunner) {
 		super(loadBalancer, lbProperties, requestFactory, lbRetryFactory);
 		this.loadBalancer = loadBalancer;
 		this.lbProperties = lbProperties;
 		this.requestFactory = requestFactory;
 		this.lbRetryFactory = lbRetryFactory;
 		this.routerContextFactory = routerContextFactory;
+		this.enhancedPluginRunner = enhancedPluginRunner;
 	}
 
 	@Override
@@ -111,8 +118,17 @@ public class PolarisRetryLoadBalancerInterceptor extends RetryLoadBalancerInterc
 			}
 
 			//3. execute request
-			ClientHttpResponse response = loadBalancer.execute(serviceName, serviceInstance,
-					requestFactory.createRequest(request, body, execution));
+			ClientHttpResponse response;
+			if (enhancedPluginRunner != null) {
+				EnhancedRestTemplateWrapInterceptor enhancedRestTemplatePluginRunnerInterceptor =
+						new EnhancedRestTemplateWrapInterceptor(enhancedPluginRunner, (RibbonLoadBalancerClient) loadBalancer);
+				response = enhancedRestTemplatePluginRunnerInterceptor.intercept(
+						request, serviceName, this.requestFactory.createRequest(request, body, execution), routerContext);
+			}
+			else {
+				response = loadBalancer.execute(serviceName, serviceInstance,
+						requestFactory.createRequest(request, body, execution));
+			}
 
 			//4. set router context to response
 			RouterContextHelper.setRouterContextToResponse(routerContext, response);

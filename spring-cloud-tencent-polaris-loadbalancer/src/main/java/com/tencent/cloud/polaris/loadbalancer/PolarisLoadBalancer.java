@@ -23,6 +23,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import com.netflix.client.config.IClientConfig;
+import com.netflix.loadbalancer.ConfigurationBasedServerList;
 import com.netflix.loadbalancer.DynamicServerListLoadBalancer;
 import com.netflix.loadbalancer.IPing;
 import com.netflix.loadbalancer.IRule;
@@ -59,6 +60,8 @@ public class PolarisLoadBalancer extends DynamicServerListLoadBalancer<Server> {
 	private final PolarisLoadBalancerProperties polarisLoadBalancerProperties;
 
 	private final InstanceTransformer instanceTransformer;
+	// when configuring by user, use origin getReachableServers and getAllServers to get instances.
+	private final boolean isPolarisDefaultServerList;
 
 	public PolarisLoadBalancer(IClientConfig config, IRule rule, IPing ping, ServerList<Server> serverList,
 			ConsumerAPI consumerAPI, PolarisLoadBalancerProperties properties, InstanceTransformer instanceTransformer) {
@@ -66,6 +69,8 @@ public class PolarisLoadBalancer extends DynamicServerListLoadBalancer<Server> {
 		this.consumerAPI = consumerAPI;
 		this.polarisLoadBalancerProperties = properties;
 		this.instanceTransformer = instanceTransformer;
+		// PolarisDiscoveryRibbonAutoConfiguration will not load, so default server list is ConfigurationBasedServerList.
+		this.isPolarisDefaultServerList = serverList instanceof ConfigurationBasedServerList;
 	}
 
 	@Override
@@ -79,10 +84,18 @@ public class PolarisLoadBalancer extends DynamicServerListLoadBalancer<Server> {
 		if (THREAD_CACHE_SERVERS.get() != null) {
 			return THREAD_CACHE_SERVERS.get();
 		}
-		return getReachableServersWithoutCache();
+		if (isPolarisDefaultServerList) {
+			return getReachableServersWithoutCache();
+		}
+		else {
+			return super.getReachableServers();
+		}
 	}
 
 	public List<Server> getReachableServersWithoutCache() {
+		if (!isPolarisDefaultServerList) {
+			return super.getReachableServers();
+		}
 		ServiceInstances serviceInstances;
 		if (polarisLoadBalancerProperties.getDiscoveryType().equals(ContextConstant.POLARIS)) {
 			serviceInstances = getPolarisDiscoveryServiceInstances();
@@ -142,7 +155,12 @@ public class PolarisLoadBalancer extends DynamicServerListLoadBalancer<Server> {
 
 	@Override
 	public List<Server> getAllServers() {
-		return getReachableServers();
+		if (isPolarisDefaultServerList) {
+			return getReachableServers();
+		}
+		else {
+			return super.getAllServers();
+		}
 	}
 
 	/**

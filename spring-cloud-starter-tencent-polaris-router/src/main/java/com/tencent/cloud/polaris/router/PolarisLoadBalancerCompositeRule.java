@@ -195,6 +195,8 @@ public class PolarisLoadBalancerCompositeRule extends AbstractLoadBalancerRule {
 			filteredInstances.add(new PolarisServer(serviceInstances, instance));
 		}
 
+		filteredInstances.addAll(LoadBalancerUtils.filterNonPolarisServers(allServers));
+
 		return filteredInstances;
 	}
 

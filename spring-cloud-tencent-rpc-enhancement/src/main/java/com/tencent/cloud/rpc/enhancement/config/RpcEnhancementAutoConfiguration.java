@@ -104,9 +104,9 @@ public class RpcEnhancementAutoConfiguration {
 	@Lazy
 	public EnhancedPluginRunner enhancedFeignPluginRunner(
 			@Autowired(required = false) List<EnhancedPlugin> enhancedPlugins,
-			@Autowired(required = false) Registration registration,
+			@Autowired(required = false) List<Registration> registrations,
 			PolarisSDKContextManager polarisSDKContextManager) {
-		return new DefaultEnhancedPluginRunner(enhancedPlugins, registration, polarisSDKContextManager.getSDKContext());
+		return new DefaultEnhancedPluginRunner(enhancedPlugins, registrations, polarisSDKContextManager.getSDKContext());
 	}
 
 	@Bean

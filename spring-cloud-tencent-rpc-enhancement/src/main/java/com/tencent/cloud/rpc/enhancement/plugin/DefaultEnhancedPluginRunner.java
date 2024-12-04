@@ -44,6 +44,16 @@ public class DefaultEnhancedPluginRunner implements EnhancedPluginRunner {
 
 	public DefaultEnhancedPluginRunner(
 			List<EnhancedPlugin> enhancedPlugins,
+			List<Registration> registration,
+			SDKContext sdkContext
+	) {
+		this(enhancedPlugins,
+				getPolarisRegistration(registration),
+				sdkContext);
+	}
+
+	public DefaultEnhancedPluginRunner(
+			List<EnhancedPlugin> enhancedPlugins,
 			Registration registration,
 			SDKContext sdkContext
 	) {
@@ -89,4 +99,17 @@ public class DefaultEnhancedPluginRunner implements EnhancedPluginRunner {
 		return this.localServiceInstance;
 	}
 
+	private static Registration getPolarisRegistration(List<Registration> registration) {
+
+		if (CollectionUtils.isEmpty(registration)) {
+			return null;
+		}
+
+		for (Registration reg : registration) {
+			if (reg.getClass().getCanonicalName().equals("com.tencent.cloud.polaris.registry.PolarisRegistration")) {
+				return reg;
+			}
+		}
+		return registration.get(0);
+	}
 }

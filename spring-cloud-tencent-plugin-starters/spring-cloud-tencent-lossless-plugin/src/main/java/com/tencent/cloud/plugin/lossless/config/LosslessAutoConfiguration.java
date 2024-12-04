@@ -17,6 +17,8 @@
 
 package com.tencent.cloud.plugin.lossless.config;
 
+import java.util.List;
+
 import com.tencent.cloud.plugin.lossless.LosslessRegistryAspect;
 import com.tencent.cloud.polaris.context.ConditionalOnPolarisEnabled;
 import com.tencent.cloud.polaris.context.PolarisSDKContextManager;
@@ -43,11 +45,37 @@ public class LosslessAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	public LosslessRegistryAspect losslessRegistryAspect(
-			ServiceRegistry serviceRegistry, Registration registration, PolarisContextProperties properties,
-			LosslessProperties losslessProperties, PolarisSDKContextManager polarisSDKContextManager,
-			RegistrationTransformer registrationTransformer) {
-		return new LosslessRegistryAspect(serviceRegistry, registration, properties, losslessProperties,
-				polarisSDKContextManager, registrationTransformer);
+			List<ServiceRegistry> serviceRegistryList, List<Registration> registrationList, List<RegistrationTransformer> registrationTransformerList,
+			PolarisContextProperties properties, LosslessProperties losslessProperties, PolarisSDKContextManager polarisSDKContextManager) {
+		// if contains multiple service registry, we need to find the polaris service registry
+		ServiceRegistry targetServiceRegistry = null;
+		Registration targetRegistration = null;
+		RegistrationTransformer targetRegistrationTransformer = null;
+		if (serviceRegistryList.size() == 1 && registrationList.size() == 1 && registrationTransformerList.size() == 1) {
+			targetServiceRegistry = serviceRegistryList.get(0);
+			targetRegistration = registrationList.get(0);
+			targetRegistrationTransformer = registrationTransformerList.get(0);
+		}
+		else {
+			for (ServiceRegistry serviceRegistry : serviceRegistryList) {
+				if (serviceRegistry.getClass().getSimpleName().contains("Polaris")) {
+					targetServiceRegistry = serviceRegistry;
+				}
+			}
+			for (Registration registration : registrationList) {
+				if (registration.getClass().getSimpleName().contains("Polaris")) {
+					targetRegistration = registration;
+				}
+			}
+			for (RegistrationTransformer registrationTransformer : registrationTransformerList) {
+				if (registrationTransformer.getClass().getSimpleName().contains("Polaris")) {
+					targetRegistrationTransformer = registrationTransformer;
+				}
+			}
+		}
+
+		return new LosslessRegistryAspect(targetServiceRegistry, targetRegistration, properties, losslessProperties,
+				polarisSDKContextManager, targetRegistrationTransformer);
 	}
 
 }

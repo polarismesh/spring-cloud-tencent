@@ -136,7 +136,7 @@ public final class PolarisEnhancedPluginUtils {
 			@Nullable String calleeServiceName, @Nullable String calleeHost, @Nullable Integer calleePort,
 			URI uri, @Nullable Integer statusCode, long delay, @Nullable Throwable exception) {
 
-		String governanceNamespace = MetadataContextHolder.get().getDisposableMetadata().get(ContextConstant.POLARIS_GOVERNANCE_TARGET_NAMESPACE);
+		String governanceNamespace = MetadataContextHolder.get().getDisposableMetadata().get(ContextConstant.POLARIS_GOVERNANCE_NAMESPACE);
 		if (StringUtils.isBlank(governanceNamespace)) {
 			governanceNamespace = MetadataContext.LOCAL_NAMESPACE;
 		}
