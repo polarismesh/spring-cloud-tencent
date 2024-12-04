@@ -116,7 +116,12 @@ public class EnhancedFeignClient implements Client {
 		}
 		catch (CallAbortedException callAbortedException) {
 			// circuit breaker fallback, not need to run post/exception enhanced plugins.
-			return getFallbackResponse(callAbortedException.getFallbackInfo());
+			if (callAbortedException.getFallbackInfo() != null) {
+				return getFallbackResponse(callAbortedException.getFallbackInfo());
+			}
+			else {
+				throw callAbortedException;
+			}
 		}
 		catch (IOException origin) {
 			enhancedPluginContext.setDelay(System.currentTimeMillis() - startMillis);
