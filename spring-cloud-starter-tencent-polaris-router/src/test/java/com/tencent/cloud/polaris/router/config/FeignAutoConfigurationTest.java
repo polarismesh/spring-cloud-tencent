@@ -21,7 +21,7 @@ package com.tencent.cloud.polaris.router.config;
 import com.tencent.cloud.common.metadata.config.MetadataAutoConfiguration;
 import com.tencent.cloud.common.util.ApplicationContextAwareUtils;
 import com.tencent.cloud.polaris.context.config.PolarisContextAutoConfiguration;
-import com.tencent.cloud.polaris.router.feign.RouterLabelFeignInterceptor;
+import com.tencent.cloud.polaris.router.instrument.feign.RouterLabelFeignInterceptor;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
