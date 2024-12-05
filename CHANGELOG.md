@@ -39,3 +39,4 @@
 - [feat:support concurrency rate limit.](https://github.com/Tencent/spring-cloud-tencent/pull/1454)
 - [feat:support auth.](https://github.com/Tencent/spring-cloud-tencent/pull/1459)
 - [feat:upgrade trace plugin.](https://github.com/Tencent/spring-cloud-tencent/pull/1470)
+- [feat:support smooth upgrade from tsf.](https://github.com/Tencent/spring-cloud-tencent/pull/1474)
