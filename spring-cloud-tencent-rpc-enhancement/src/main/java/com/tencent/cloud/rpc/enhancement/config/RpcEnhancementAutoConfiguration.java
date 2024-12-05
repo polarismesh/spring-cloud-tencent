@@ -94,7 +94,6 @@ public class RpcEnhancementAutoConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnMissingBean
 	@ConditionalOnClass(name = "com.tencent.cloud.polaris.registry.PolarisRegistration")
 	public RegistrationTransformer registrationTransformer() {
 		return new PolarisRegistrationTransformer();

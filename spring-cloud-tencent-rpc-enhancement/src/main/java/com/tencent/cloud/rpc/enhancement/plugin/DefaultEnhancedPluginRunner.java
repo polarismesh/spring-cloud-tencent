@@ -104,9 +104,8 @@ public class DefaultEnhancedPluginRunner implements EnhancedPluginRunner {
 		if (CollectionUtils.isEmpty(registration)) {
 			return null;
 		}
-
 		for (Registration reg : registration) {
-			if (reg.getClass().getCanonicalName().equals("com.tencent.cloud.polaris.registry.PolarisRegistration")) {
+			if ("com.tencent.cloud.polaris.registry.PolarisRegistration".equals(reg.getClass().getName())) {
 				return reg;
 			}
 		}

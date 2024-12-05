@@ -23,6 +23,7 @@ import java.util.stream.Stream;
 
 import com.netflix.client.config.DefaultClientConfigImpl;
 import com.netflix.client.config.IClientConfig;
+import com.netflix.loadbalancer.ConfigurationBasedServerList;
 import com.netflix.loadbalancer.DummyPing;
 import com.netflix.loadbalancer.Server;
 import com.netflix.loadbalancer.ServerList;
@@ -103,7 +104,8 @@ public class PolarisLoadBalancerTest {
 					.thenReturn("TestServer");
 
 			PolarisLoadBalancerProperties properties = new PolarisLoadBalancerProperties();
-			ServerList<Server> emptyServerList = new StaticServerList<>();
+			ConfigurationBasedServerList emptyServerList = new ConfigurationBasedServerList();
+			emptyServerList.initWithNiwsConfig(config);
 
 			PolarisLoadBalancer balancer = new PolarisLoadBalancer(config, rule, new DummyPing(), emptyServerList,
 					consumerAPI, properties, null);
