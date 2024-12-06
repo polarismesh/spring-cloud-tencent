@@ -18,11 +18,11 @@
 package com.tencent.cloud.rpc.enhancement.config;
 
 import com.tencent.cloud.polaris.context.config.PolarisContextAutoConfiguration;
-import com.tencent.cloud.rpc.enhancement.feign.EnhancedFeignBeanPostProcessor;
+import com.tencent.cloud.rpc.enhancement.instrument.feign.EnhancedFeignBeanPostProcessor;
+import com.tencent.cloud.rpc.enhancement.instrument.resttemplate.EnhancedRestTemplateInterceptor;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginRunner;
 import com.tencent.cloud.rpc.enhancement.plugin.reporter.ExceptionPolarisReporter;
 import com.tencent.cloud.rpc.enhancement.plugin.reporter.SuccessPolarisReporter;
-import com.tencent.cloud.rpc.enhancement.resttemplate.EnhancedRestTemplateInterceptor;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;

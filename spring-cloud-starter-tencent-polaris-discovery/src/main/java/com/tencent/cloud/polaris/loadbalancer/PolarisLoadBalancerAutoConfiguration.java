@@ -21,7 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.tencent.cloud.polaris.context.ConditionalOnPolarisEnabled;
-import com.tencent.cloud.rpc.enhancement.resttemplate.EnhancedRestTemplateInterceptor;
+import com.tencent.cloud.rpc.enhancement.instrument.resttemplate.EnhancedRestTemplateInterceptor;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;

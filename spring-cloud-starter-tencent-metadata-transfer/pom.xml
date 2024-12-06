@@ -17,11 +17,6 @@
 		<!-- Spring Cloud Tencent dependencies start -->
 		<dependency>
 			<groupId>com.tencent.cloud</groupId>
-			<artifactId>spring-cloud-tencent-commons</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>com.tencent.cloud</groupId>
 			<artifactId>spring-cloud-tencent-rpc-enhancement</artifactId>
 		</dependency>
 
@@ -56,7 +51,7 @@
 			<artifactId>spring-cloud-starter-loadbalancer</artifactId>
 			<scope>test</scope>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>com.tencent.polaris</groupId>
 			<artifactId>polaris-test-mock-discovery</artifactId>
