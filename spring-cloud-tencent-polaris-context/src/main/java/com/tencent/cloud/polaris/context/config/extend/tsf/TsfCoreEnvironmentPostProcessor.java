@@ -109,8 +109,6 @@ public final class TsfCoreEnvironmentPostProcessor implements EnvironmentPostPro
 					LOGGER.error("tsf_namespace_id is empty");
 				}
 
-				defaultProperties.put("tsf_consul_enable", "true");
-
 				// context
 				defaultProperties.put("spring.cloud.polaris.enabled", "true");
 				defaultProperties.put("spring.cloud.polaris.discovery.enabled", "false");
