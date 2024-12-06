@@ -1,7 +1,7 @@
 /*
- * Tencent is pleased to support the open source community by making Spring Cloud Tencent available.
+ * Tencent is pleased to support the open source community by making spring-cloud-tencent available.
  *
- * Copyright (C) 2019 THL A29 Limited, a Tencent company. All rights reserved.
+ * Copyright (C) 2021 THL A29 Limited, a Tencent company. All rights reserved.
  *
  * Licensed under the BSD 3-Clause License (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,8 +44,8 @@ import org.springframework.web.reactive.DispatcherHandler;
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnProperty(name = "spring.cloud.gateway.enabled", matchIfMissing = true)
-@AutoConfigureAfter({ReactivePolarisCircuitBreakerAutoConfiguration.class })
-@ConditionalOnClass({ DispatcherHandler.class, ReactivePolarisCircuitBreakerAutoConfiguration.class,
+@AutoConfigureAfter({ReactivePolarisCircuitBreakerAutoConfiguration.class})
+@ConditionalOnClass({DispatcherHandler.class, ReactivePolarisCircuitBreakerAutoConfiguration.class,
 		ReactiveCircuitBreakerFactory.class, ReactivePolarisCircuitBreakerFactory.class, GatewayAutoConfiguration.class})
 public class GatewayPolarisCircuitBreakerAutoConfiguration {
 
