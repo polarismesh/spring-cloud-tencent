@@ -1,7 +1,7 @@
 /*
- * Tencent is pleased to support the open source community by making Spring Cloud Tencent available.
+ * Tencent is pleased to support the open source community by making spring-cloud-tencent available.
  *
- * Copyright (C) 2019 THL A29 Limited, a Tencent company. All rights reserved.
+ * Copyright (C) 2021 THL A29 Limited, a Tencent company. All rights reserved.
  *
  * Licensed under the BSD 3-Clause License (the "License");
  * you may not use this file except in compliance with the License.
@@ -62,9 +62,12 @@ public class PolarisCircuitBreakerEndpointTest {
 			ruleBuilder.setEnable(true);
 			ruleBuilder.setLevel(CircuitBreakerProto.Level.METHOD);
 			CircuitBreakerProto.RuleMatcher.Builder rmBuilder = CircuitBreakerProto.RuleMatcher.newBuilder();
-			rmBuilder.setDestination(CircuitBreakerProto.RuleMatcher.DestinationService.newBuilder().setNamespace("default").setService("svc2").setMethod(
-					ModelProto.MatchString.newBuilder().setValue(StringValue.newBuilder().setValue("*").build()).build()).build());
-			rmBuilder.setSource(CircuitBreakerProto.RuleMatcher.SourceService.newBuilder().setNamespace("*").setService("*").build());
+			rmBuilder.setDestination(CircuitBreakerProto.RuleMatcher.DestinationService.newBuilder()
+					.setNamespace("default").setService("svc2").setMethod(
+							ModelProto.MatchString.newBuilder().setValue(StringValue.newBuilder().setValue("*").build())
+									.build()).build());
+			rmBuilder.setSource(CircuitBreakerProto.RuleMatcher.SourceService.newBuilder().setNamespace("*")
+					.setService("*").build());
 			ruleBuilder.setRuleMatcher(rmBuilder.build());
 			return CircuitBreakerProto.CircuitBreaker.newBuilder().addRules(ruleBuilder.build()).build().getRulesList();
 		});
