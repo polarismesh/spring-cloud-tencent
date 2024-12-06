@@ -1,7 +1,7 @@
 /*
- * Tencent is pleased to support the open source community by making Spring Cloud Tencent available.
+ * Tencent is pleased to support the open source community by making spring-cloud-tencent available.
  *
- * Copyright (C) 2019 THL A29 Limited, a Tencent company. All rights reserved.
+ * Copyright (C) 2021 THL A29 Limited, a Tencent company. All rights reserved.
  *
  * Licensed under the BSD 3-Clause License (the "License");
  * you may not use this file except in compliance with the License.
@@ -71,7 +71,8 @@ public class ExceptionCircuitBreakerReporter implements EnhancedPlugin {
 		}
 
 		EnhancedRequestContext request = context.getRequest();
-		ServiceInstance serviceInstance = Optional.ofNullable(context.getTargetServiceInstance()).orElse(new DefaultServiceInstance());
+		ServiceInstance serviceInstance = Optional.ofNullable(context.getTargetServiceInstance())
+				.orElse(new DefaultServiceInstance());
 
 		ResourceStat resourceStat = PolarisEnhancedPluginUtils.createInstanceResourceStat(
 				serviceInstance.getServiceId(),
@@ -84,7 +85,8 @@ public class ExceptionCircuitBreakerReporter implements EnhancedPlugin {
 		);
 
 		LOG.debug("Will report CircuitBreaker ResourceStat of {}. Request=[{} {}]. Response=[{}]. Delay=[{}]ms.",
-				resourceStat.getRetStatus().name(), request.getHttpMethod().name(), request.getUrl().getPath(), context.getThrowable().getMessage(), context.getDelay());
+				resourceStat.getRetStatus().name(), request.getHttpMethod().name(), request.getUrl()
+						.getPath(), context.getThrowable().getMessage(), context.getDelay());
 
 		circuitBreakAPI.report(resourceStat);
 
