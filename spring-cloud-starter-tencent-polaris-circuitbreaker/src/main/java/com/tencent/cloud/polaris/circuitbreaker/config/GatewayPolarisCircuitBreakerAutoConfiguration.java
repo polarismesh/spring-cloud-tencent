@@ -18,7 +18,7 @@
 package com.tencent.cloud.polaris.circuitbreaker.config;
 
 import com.tencent.cloud.polaris.circuitbreaker.ReactivePolarisCircuitBreakerFactory;
-import com.tencent.cloud.polaris.circuitbreaker.gateway.PolarisCircuitBreakerFilterFactory;
+import com.tencent.cloud.polaris.circuitbreaker.instrument.gateway.PolarisCircuitBreakerFilterFactory;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,8 +44,8 @@ import org.springframework.web.reactive.DispatcherHandler;
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnProperty(name = "spring.cloud.gateway.enabled", matchIfMissing = true)
-@AutoConfigureAfter({ReactivePolarisCircuitBreakerAutoConfiguration.class })
-@ConditionalOnClass({ DispatcherHandler.class, ReactivePolarisCircuitBreakerAutoConfiguration.class,
+@AutoConfigureAfter({ReactivePolarisCircuitBreakerAutoConfiguration.class})
+@ConditionalOnClass({DispatcherHandler.class, ReactivePolarisCircuitBreakerAutoConfiguration.class,
 		ReactiveCircuitBreakerFactory.class, ReactivePolarisCircuitBreakerFactory.class, GatewayAutoConfiguration.class})
 public class GatewayPolarisCircuitBreakerAutoConfiguration {
 

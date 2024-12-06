@@ -14,27 +14,7 @@
 	<dependencies>
 		<dependency>
 			<groupId>com.tencent.cloud</groupId>
-			<artifactId>spring-cloud-starter-tencent-polaris-discovery</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>com.tencent.cloud</groupId>
-			<artifactId>spring-cloud-starter-tencent-polaris-config</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>com.tencent.cloud</groupId>
-			<artifactId>spring-cloud-starter-tencent-polaris-contract</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>com.tencent.cloud</groupId>
-			<artifactId>spring-cloud-starter-tencent-polaris-ratelimit</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>com.tencent.cloud</groupId>
-			<artifactId>spring-cloud-starter-tencent-polaris-auth</artifactId>
+			<artifactId>spring-cloud-starter-tencent-all</artifactId>
 		</dependency>
 
 		<dependency>
@@ -48,14 +28,6 @@
 		<dependency>
 			<groupId>org.springframework.cloud</groupId>
 			<artifactId>spring-cloud-starter-bootstrap</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.tencent.cloud</groupId>
-			<artifactId>spring-cloud-starter-tencent-metadata-transfer</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.tencent.cloud</groupId>
-			<artifactId>spring-cloud-starter-tencent-trace-plugin</artifactId>
 		</dependency>
 	</dependencies>
 
