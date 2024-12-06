@@ -21,7 +21,7 @@ import java.util.function.Function;
 
 import com.tencent.cloud.polaris.circuitbreaker.common.PolarisCircuitBreakerConfigBuilder;
 import com.tencent.cloud.polaris.circuitbreaker.common.PolarisResultToErrorCode;
-import com.tencent.cloud.polaris.circuitbreaker.reactor.PolarisCircuitBreakerReactorTransformer;
+import com.tencent.cloud.polaris.circuitbreaker.instrument.reactor.PolarisCircuitBreakerReactorTransformer;
 import com.tencent.cloud.polaris.circuitbreaker.util.PolarisCircuitBreakerUtils;
 import com.tencent.polaris.api.core.ConsumerAPI;
 import com.tencent.polaris.api.pojo.ServiceKey;
