@@ -37,3 +37,4 @@
 - [fix:fix auth not effected bug.](https://github.com/Tencent/spring-cloud-tencent/pull/1465)
 - [feat:upgrade trace plugin.](https://github.com/Tencent/spring-cloud-tencent/pull/1469)
 - [feat:support smooth upgrade from tsf.](https://github.com/Tencent/spring-cloud-tencent/pull/1473)
+- [fix:fix caller disposable metadata handle when using tracing.](https://github.com/Tencent/spring-cloud-tencent/pull/1477)
