@@ -166,9 +166,11 @@ public final class MetadataContextHolder {
 			}
 			// caller disposable metadata to caller custom disposable metadata
 			MetadataContainer metadataContainerDownstream = metadataManager.getMetadataContainer(MetadataType.CUSTOM, false);
+			MetadataContainer callerCustomMetadataContainer = metadataManager.getMetadataContainer(MetadataType.CUSTOM, true);
 			if (!CollectionUtils.isEmpty(dynamicDisposableMetadata)) {
 				for (Map.Entry<String, String> entry : dynamicDisposableMetadata.entrySet()) {
 					metadataContainerDownstream.putMetadataStringValue(entry.getKey(), entry.getValue(), TransitiveType.NONE);
+					callerCustomMetadataContainer.putMetadataStringValue(entry.getKey(), entry.getValue(), TransitiveType.DISPOSABLE);
 				}
 			}
 			// caller application metadata to caller application disposable metadata
