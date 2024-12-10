@@ -39,3 +39,4 @@
 - [feat:add admin http handler.](https://github.com/Tencent/spring-cloud-tencent/pull/1450)
 - [feat:upgrade spring cloud 2023 version.](https://github.com/Tencent/spring-cloud-tencent/pull/1451)
 - [feat:support concurrency rate limit.](https://github.com/Tencent/spring-cloud-tencent/pull/1455)
+- [feat:support auth.](https://github.com/Tencent/spring-cloud-tencent/pull/1479)
