@@ -25,13 +25,13 @@ import com.tencent.cloud.polaris.router.config.properties.PolarisMetadataRouterP
 import com.tencent.cloud.polaris.router.config.properties.PolarisNamespaceRouterProperties;
 import com.tencent.cloud.polaris.router.config.properties.PolarisNearByRouterProperties;
 import com.tencent.cloud.polaris.router.config.properties.PolarisRuleBasedRouterProperties;
+import com.tencent.cloud.polaris.router.instrument.resttemplate.RouterLabelRestTemplateInterceptor;
+import com.tencent.cloud.polaris.router.instrument.scg.RouterLabelGlobalFilter;
 import com.tencent.cloud.polaris.router.interceptor.MetadataRouterRequestInterceptor;
 import com.tencent.cloud.polaris.router.interceptor.NamespaceRouterRequestInterceptor;
 import com.tencent.cloud.polaris.router.interceptor.NearbyRouterRequestInterceptor;
 import com.tencent.cloud.polaris.router.interceptor.RuleBasedRouterRequestInterceptor;
-import com.tencent.cloud.polaris.router.resttemplate.RouterLabelRestTemplateInterceptor;
-import com.tencent.cloud.polaris.router.scg.RouterLabelGlobalFilter;
-import com.tencent.cloud.rpc.enhancement.resttemplate.EnhancedRestTemplateInterceptor;
+import com.tencent.cloud.rpc.enhancement.instrument.resttemplate.EnhancedRestTemplateInterceptor;
 
 import org.springframework.beans.factory.SmartInitializingSingleton;
 import org.springframework.beans.factory.annotation.Autowired;
