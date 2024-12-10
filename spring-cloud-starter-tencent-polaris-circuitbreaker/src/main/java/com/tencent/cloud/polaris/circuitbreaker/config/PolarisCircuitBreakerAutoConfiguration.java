@@ -22,9 +22,9 @@ import java.util.List;
 
 import com.tencent.cloud.polaris.circuitbreaker.PolarisCircuitBreakerFactory;
 import com.tencent.cloud.polaris.circuitbreaker.common.CircuitBreakerConfigModifier;
+import com.tencent.cloud.polaris.circuitbreaker.instrument.resttemplate.PolarisCircuitBreakerRestTemplateBeanPostProcessor;
 import com.tencent.cloud.polaris.circuitbreaker.reporter.ExceptionCircuitBreakerReporter;
 import com.tencent.cloud.polaris.circuitbreaker.reporter.SuccessCircuitBreakerReporter;
-import com.tencent.cloud.polaris.circuitbreaker.resttemplate.PolarisCircuitBreakerRestTemplateBeanPostProcessor;
 import com.tencent.cloud.polaris.context.PolarisSDKContextManager;
 import com.tencent.cloud.rpc.enhancement.config.RpcEnhancementAutoConfiguration;
 import com.tencent.cloud.rpc.enhancement.config.RpcEnhancementReporterProperties;
