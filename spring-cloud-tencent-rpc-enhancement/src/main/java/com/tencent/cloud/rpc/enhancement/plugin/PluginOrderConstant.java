@@ -63,15 +63,23 @@ public class PluginOrderConstant {
 		 * {@link com.tencent.cloud.plugin.trace.TraceMetadataEnhancedPlugin}.
 		 */
 		public static final int CONSUMER_TRACE_METADATA_PLUGIN_ORDER = CONSUMER_TRANSFER_METADATA_PLUGIN_ORDER - 1;
+
+		/**
+		 * order for
+		 * {@link com.tencent.cloud.plugin.trace.TraceClientPreEnhancedPlugin}
+		 * and
+		 * {@link com.tencent.cloud.plugin.trace.TraceClientFinallyEnhancedPlugin}.
+		 */
+		public static final int TRACE_CLIENT_PLUGIN_ORDER = Ordered.HIGHEST_PRECEDENCE + 3;
 	}
 
 	public static class ServerPluginOrder {
 
 		/**
 		 * order for
-		 * {@link com.tencent.cloud.plugin.trace.TraceServerMetadataEnhancedPlugin}.
+		 * {@link com.tencent.cloud.plugin.trace.TraceServerPreEnhancedPlugin}.
 		 */
-		public static final int PROVIDER_TRACE_METADATA_PLUGIN_ORDER = Ordered.HIGHEST_PRECEDENCE + 1;
+		public static final int TRACE_SERVER_PRE_PLUGIN_ORDER = Ordered.HIGHEST_PRECEDENCE + 1;
 	}
 
 }

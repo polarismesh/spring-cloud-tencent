@@ -15,13 +15,25 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package com.tencent.cloud.plugin.trace;
+package com.tencent.cloud.plugin.trace.attribute;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginContext;
 
 public interface SpanAttributesProvider {
 
-	Map<String, String> getConsumerSpanAttributes(EnhancedPluginContext context);
+	/**
+	 * Key of OT scope object to save in EnhancedPluginContext.
+	 */
+	String OT_SCOPE_KEY = "OT_SCOPE_KEY";
+
+	default Map<String, String> getServerSpanAttributes(EnhancedPluginContext context) {
+		return new HashMap<>();
+	}
+
+	default Map<String, String> getClientBaggageAttributes(EnhancedPluginContext context) {
+		return new HashMap<>();
+	}
 }

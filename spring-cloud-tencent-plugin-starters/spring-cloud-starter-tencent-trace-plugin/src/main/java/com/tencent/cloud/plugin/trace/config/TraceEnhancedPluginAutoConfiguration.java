@@ -17,12 +17,19 @@
 
 package com.tencent.cloud.plugin.trace.config;
 
-import com.tencent.cloud.plugin.trace.SpanAttributesProvider;
-import com.tencent.cloud.plugin.trace.TraceServerMetadataEnhancedPlugin;
+import java.util.List;
+
+import com.tencent.cloud.plugin.trace.TraceClientFinallyEnhancedPlugin;
+import com.tencent.cloud.plugin.trace.TraceClientPreEnhancedPlugin;
+import com.tencent.cloud.plugin.trace.TraceServerPreEnhancedPlugin;
+import com.tencent.cloud.plugin.trace.attribute.PolarisSpanAttributesProvider;
+import com.tencent.cloud.plugin.trace.attribute.SpanAttributesProvider;
+import com.tencent.cloud.plugin.trace.attribute.tsf.TsfSpanAttributesProvider;
 import com.tencent.cloud.polaris.context.ConditionalOnPolarisEnabled;
 import com.tencent.cloud.polaris.context.PolarisSDKContextManager;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -34,9 +41,31 @@ import org.springframework.context.annotation.Configuration;
 public class TraceEnhancedPluginAutoConfiguration {
 
 	@Bean
-	public TraceServerMetadataEnhancedPlugin traceServerMetadataEnhancedPlugin(
-			PolarisSDKContextManager polarisSDKContextManager, @Autowired(required = false) SpanAttributesProvider spanAttributesProvider) {
-		return new TraceServerMetadataEnhancedPlugin(polarisSDKContextManager, spanAttributesProvider);
+	public TraceServerPreEnhancedPlugin traceServerPreEnhancedPlugin(
+			PolarisSDKContextManager polarisSDKContextManager, @Autowired(required = false) List<SpanAttributesProvider> spanAttributesProviderList) {
+		return new TraceServerPreEnhancedPlugin(polarisSDKContextManager, spanAttributesProviderList);
 	}
 
+	@Bean
+	public TraceClientPreEnhancedPlugin traceClientPreEnhancedPlugin(
+			PolarisSDKContextManager polarisSDKContextManager, @Autowired(required = false) List<SpanAttributesProvider> spanAttributesProviderList) {
+		return new TraceClientPreEnhancedPlugin(polarisSDKContextManager, spanAttributesProviderList);
+	}
+
+	@Bean
+	public TraceClientFinallyEnhancedPlugin traceClientFinallyEnhancedPlugin() {
+		return new TraceClientFinallyEnhancedPlugin();
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	public PolarisSpanAttributesProvider polarisSpanAttributesProvider() {
+		return new PolarisSpanAttributesProvider();
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	public TsfSpanAttributesProvider tsfClientSpanAttributesProvider() {
+		return new TsfSpanAttributesProvider();
+	}
 }

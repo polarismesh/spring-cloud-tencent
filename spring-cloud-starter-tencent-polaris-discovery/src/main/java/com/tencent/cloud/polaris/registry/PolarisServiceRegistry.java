@@ -25,6 +25,7 @@ import java.util.concurrent.ScheduledExecutorService;
 
 import com.tencent.cloud.common.metadata.StaticMetadataManager;
 import com.tencent.cloud.common.util.OkHttpUtil;
+import com.tencent.cloud.common.util.OtUtils;
 import com.tencent.cloud.polaris.PolarisDiscoveryProperties;
 import com.tencent.cloud.polaris.context.PolarisSDKContextManager;
 import com.tencent.cloud.polaris.discovery.PolarisDiscoveryHandler;
@@ -110,6 +111,7 @@ public class PolarisServiceRegistry implements ServiceRegistry<PolarisRegistrati
 		InstanceRegisterRequest instanceRegisterRequest = new InstanceRegisterRequest();
 		instanceRegisterRequest.setNamespace(polarisDiscoveryProperties.getNamespace());
 		instanceRegisterRequest.setService(serviceId);
+		OtUtils.setOtServiceNameIfNeeded(serviceId);
 		instanceRegisterRequest.setHost(registration.getHost());
 		instanceRegisterRequest.setPort(registration.getPort());
 		instanceRegisterRequest.setWeight(polarisDiscoveryProperties.getWeight());
