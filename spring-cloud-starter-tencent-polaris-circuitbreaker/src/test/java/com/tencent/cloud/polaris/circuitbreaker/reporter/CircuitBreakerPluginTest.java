@@ -18,20 +18,22 @@
 package com.tencent.cloud.polaris.circuitbreaker.reporter;
 
 import java.net.URI;
+import java.util.HashMap;
 
-import com.tencent.cloud.common.constant.ContextConstant;
 import com.tencent.cloud.common.metadata.MetadataContext;
-import com.tencent.cloud.common.metadata.MetadataContextHolder;
 import com.tencent.cloud.common.util.ApplicationContextAwareUtils;
 import com.tencent.cloud.polaris.circuitbreaker.PolarisCircuitBreaker;
-import com.tencent.cloud.rpc.enhancement.config.RpcEnhancementReporterProperties;
+import com.tencent.cloud.polaris.circuitbreaker.common.PolarisCircuitBreakerConfigBuilder;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginContext;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginType;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedRequestContext;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedResponseContext;
+import com.tencent.polaris.api.core.ConsumerAPI;
+import com.tencent.polaris.api.pojo.CircuitBreakerStatus;
 import com.tencent.polaris.circuitbreak.api.CircuitBreakAPI;
-import com.tencent.polaris.client.api.SDKContext;
-import com.tencent.polaris.metadata.core.MetadataType;
+import com.tencent.polaris.circuitbreak.api.InvokeHandler;
+import com.tencent.polaris.circuitbreak.api.pojo.InvokeContext;
+import com.tencent.polaris.circuitbreak.client.exception.CallAbortedException;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -44,37 +46,38 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import org.springframework.cloud.client.DefaultServiceInstance;
+import org.springframework.cloud.client.circuitbreaker.CircuitBreakerFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 
 import static com.tencent.polaris.test.common.Consts.NAMESPACE_TEST;
 import static com.tencent.polaris.test.common.Consts.SERVICE_PROVIDER;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 /**
- * ExceptionCircuitBreakerReporterTest.
+ * CircuitBreakerPluginTest.
  *
- * @author sean yu
+ * @author Shedfree Wu
  */
 @ExtendWith(MockitoExtension.class)
-public class ExceptionCircuitBreakerReporterTest {
+public class CircuitBreakerPluginTest {
 
 	private static MockedStatic<ApplicationContextAwareUtils> mockedApplicationContextAwareUtils;
-	@Mock
-	private RpcEnhancementReporterProperties reporterProperties;
-	@Mock
-	private SDKContext sdkContext;
 	@InjectMocks
-	private ExceptionCircuitBreakerReporter exceptionCircuitBreakerReporter;
+	private CircuitBreakerPlugin circuitBreakerPlugin;
 	@Mock
 	private CircuitBreakAPI circuitBreakAPI;
 	@Mock
-	private PolarisCircuitBreaker polarisCircuitBreaker;
+	private CircuitBreakerFactory circuitBreakerFactory;
+
+	@Mock
+	private ConsumerAPI consumerAPI;
+
 
 	@BeforeAll
 	static void beforeAll() {
@@ -96,22 +99,22 @@ public class ExceptionCircuitBreakerReporterTest {
 
 	@Test
 	public void testGetName() {
-		assertThat(exceptionCircuitBreakerReporter.getName()).isEqualTo(ExceptionCircuitBreakerReporter.class.getName());
+		assertThat(circuitBreakerPlugin.getName()).isEqualTo(CircuitBreakerPlugin.class.getName());
 	}
 
 	@Test
 	public void testType() {
-		assertThat(exceptionCircuitBreakerReporter.getType()).isEqualTo(EnhancedPluginType.Client.EXCEPTION);
+		assertThat(circuitBreakerPlugin.getType()).isEqualTo(EnhancedPluginType.Client.PRE);
 	}
 
 	@Test
 	public void testRun() throws Throwable {
-		EnhancedPluginContext context = mock(EnhancedPluginContext.class);
-		// test not report
-		exceptionCircuitBreakerReporter.run(context);
-		verify(context, times(0)).getRequest();
+		when(circuitBreakAPI.makeInvokeHandler(any())).thenReturn(new MockInvokeHandler());
 
-		doReturn(true).when(reporterProperties).isEnabled();
+		PolarisCircuitBreakerConfigBuilder polarisCircuitBreakerConfigBuilder = new PolarisCircuitBreakerConfigBuilder();
+		PolarisCircuitBreaker polarisCircuitBreaker = new PolarisCircuitBreaker(polarisCircuitBreakerConfigBuilder.build(), consumerAPI, circuitBreakAPI);
+		when(circuitBreakerFactory.create(anyString())).thenReturn(polarisCircuitBreaker);
+
 
 		EnhancedPluginContext pluginContext = new EnhancedPluginContext();
 		EnhancedRequestContext request = EnhancedRequestContext.builder()
@@ -130,10 +133,10 @@ public class ExceptionCircuitBreakerReporterTest {
 		pluginContext.setTargetServiceInstance(serviceInstance, null);
 		pluginContext.setThrowable(new RuntimeException());
 
-		exceptionCircuitBreakerReporter.run(pluginContext);
-		exceptionCircuitBreakerReporter.getOrder();
-		exceptionCircuitBreakerReporter.getName();
-		exceptionCircuitBreakerReporter.getType();
+		assertThatThrownBy(() -> circuitBreakerPlugin.run(pluginContext)).isExactlyInstanceOf(CallAbortedException.class);
+		circuitBreakerPlugin.getOrder();
+		circuitBreakerPlugin.getName();
+		circuitBreakerPlugin.getType();
 	}
 
 	@Test
@@ -146,68 +149,23 @@ public class ExceptionCircuitBreakerReporterTest {
 		EnhancedPluginContext context = new EnhancedPluginContext();
 		context.setRequest(request);
 		context.setResponse(response);
-		exceptionCircuitBreakerReporter.handlerThrowable(context, new RuntimeException("Mock exception."));
+		circuitBreakerPlugin.handlerThrowable(context, new RuntimeException("Mock exception."));
 	}
 
-	@Test
-	public void testExistCircuitBreaker() throws Throwable {
+	static class MockInvokeHandler implements InvokeHandler {
+		@Override
+		public void acquirePermission() {
+			throw new CallAbortedException("mock", new CircuitBreakerStatus.FallbackInfo(0, new HashMap<>(), ""));
+		}
 
-		doReturn(true).when(reporterProperties).isEnabled();
+		@Override
+		public void onSuccess(InvokeContext.ResponseContext responseContext) {
 
-		EnhancedPluginContext pluginContext = new EnhancedPluginContext();
-		EnhancedRequestContext request = EnhancedRequestContext.builder()
-				.httpMethod(HttpMethod.GET)
-				.url(URI.create("http://0.0.0.0/"))
-				.build();
-		EnhancedResponseContext response = EnhancedResponseContext.builder()
-				.httpStatus(300)
-				.build();
-		DefaultServiceInstance serviceInstance = new DefaultServiceInstance();
-		serviceInstance.setServiceId(SERVICE_PROVIDER);
+		}
 
-		pluginContext.setRequest(request);
-		pluginContext.setResponse(response);
-		pluginContext.setTargetServiceInstance(serviceInstance, null);
-		pluginContext.setThrowable(new RuntimeException());
+		@Override
+		public void onError(InvokeContext.ResponseContext responseContext) {
 
-		MetadataContextHolder.get().getMetadataContainer(MetadataType.APPLICATION, true).
-				putMetadataObjectValue(ContextConstant.CircuitBreaker.POLARIS_CIRCUIT_BREAKER, polarisCircuitBreaker);
-		MetadataContextHolder.get().getMetadataContainer(MetadataType.APPLICATION, true).
-				putMetadataObjectValue(ContextConstant.CircuitBreaker.CIRCUIT_BREAKER_START_TIME, System.currentTimeMillis());
-
-		exceptionCircuitBreakerReporter.run(pluginContext);
-
-		response = EnhancedResponseContext.builder()
-				.httpStatus(500)
-				.build();
-		pluginContext.setResponse(response);
-		exceptionCircuitBreakerReporter.run(pluginContext);
-	}
-
-	@Test
-	public void testExistCircuitBreaker2() throws Throwable {
-
-		doReturn(true).when(reporterProperties).isEnabled();
-
-		EnhancedPluginContext pluginContext = new EnhancedPluginContext();
-		EnhancedRequestContext request = EnhancedRequestContext.builder()
-				.httpMethod(HttpMethod.GET)
-				.url(URI.create("http://0.0.0.0/"))
-				.build();
-		EnhancedResponseContext response = EnhancedResponseContext.builder()
-				.httpStatus(300)
-				.build();
-		DefaultServiceInstance serviceInstance = new DefaultServiceInstance();
-		serviceInstance.setServiceId(SERVICE_PROVIDER);
-
-		pluginContext.setRequest(request);
-		pluginContext.setResponse(response);
-		pluginContext.setTargetServiceInstance(serviceInstance, null);
-		pluginContext.setThrowable(new RuntimeException());
-		// not exist circuit CIRCUIT_BREAKER_START_TIME
-		MetadataContextHolder.get().getMetadataContainer(MetadataType.APPLICATION, true).
-				putMetadataObjectValue(ContextConstant.CircuitBreaker.POLARIS_CIRCUIT_BREAKER, polarisCircuitBreaker);
-
-		exceptionCircuitBreakerReporter.run(pluginContext);
+		}
 	}
 }

@@ -22,11 +22,8 @@ import java.net.URISyntaxException;
 import java.util.Collections;
 import java.util.Enumeration;
 
-import com.netflix.zuul.ZuulFilter;
 import com.netflix.zuul.context.RequestContext;
-import com.netflix.zuul.exception.ZuulException;
 import com.tencent.cloud.common.constant.ContextConstant;
-import com.tencent.cloud.common.constant.OrderConstant;
 import com.tencent.cloud.common.util.ZuulFilterUtils;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginContext;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginRunner;
@@ -35,49 +32,25 @@ import com.tencent.cloud.rpc.enhancement.plugin.EnhancedRequestContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.springframework.core.env.Environment;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
-import org.springframework.util.StringUtils;
-
-import static org.springframework.cloud.netflix.zuul.filters.support.FilterConstants.PRE_TYPE;
 
 /**
  * Polaris circuit breaker implement in Zuul.
  *
  * @author Haotian Zhang
  */
-public class EnhancedPreZuulFilter extends ZuulFilter {
+public class EnhancedZuulPluginRunner {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(EnhancedPreZuulFilter.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(EnhancedZuulPluginRunner.class);
 
 	private final EnhancedPluginRunner pluginRunner;
 
-	private final Environment environment;
-
-	public EnhancedPreZuulFilter(EnhancedPluginRunner pluginRunner, Environment environment) {
+	public EnhancedZuulPluginRunner(EnhancedPluginRunner pluginRunner) {
 		this.pluginRunner = pluginRunner;
-		this.environment = environment;
 	}
 
-	@Override
-	public String filterType() {
-		return PRE_TYPE;
-	}
-
-	@Override
-	public int filterOrder() {
-		return OrderConstant.Client.Zuul.ENHANCED_ROUTE_FILTER_ORDER;
-	}
-
-	@Override
-	public boolean shouldFilter() {
-		String enabled = environment.getProperty("spring.cloud.tencent.rpc-enhancement.reporter");
-		return StringUtils.isEmpty(enabled) || enabled.equals("true");
-	}
-
-	@Override
-	public Object run() throws ZuulException {
+	public void run() {
 		EnhancedPluginContext enhancedPluginContext = new EnhancedPluginContext();
 		RequestContext context = RequestContext.getCurrentContext();
 		context.set(ContextConstant.Zuul.ENHANCED_PLUGIN_CONTEXT, enhancedPluginContext);
@@ -96,6 +69,7 @@ public class EnhancedPreZuulFilter extends ZuulFilter {
 					.httpHeaders(requestHeaders)
 					.httpMethod(HttpMethod.resolve(context.getRequest().getMethod()))
 					.url(uri)
+					.serviceUrl(uri)
 					.build();
 
 			enhancedPluginContext.setRequest(enhancedRequestContext);
@@ -108,6 +82,5 @@ public class EnhancedPreZuulFilter extends ZuulFilter {
 		catch (URISyntaxException e) {
 			LOGGER.error("Generate URI failed.", e);
 		}
-		return null;
 	}
 }

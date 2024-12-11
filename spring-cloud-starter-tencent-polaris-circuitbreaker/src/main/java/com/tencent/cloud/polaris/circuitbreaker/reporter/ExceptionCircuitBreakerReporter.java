@@ -18,7 +18,11 @@
 package com.tencent.cloud.polaris.circuitbreaker.reporter;
 
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
+import com.tencent.cloud.common.constant.ContextConstant;
+import com.tencent.cloud.common.metadata.MetadataContextHolder;
+import com.tencent.cloud.polaris.circuitbreaker.PolarisCircuitBreaker;
 import com.tencent.cloud.rpc.enhancement.config.RpcEnhancementReporterProperties;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPlugin;
 import com.tencent.cloud.rpc.enhancement.plugin.EnhancedPluginContext;
@@ -27,6 +31,9 @@ import com.tencent.cloud.rpc.enhancement.plugin.EnhancedRequestContext;
 import com.tencent.cloud.rpc.enhancement.plugin.PolarisEnhancedPluginUtils;
 import com.tencent.polaris.api.plugin.circuitbreaker.ResourceStat;
 import com.tencent.polaris.circuitbreak.api.CircuitBreakAPI;
+import com.tencent.polaris.circuitbreak.api.pojo.InvokeContext;
+import com.tencent.polaris.metadata.core.MetadataObjectValue;
+import com.tencent.polaris.metadata.core.MetadataType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -74,6 +81,10 @@ public class ExceptionCircuitBreakerReporter implements EnhancedPlugin {
 		ServiceInstance serviceInstance = Optional.ofNullable(context.getTargetServiceInstance())
 				.orElse(new DefaultServiceInstance());
 
+		if (LOG.isDebugEnabled()) {
+			String governanceNamespace = MetadataContextHolder.get().getDisposableMetadata().get(ContextConstant.POLARIS_GOVERNANCE_NAMESPACE);
+			LOG.debug("governanceNamespace={}, serviceInstance:{}", governanceNamespace, serviceInstance);
+		}
 		ResourceStat resourceStat = PolarisEnhancedPluginUtils.createInstanceResourceStat(
 				serviceInstance.getServiceId(),
 				serviceInstance.getHost(),
@@ -90,6 +101,34 @@ public class ExceptionCircuitBreakerReporter implements EnhancedPlugin {
 
 		circuitBreakAPI.report(resourceStat);
 
+		MetadataObjectValue<PolarisCircuitBreaker> circuitBreakerObject = MetadataContextHolder.get().
+				getMetadataContainer(MetadataType.APPLICATION, true).
+				getMetadataValue(ContextConstant.CircuitBreaker.POLARIS_CIRCUIT_BREAKER);
+
+		MetadataObjectValue<Long> startTimeMilliObject = MetadataContextHolder.get().
+				getMetadataContainer(MetadataType.APPLICATION, true).
+				getMetadataValue(ContextConstant.CircuitBreaker.CIRCUIT_BREAKER_START_TIME);
+
+		boolean existCircuitBreaker = existMetadataValue(circuitBreakerObject);
+		boolean existStartTime = existMetadataValue(startTimeMilliObject);
+
+		if (existCircuitBreaker && existStartTime) {
+			PolarisCircuitBreaker polarisCircuitBreaker = circuitBreakerObject.getObjectValue().get();
+			Long startTimeMillis = startTimeMilliObject.getObjectValue().get();
+
+			long delay = System.currentTimeMillis() - startTimeMillis;
+			InvokeContext.ResponseContext responseContext = new InvokeContext.ResponseContext();
+			responseContext.setDuration(delay);
+			responseContext.setDurationUnit(TimeUnit.MILLISECONDS);
+			responseContext.setError(context.getThrowable());
+
+			if (responseContext.getError() == null) {
+				polarisCircuitBreaker.onSuccess(responseContext);
+			}
+			else {
+				polarisCircuitBreaker.onError(responseContext);
+			}
+		}
 	}
 
 	@Override
@@ -102,4 +141,10 @@ public class ExceptionCircuitBreakerReporter implements EnhancedPlugin {
 	public int getOrder() {
 		return CIRCUIT_BREAKER_REPORTER_PLUGIN_ORDER;
 	}
+
+	private static boolean existMetadataValue(MetadataObjectValue<?> metadataObjectValue) {
+		return Optional.ofNullable(metadataObjectValue).map(MetadataObjectValue::getObjectValue).
+				map(Optional::isPresent).orElse(false);
+	}
+
 }

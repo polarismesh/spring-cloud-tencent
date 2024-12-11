@@ -57,4 +57,14 @@ public final class LoadBalancerUtils {
 
 		return new DefaultServiceInstances(serviceKey, instances);
 	}
+
+	public static List<Server> filterNonPolarisServers(List<Server> servers) {
+		List<Server> result = new ArrayList<>(servers.size());
+		for (Server server : servers) {
+			if (!(server instanceof PolarisServer)) {
+				result.add(server);
+			}
+		}
+		return result;
+	}
 }

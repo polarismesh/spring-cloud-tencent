@@ -17,7 +17,7 @@
 
 package com.tencent.cloud.polaris.circuitbreaker.common;
 
-import com.tencent.cloud.polaris.circuitbreaker.zuul.PolarisCircuitBreakerPostZuulFilter;
+import com.tencent.cloud.polaris.context.CircuitBreakerStatusCodeException;
 import com.tencent.polaris.circuitbreak.api.pojo.ResultToErrorCode;
 import feign.FeignException;
 
@@ -50,8 +50,8 @@ public class PolarisResultToErrorCode implements ResultToErrorCode {
 				&& e instanceof WebClientResponseException) {
 			return ((WebClientResponseException) e).getRawStatusCode();
 		}
-		else if (e instanceof PolarisCircuitBreakerPostZuulFilter.CircuitBreakerStatusCodeException) {
-			return ((PolarisCircuitBreakerPostZuulFilter.CircuitBreakerStatusCodeException) e).getRawStatusCode();
+		else if (e instanceof CircuitBreakerStatusCodeException) {
+			return ((CircuitBreakerStatusCodeException) e).getRawStatusCode();
 		}
 		return -1;
 	}

@@ -30,6 +30,10 @@ public final class ContextConstant {
 	 * Name of Polaris.
 	 */
 	public static final String POLARIS = "POLARIS";
+	/**
+	 * Metadata key for target governance namespace.
+	 */
+	public static final String POLARIS_GOVERNANCE_NAMESPACE = "POLARIS_GOVERNANCE_NAMESPACE";
 
 	/**
 	 * SCT Default Charset .
@@ -47,25 +51,34 @@ public final class ContextConstant {
 	public static final class Zuul {
 
 		/**
-		 * polaris circuit breaker.
-		 */
-		public static final String POLARIS_CIRCUIT_BREAKER = "PolarisCircuitBreaker";
-
-		/**
 		 * timestamp before route.
 		 */
 		public static final String POLARIS_PRE_ROUTE_TIME = "PolarisPreRouteTime";
-		/**
-		 * is in routing state.
-		 */
-		public static final String POLARIS_IS_IN_ROUTING_STATE = "PolarisIsInRoutingState";
-
 		/**
 		 * polaris circuit breaker.
 		 */
 		public static final String ENHANCED_PLUGIN_CONTEXT = "EnhancedPluginContext";
 
 		private Zuul() {
+		}
+	}
+
+	public static final class CircuitBreaker {
+		/**
+		 * polaris circuit breaker.
+		 */
+		public static final String POLARIS_CIRCUIT_BREAKER = "PolarisCircuitBreaker";
+		/**
+		 * circuit breaker start time.
+		 */
+		public static final String CIRCUIT_BREAKER_START_TIME = "CIRCUIT_BREAKER_START_TIME";
+		/**
+		 * circuit breaker fallback http response.
+		 */
+		public static final String CIRCUIT_BREAKER_FALLBACK_HTTP_RESPONSE = "CIRCUIT_BREAKER_FALLBACK_HTTP_RESPONSE";
+
+		private CircuitBreaker() {
+
 		}
 	}
 }

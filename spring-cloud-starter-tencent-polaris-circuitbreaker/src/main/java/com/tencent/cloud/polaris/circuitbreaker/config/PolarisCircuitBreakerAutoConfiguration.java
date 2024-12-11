@@ -24,11 +24,9 @@ import java.util.Set;
 
 import com.tencent.cloud.polaris.circuitbreaker.PolarisCircuitBreakerFactory;
 import com.tencent.cloud.polaris.circuitbreaker.common.CircuitBreakerConfigModifier;
+import com.tencent.cloud.polaris.circuitbreaker.reporter.CircuitBreakerPlugin;
 import com.tencent.cloud.polaris.circuitbreaker.reporter.ExceptionCircuitBreakerReporter;
 import com.tencent.cloud.polaris.circuitbreaker.reporter.SuccessCircuitBreakerReporter;
-import com.tencent.cloud.polaris.circuitbreaker.resttemplate.PolarisCircuitBreakerRestTemplateBeanPostProcessor;
-import com.tencent.cloud.polaris.circuitbreaker.zuul.PolarisCircuitBreakerPostZuulFilter;
-import com.tencent.cloud.polaris.circuitbreaker.zuul.PolarisCircuitBreakerZuulFilter;
 import com.tencent.cloud.polaris.circuitbreaker.zuul.PolarisZuulFallbackFactory;
 import com.tencent.cloud.polaris.context.PolarisSDKContextManager;
 import com.tencent.cloud.rpc.enhancement.config.RpcEnhancementAutoConfiguration;
@@ -42,10 +40,8 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.cloud.client.circuitbreaker.CircuitBreakerFactory;
 import org.springframework.cloud.client.circuitbreaker.Customizer;
 import org.springframework.cloud.netflix.zuul.filters.route.FallbackProvider;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.env.Environment;
 
 
 /**
@@ -69,17 +65,16 @@ public class PolarisCircuitBreakerAutoConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnClass(name = "org.springframework.web.client.RestTemplate")
-	public static PolarisCircuitBreakerRestTemplateBeanPostProcessor polarisCircuitBreakerRestTemplateBeanPostProcessor(
-			ApplicationContext applicationContext) {
-		return new PolarisCircuitBreakerRestTemplateBeanPostProcessor(applicationContext);
-	}
-
-	@Bean
 	@ConditionalOnMissingBean(SuccessCircuitBreakerReporter.class)
 	public SuccessCircuitBreakerReporter successCircuitBreakerReporter(RpcEnhancementReporterProperties properties,
 			PolarisSDKContextManager polarisSDKContextManager) {
 		return new SuccessCircuitBreakerReporter(properties, polarisSDKContextManager.getCircuitBreakAPI());
+	}
+
+	@Bean
+	@ConditionalOnMissingBean(CircuitBreakerPlugin.class)
+	public CircuitBreakerPlugin circuitBreakerPlugin(CircuitBreakerFactory circuitBreakerFactory) {
+		return new CircuitBreakerPlugin(circuitBreakerFactory);
 	}
 
 	@Bean
@@ -115,21 +110,6 @@ public class PolarisCircuitBreakerAutoConfiguration {
 		@Bean
 		public PolarisZuulFallbackFactory polarisZuulFallbackFactory() {
 			return new PolarisZuulFallbackFactory(zuulFallbackProviders);
-		}
-
-		@Bean
-		public PolarisCircuitBreakerZuulFilter polarisCircuitBreakerZuulFilter(
-				CircuitBreakerFactory circuitBreakerFactory,
-				PolarisZuulFallbackFactory polarisZuulFallbackFactory,
-				Environment environment) {
-			return new PolarisCircuitBreakerZuulFilter(circuitBreakerFactory, polarisZuulFallbackFactory, environment);
-		}
-
-		@Bean
-		public PolarisCircuitBreakerPostZuulFilter polarisCircuitBreakerPostZuulFilter(
-				PolarisZuulFallbackFactory polarisZuulFallbackFactory,
-				Environment environment) {
-			return new PolarisCircuitBreakerPostZuulFilter(polarisZuulFallbackFactory, environment);
 		}
 	}
 }

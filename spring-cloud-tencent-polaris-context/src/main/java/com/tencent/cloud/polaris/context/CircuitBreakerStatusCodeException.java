@@ -15,24 +15,15 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package com.tencent.cloud.polaris.circuitbreaker.config;
+package com.tencent.cloud.polaris.context;
 
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.client.HttpStatusCodeException;
 
-/**
- * Autoconfiguration at bootstrap phase.
- *
- * @author lepdou 2022-03-29
- */
-@Configuration(proxyBeanMethods = false)
-@ConditionalOnProperty("spring.cloud.polaris.enabled")
-@Import({
-		PolarisCircuitBreakerAutoConfiguration.class,
-		PolarisCircuitBreakerFeignClientAutoConfiguration.class,
-		GatewayPolarisCircuitBreakerAutoConfiguration.class
-})
-public class PolarisCircuitBreakerBootstrapConfiguration {
+public class CircuitBreakerStatusCodeException extends HttpStatusCodeException {
+
+	public CircuitBreakerStatusCodeException(HttpStatus statusCode) {
+		super(statusCode);
+	}
 
 }

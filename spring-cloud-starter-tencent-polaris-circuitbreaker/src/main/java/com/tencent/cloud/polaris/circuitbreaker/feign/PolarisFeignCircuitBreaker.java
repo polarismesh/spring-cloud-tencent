@@ -23,7 +23,6 @@ import feign.Feign;
 import feign.Target;
 import feign.codec.Decoder;
 
-import org.springframework.cloud.client.circuitbreaker.CircuitBreakerFactory;
 import org.springframework.cloud.openfeign.FallbackFactory;
 import org.springframework.cloud.openfeign.FeignCircuitBreaker;
 import org.springframework.util.ReflectionUtils;
@@ -51,26 +50,7 @@ public final class PolarisFeignCircuitBreaker {
 	 */
 	public static final class Builder extends Feign.Builder {
 
-		private CircuitBreakerFactory circuitBreakerFactory;
-		private String feignClientName;
-		private PolarisCircuitBreakerNameResolver circuitBreakerNameResolver;
-
 		public Builder() {
-		}
-
-		public Builder circuitBreakerFactory(CircuitBreakerFactory circuitBreakerFactory) {
-			this.circuitBreakerFactory = circuitBreakerFactory;
-			return this;
-		}
-
-		public Builder feignClientName(String feignClientName) {
-			this.feignClientName = feignClientName;
-			return this;
-		}
-
-		public Builder circuitBreakerNameResolver(PolarisCircuitBreakerNameResolver circuitBreakerNameResolver) {
-			this.circuitBreakerNameResolver = circuitBreakerNameResolver;
-			return this;
 		}
 
 		public <T> T target(Target<T> target, T fallback) {
@@ -91,7 +71,7 @@ public final class PolarisFeignCircuitBreaker {
 			field.setAccessible(true);
 			Decoder decoder = (Decoder) ReflectionUtils.getField(field, this);
 			this.invocationHandlerFactory((target, dispatch) -> new PolarisFeignCircuitBreakerInvocationHandler(
-					circuitBreakerFactory, feignClientName, target, dispatch, nullableFallbackFactory, circuitBreakerNameResolver, decoder));
+					target, dispatch, nullableFallbackFactory, decoder));
 			return this.build();
 		}
 

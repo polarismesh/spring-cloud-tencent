@@ -18,7 +18,6 @@
 package org.springframework.cloud.openfeign;
 
 import com.tencent.cloud.polaris.circuitbreaker.config.ConditionalOnPolarisCircuitBreakerEnabled;
-import com.tencent.cloud.polaris.circuitbreaker.feign.PolarisCircuitBreakerNameResolver;
 
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -46,7 +45,7 @@ public class PolarisFeignCircuitBreakerTargeterAutoConfiguration {
 	@Primary
 	@ConditionalOnBean(CircuitBreakerFactory.class)
 	@ConditionalOnMissingBean(Targeter.class)
-	public Targeter polarisFeignCircuitBreakerTargeter(CircuitBreakerFactory circuitBreakerFactory, PolarisCircuitBreakerNameResolver circuitBreakerNameResolver) {
-		return new PolarisFeignCircuitBreakerTargeter(circuitBreakerFactory, circuitBreakerNameResolver);
+	public Targeter polarisFeignCircuitBreakerTargeter() {
+		return new PolarisFeignCircuitBreakerTargeter();
 	}
 }

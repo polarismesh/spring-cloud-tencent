@@ -17,25 +17,15 @@
 
 package com.tencent.cloud.polaris.loadbalancer.config;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.tencent.cloud.polaris.context.ConditionalOnPolarisEnabled;
-import com.tencent.cloud.rpc.enhancement.resttemplate.EnhancedRestTemplateInterceptor;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.cloud.client.loadbalancer.LoadBalancerInterceptor;
-import org.springframework.cloud.client.loadbalancer.RestTemplateCustomizer;
-import org.springframework.cloud.client.loadbalancer.RetryLoadBalancerInterceptor;
 import org.springframework.cloud.netflix.ribbon.RibbonAutoConfiguration;
 import org.springframework.cloud.netflix.ribbon.RibbonClients;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.client.ClientHttpRequestInterceptor;
-import org.springframework.util.CollectionUtils;
 
 /**
  * Auto-configuration Ribbon for Polaris.
@@ -53,44 +43,6 @@ public class PolarisLoadBalancerAutoConfiguration {
 	@Bean
 	public PolarisLoadBalancerProperties polarisLoadBalancerProperties() {
 		return new PolarisLoadBalancerProperties();
-	}
-
-	@Bean
-	public RestTemplateCustomizer polarisRestTemplateCustomizer(
-			@Autowired(required = false) RetryLoadBalancerInterceptor retryLoadBalancerInterceptor,
-			@Autowired(required = false) LoadBalancerInterceptor loadBalancerInterceptor) {
-		return restTemplate -> {
-			List<ClientHttpRequestInterceptor> list = new ArrayList<>(restTemplate.getInterceptors());
-			// LoadBalancerInterceptor must invoke before EnhancedRestTemplateInterceptor
-			int addIndex = list.size();
-			if (CollectionUtils.containsInstance(list, retryLoadBalancerInterceptor) || CollectionUtils.containsInstance(list, loadBalancerInterceptor)) {
-				ClientHttpRequestInterceptor enhancedRestTemplateInterceptor = null;
-				for (int i = 0; i < list.size(); i++) {
-					if (list.get(i) instanceof EnhancedRestTemplateInterceptor) {
-						enhancedRestTemplateInterceptor = list.get(i);
-						addIndex = i;
-					}
-				}
-				if (enhancedRestTemplateInterceptor != null) {
-					list.remove(addIndex);
-					list.add(enhancedRestTemplateInterceptor);
-				}
-			}
-			else {
-				if (retryLoadBalancerInterceptor != null || loadBalancerInterceptor != null) {
-					for (int i = 0; i < list.size(); i++) {
-						if (list.get(i) instanceof EnhancedRestTemplateInterceptor) {
-							addIndex = i;
-						}
-					}
-					list.add(addIndex,
-							retryLoadBalancerInterceptor != null
-									? retryLoadBalancerInterceptor
-									: loadBalancerInterceptor);
-				}
-			}
-			restTemplate.setInterceptors(list);
-		};
 	}
 
 }
