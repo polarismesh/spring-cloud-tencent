@@ -40,3 +40,4 @@
 - [feat:upgrade trace plugin.](https://github.com/Tencent/spring-cloud-tencent/pull/1468)
 - [feat:support smooth upgrade from tsf.](https://github.com/Tencent/spring-cloud-tencent/pull/1472)
 - [fix:fix caller disposable metadata handle when using tracing.](https://github.com/Tencent/spring-cloud-tencent/pull/1476)
+- [refactor:update registry status.](https://github.com/Tencent/spring-cloud-tencent/pull/1486)
