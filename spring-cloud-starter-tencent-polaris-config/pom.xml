@@ -63,11 +63,6 @@
 		<!-- Polaris dependencies end -->
 
 		<!-- Spring cloud dependencies start -->
-		<dependency>
-			<groupId>org.springframework.cloud</groupId>
-			<artifactId>spring-cloud-context</artifactId>
-		</dependency>
-		<!-- Spring cloud dependencies start -->
 
 		<dependency>
 			<groupId>org.springframework.boot</groupId>

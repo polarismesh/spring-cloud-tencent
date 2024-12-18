@@ -90,7 +90,7 @@
 
 	<properties>
 		<!-- Project revision -->
-		<revision>2.0.0.0-Hoxton.SR12-SNAPSHOT</revision>
+		<revision>2.0.0.0-Hoxton.SR12</revision>
 
 		<!-- Spring Framework -->
 		<spring.framework.version>5.2.25.RELEASE</spring.framework.version>
@@ -100,6 +100,7 @@
 
 		<!-- Spring Cloud -->
 		<spring.cloud.version>Hoxton.SR12</spring.cloud.version>
+		<spring.cloud.netflix.version>2.2.10.RELEASE</spring.cloud.netflix.version>
 
 		<!-- Maven Plugin Versions -->
 		<jacoco.version>0.8.12</jacoco.version>
@@ -145,6 +146,15 @@
 			</dependency>
 
 			<!-- Spring Cloud Dependencies -->
+
+			<dependency>
+				<groupId>org.springframework.cloud</groupId>
+				<artifactId>spring-cloud-netflix-dependencies</artifactId>
+				<version>${spring.cloud.netflix.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+
 			<dependency>
 				<groupId>org.springframework.cloud</groupId>
 				<artifactId>spring-cloud-dependencies</artifactId>
@@ -152,6 +162,7 @@
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
+
 		</dependencies>
 	</dependencyManagement>
 
