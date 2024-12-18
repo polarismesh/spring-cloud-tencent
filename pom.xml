@@ -101,10 +101,6 @@
 		<!-- Spring Cloud -->
 		<spring.cloud.version>Hoxton.SR12</spring.cloud.version>
 		<spring.cloud.netflix.version>2.2.10.RELEASE</spring.cloud.netflix.version>
-		<HdrHistogram.version>2.1.10</HdrHistogram.version>
-		<hibernate-validator.version>6.2.5.Final</hibernate-validator.version>
-		<jsr305.version>3.0.2</jsr305.version>
-		<jakarta.el.version>3.0.4</jakarta.el.version>
 
 		<!-- Maven Plugin Versions -->
 		<jacoco.version>0.8.12</jacoco.version>
@@ -165,30 +161,6 @@
 				<version>${spring.cloud.version}</version>
 				<type>pom</type>
 				<scope>import</scope>
-			</dependency>
-
-			<dependency>
-				<groupId>org.hdrhistogram</groupId>
-				<artifactId>HdrHistogram</artifactId>
-				<version>${HdrHistogram.version}</version>
-			</dependency>
-
-			<dependency>
-				<groupId>org.hibernate.validator</groupId>
-				<artifactId>hibernate-validator</artifactId>
-				<version>${hibernate-validator.version}</version>
-			</dependency>
-
-			<dependency>
-				<groupId>com.google.code.findbugs</groupId>
-				<artifactId>jsr305</artifactId>
-				<version>${jsr305.version}</version>
-			</dependency>
-
-			<dependency>
-				<groupId>org.glassfish</groupId>
-				<artifactId>jakarta.el</artifactId>
-				<version>${jakarta.el.version}</version>
 			</dependency>
 
 		</dependencies>
