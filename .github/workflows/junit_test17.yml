@@ -6,10 +6,12 @@ name: Test with Junit (JDK17)
 on:
   push:
     branches:
+      - 2024
       - 2023
       - 2022
   pull_request:
     branches:
+      - 2024
       - 2023
       - 2022
 

@@ -3,6 +3,7 @@ name: Snapshot
 on:
   push:
     branches:
+      - 2024
       - 2023
       - 2022
       - 2021

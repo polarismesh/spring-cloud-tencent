@@ -60,9 +60,6 @@ Spring Cloud 集成北极星可以解决以下问题：
 Spring Cloud Tencent 所有组件都已上传到 Maven 中央仓库，只需要引入依赖即可。
 
 > 注意：
->
-> 支持Spring Cloud 版本：2023、2022、2021、2020、Hoxton。
->
 > Spring Cloud Tencent
 > 的版本列表可以查看
 > [Spring Cloud Tencent 版本管理](https://github.com/Tencent/spring-cloud-tencent/wiki/Spring-Cloud-Tencent-%E7%89%88%E6%9C%AC%E7%AE%A1%E7%90%86)
