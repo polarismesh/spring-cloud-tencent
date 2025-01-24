@@ -41,3 +41,4 @@
 - [feat:support smooth upgrade from tsf.](https://github.com/Tencent/spring-cloud-tencent/pull/1472)
 - [fix:fix caller disposable metadata handle when using tracing.](https://github.com/Tencent/spring-cloud-tencent/pull/1476)
 - [refactor:update registry status.](https://github.com/Tencent/spring-cloud-tencent/pull/1486)
+- [feat: implement circuit breaker in enhance plugin, support listen config group, support refresh single config in refresh_context mode.](https://github.com/Tencent/spring-cloud-tencent/pull/1490)
